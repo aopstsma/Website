@@ -2,9 +2,9 @@
   "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
   "/schools/page": "app/schools/page.js",
-  "/about/page": "app/about/page.js",
-  "/achievements/page": "app/achievements/page.js",
   "/contact/page": "app/contact/page.js",
+  "/achievements/page": "app/achievements/page.js",
+  "/about/page": "app/about/page.js",
   "/services/page": "app/services/page.js",
   "/zones/page": "app/zones/page.js"
 }

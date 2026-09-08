@@ -23,7 +23,7 @@ export default function HeroSection() {
 
   return (
     <section className="hero">
-      <OdishaHeroMap activeZone={activeZone} />
+      <OdishaHeroMap />
       <div className="wrap hero__inner">
         <div>
           <p className="hero__est">Established 1980</p>
