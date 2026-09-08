@@ -1,7 +1,8 @@
 /* ============================================================
-   Odisha particle map — hero visual
-   Points fill the state outline; six zone nodes glow on top.
-   Hovering a zone in the rail lights that node and its region.
+   Odisha network map — hero visual, v2
+   Particle state map + glowing zone nodes + live network lines
+   with travelling light pulses, aurora backdrop, and an idle
+   auto-cycle so the scene is never static.
    ============================================================ */
 
 (function () {
@@ -10,7 +11,6 @@
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- Simplified Odisha boundary (lon, lat), clockwise ---- */
   const OUTLINE = [
     [86.90, 22.55], [87.20, 22.20], [87.48, 21.75], [87.10, 21.60],
     [86.95, 21.48], [86.92, 21.05], [86.80, 20.75], [86.72, 20.32],
@@ -23,17 +23,15 @@
     [85.72, 22.38], [86.22, 22.42], [86.55, 22.25]
   ];
 
-  /* ---- Zone anchors ---- */
   const ZONES = [
     { id: 'balasore',    lon: 86.93, lat: 21.49 },
     { id: 'cuttack',     lon: 85.95, lat: 20.52 },
-    { id: 'bhubaneswar', lon: 85.78, lat: 20.20 },
+    { id: 'bhubaneswar', lon: 85.78, lat: 20.16 },
     { id: 'zone-four',   lon: 84.85, lat: 22.20, pending: true },
     { id: 'sambalpur',   lon: 83.97, lat: 21.47 },
     { id: 'berhampur',   lon: 84.79, lat: 19.31 }
   ];
 
-  /* ---- Projection: lon/lat -> local units ---- */
   const LON0 = 84.45, LAT0 = 20.4, SCALE = 3.05;
   const px = (lon) => (lon - LON0) * SCALE;
   const py = (lat) => (lat - LAT0) * SCALE * 1.06;
@@ -48,68 +46,88 @@
     return hit;
   }
 
-  /* ---- Scene ---- */
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
   camera.position.set(0, 0, 12.6);
 
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   } catch (e) { return; }
   renderer.setClearColor(0x000000, 0);
 
+  const world = new THREE.Group();
+  scene.add(world);
   const group = new THREE.Group();
   group.position.x = 1.7;
-  scene.add(group);
+  world.add(group);
 
-  /* ---- Fill points ---- */
+  /* ---- Aurora backdrop ---- */
+  const auroraGeo = new THREE.PlaneGeometry(60, 40, 40, 26);
+  const auroraCols = new Float32Array(auroraGeo.attributes.position.count * 3);
+  auroraGeo.setAttribute('color', new THREE.BufferAttribute(auroraCols, 3));
+  const aurora = new THREE.Mesh(auroraGeo, new THREE.MeshBasicMaterial({
+    vertexColors: true, transparent: true, opacity: 0.5,
+    blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
+  }));
+  aurora.position.z = -14;
+  world.add(aurora);
+
+  const A1 = new THREE.Color(0x1B4A73);
+  const A2 = new THREE.Color(0x6B3A82);
+  const A3 = new THREE.Color(0xB8801F);
+  const auroraTmp = new THREE.Color();
+
+  function paintAurora(t) {
+    const p = auroraGeo.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const x = p.getX(i) / 30, y = p.getY(i) / 20;
+      const w1 = Math.sin(x * 1.6 + t * 0.16) * 0.5 + 0.5;
+      const w2 = Math.sin(y * 2.1 - t * 0.11 + 1.7) * 0.5 + 0.5;
+      const w3 = Math.sin((x + y) * 1.25 + t * 0.2) * 0.5 + 0.5;
+      auroraTmp.copy(A1).lerp(A2, w1).lerp(A3, w2 * w3 * 0.5);
+      const fade = Math.max(0, 1 - Math.hypot(x, y) * 0.72);
+      auroraCols[i*3] = auroraTmp.r * fade;
+      auroraCols[i*3+1] = auroraTmp.g * fade;
+      auroraCols[i*3+2] = auroraTmp.b * fade;
+    }
+    auroraGeo.attributes.color.needsUpdate = true;
+  }
+  paintAurora(0);
+
+  /* ---- Fill particles ---- */
   const dense = window.innerWidth > 900 && !reduced;
-  const step = dense ? 0.075 : 0.125;
+  const step = dense ? 0.068 : 0.115;
+  const positions = [], targets = [], seeds = [], zoneIdx = [], sizes = [];
 
-  const positions = [], targets = [], seeds = [], zoneIdx = [];
+  function pushPoint(x, y, z, big) {
+    targets.push(x, y, z);
+    const a = Math.random() * Math.PI * 2, r = 9 + Math.random() * 9;
+    positions.push(Math.cos(a) * r, Math.sin(a) * r * 0.7, (Math.random() - 0.5) * 16);
+    seeds.push(Math.random() * Math.PI * 2);
+    sizes.push(big ? 1.9 : 0.7 + Math.random() * 0.7);
+    let best = 0, bestD = Infinity;
+    ZONES.forEach((z, i) => {
+      const d = (px(z.lon) - x) ** 2 + (py(z.lat) - y) ** 2;
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    zoneIdx.push(best);
+  }
+
   for (let lon = 81.3; lon <= 87.6; lon += step) {
     for (let lat = 18.1; lat <= 22.7; lat += step) {
       const jl = lon + (Math.random() - 0.5) * step * 0.9;
       const ja = lat + (Math.random() - 0.5) * step * 0.9;
       if (!inside(jl, ja)) continue;
-
-      const x = px(jl), y = py(ja);
-      targets.push(x, y, (Math.random() - 0.5) * 0.35);
-      positions.push(
-        x + (Math.random() - 0.5) * 16,
-        y + (Math.random() - 0.5) * 12,
-        (Math.random() - 0.5) * 14
-      );
-      seeds.push(Math.random() * Math.PI * 2);
-
-      // nearest zone, for the highlight sweep
-      let best = 0, bestD = Infinity;
-      ZONES.forEach((z, i) => {
-        const d = (px(z.lon) - x) ** 2 + (py(z.lat) - y) ** 2;
-        if (d < bestD) { bestD = d; best = i; }
-      });
-      zoneIdx.push(best);
+      pushPoint(px(jl), py(ja), (Math.random() - 0.5) * 0.4, false);
     }
   }
-
-  // Denser trace along the coastline / borders
   for (let i = 0; i < OUTLINE.length; i++) {
     const a = OUTLINE[i], b = OUTLINE[(i + 1) % OUTLINE.length];
-    const segs = dense ? 26 : 14;
+    const segs = dense ? 34 : 18;
     for (let s = 0; s < segs; s++) {
       const t = s / segs;
-      const x = px(a[0] + (b[0] - a[0]) * t);
-      const y = py(a[1] + (b[1] - a[1]) * t);
-      targets.push(x, y, 0);
-      positions.push(x + (Math.random() - 0.5) * 16, y + (Math.random() - 0.5) * 12, (Math.random() - 0.5) * 14);
-      seeds.push(Math.random() * Math.PI * 2);
-      let best = 0, bestD = Infinity;
-      ZONES.forEach((z, k) => {
-        const d = (px(z.lon) - x) ** 2 + (py(z.lat) - y) ** 2;
-        if (d < bestD) { bestD = d; best = k; }
-      });
-      zoneIdx.push(best);
+      pushPoint(px(a[0] + (b[0]-a[0]) * t), py(a[1] + (b[1]-a[1]) * t), 0.05, true);
     }
   }
 
@@ -117,99 +135,190 @@
   const posArr = new Float32Array(positions);
   const tgtArr = new Float32Array(targets);
   const colArr = new Float32Array(COUNT * 3);
+  const sizeArr = new Float32Array(sizes);
 
-  const BASE = new THREE.Color(0x2C5064);
-  const LIT  = new THREE.Color(0xD4A537);
+  const BASE = new THREE.Color(0x2E5A73);
+  const LIT  = new THREE.Color(0xF2C75C);
   for (let i = 0; i < COUNT; i++) {
-    colArr[i * 3] = BASE.r; colArr[i * 3 + 1] = BASE.g; colArr[i * 3 + 2] = BASE.b;
+    colArr[i*3] = BASE.r; colArr[i*3+1] = BASE.g; colArr[i*3+2] = BASE.b;
   }
 
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
   geo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
+  geo.setAttribute('aScale', new THREE.BufferAttribute(sizeArr, 1));
 
-  const mat = new THREE.PointsMaterial({
-    size: dense ? 0.052 : 0.072,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.95,
-    sizeAttenuation: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending
+  function dotTexture() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const g = c.getContext('2d');
+    const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.35, 'rgba(255,255,255,0.55)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
+    const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+  }
+  const sprite = dotTexture();
+
+  const VERT = `
+    attribute float aScale;
+    varying vec3 vColor;
+    uniform float uSize;
+    void main() {
+      vColor = color;
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = uSize * aScale * (1.0 / -mv.z) * 3.0;
+      gl_Position = projectionMatrix * mv;
+    }`;
+  const FRAG = `
+    uniform sampler2D uMap;
+    varying vec3 vColor;
+    void main() {
+      vec4 tex = texture2D(uMap, gl_PointCoord);
+      gl_FragColor = vec4(vColor, tex.a);
+    }`;
+
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uMap: { value: sprite }, uSize: { value: dense ? 13.0 : 17.0 } },
+    vertexShader: VERT, fragmentShader: FRAG,
+    transparent: true, depthWrite: false,
+    blending: THREE.AdditiveBlending, vertexColors: true
   });
-  const cloud = new THREE.Points(geo, mat);
-  group.add(cloud);
+  group.add(new THREE.Points(geo, mat));
+
+  /* ---- Network links + pulses ---- */
+  const LINKS = [[0,1],[1,2],[1,4],[4,3],[3,0],[2,5],[4,5],[1,5]];
+  const linkCurves = [];
+
+  LINKS.forEach(([a, b]) => {
+    const pa = new THREE.Vector3(px(ZONES[a].lon), py(ZONES[a].lat), 0.4);
+    const pb = new THREE.Vector3(px(ZONES[b].lon), py(ZONES[b].lat), 0.4);
+    const mid = pa.clone().add(pb).multiplyScalar(0.5);
+    mid.z += 1.4 + Math.random() * 0.8;
+    const curve = new THREE.QuadraticBezierCurve3(pa, mid, pb);
+    const pts = curve.getPoints(44);
+
+    const lg = new THREE.BufferGeometry().setFromPoints(pts);
+    const lc = new Float32Array(pts.length * 3);
+    const c1 = new THREE.Color(0x3E7FA8), c2 = new THREE.Color(0xD4A537);
+    const tc = new THREE.Color();
+    pts.forEach((_, i) => {
+      const t = i / (pts.length - 1);
+      tc.copy(c1).lerp(c2, Math.sin(t * Math.PI) * 0.7);
+      const fade = Math.sin(t * Math.PI);
+      lc[i*3] = tc.r * fade; lc[i*3+1] = tc.g * fade; lc[i*3+2] = tc.b * fade;
+    });
+    lg.setAttribute('color', new THREE.BufferAttribute(lc, 3));
+
+    const line = new THREE.Line(lg, new THREE.LineBasicMaterial({
+      vertexColors: true, transparent: true, opacity: 0.34,
+      blending: THREE.AdditiveBlending, depthWrite: false
+    }));
+    group.add(line);
+    linkCurves.push({ curve, line, a, b });
+  });
+
+  const PULSES = reduced ? 0 : 14;
+  const pulseGeo = new THREE.BufferGeometry();
+  const pulsePos = new Float32Array(Math.max(PULSES,1) * 3);
+  const pulseCol = new Float32Array(Math.max(PULSES,1) * 3);
+  const pulseSize = new Float32Array(Math.max(PULSES,1));
+  pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
+  pulseGeo.setAttribute('color', new THREE.BufferAttribute(pulseCol, 3));
+  pulseGeo.setAttribute('aScale', new THREE.BufferAttribute(pulseSize, 1));
+
+  const pulseMat = new THREE.ShaderMaterial({
+    uniforms: { uMap: { value: sprite }, uSize: { value: 26.0 } },
+    vertexShader: VERT, fragmentShader: FRAG,
+    transparent: true, depthWrite: false,
+    blending: THREE.AdditiveBlending, vertexColors: true
+  });
+  if (PULSES) group.add(new THREE.Points(pulseGeo, pulseMat));
+
+  const pulses = [];
+  for (let i = 0; i < PULSES; i++) {
+    pulses.push({
+      link: Math.floor(Math.random() * linkCurves.length),
+      t: Math.random(),
+      speed: 0.09 + Math.random() * 0.13
+    });
+    pulseSize[i] = 0.8 + Math.random() * 0.7;
+  }
 
   /* ---- Zone nodes ---- */
   const nodes = ZONES.map((z) => {
     const g = new THREE.Group();
-    g.position.set(px(z.lon), py(z.lat), 0.42);
-
+    g.position.set(px(z.lon), py(z.lat), 0.45);
     const core = new THREE.Mesh(
-      new THREE.SphereGeometry(0.085, 16, 16),
-      new THREE.MeshBasicMaterial({ color: z.pending ? 0x5C7386 : 0xF0D48A })
-    );
+      new THREE.SphereGeometry(0.09, 18, 18),
+      new THREE.MeshBasicMaterial({ color: z.pending ? 0x6C8497 : 0xFFF0C4 }));
     const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.16, 0.185, 40),
-      new THREE.MeshBasicMaterial({
-        color: z.pending ? 0x5C7386 : 0xD4A537,
-        transparent: true, opacity: 0.55, side: THREE.DoubleSide
-      })
-    );
+      new THREE.RingGeometry(0.17, 0.2, 48),
+      new THREE.MeshBasicMaterial({ color: z.pending ? 0x6C8497 : 0xD4A537,
+        transparent: true, opacity: 0.6, side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending, depthWrite: false }));
+    const wave = new THREE.Mesh(
+      new THREE.RingGeometry(0.22, 0.26, 48),
+      new THREE.MeshBasicMaterial({ color: 0xD4A537, transparent: true, opacity: 0,
+        side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }));
     const halo = new THREE.Mesh(
-      new THREE.RingGeometry(0.2, 0.5, 40),
-      new THREE.MeshBasicMaterial({
-        color: 0xD4A537, transparent: true, opacity: 0, side: THREE.DoubleSide
-      })
-    );
-    g.add(core, ring, halo);
+      new THREE.CircleGeometry(0.75, 40),
+      new THREE.MeshBasicMaterial({ color: 0xD4A537, transparent: true, opacity: 0,
+        blending: THREE.AdditiveBlending, depthWrite: false }));
+    halo.position.z = -0.05;
+    g.add(halo, wave, ring, core);
     group.add(g);
-    return { g, core, ring, halo, phase: Math.random() * Math.PI * 2, glow: 0, pending: !!z.pending };
+    return { g, ring, wave, halo, phase: Math.random()*Math.PI*2, glow: 0, pending: !!z.pending };
   });
 
-  /* ---- Interaction state ---- */
-  let active = -1;
-  let pointerX = 0, pointerY = 0;
+  /* ---- Interaction ---- */
+  let active = -1, hovered = -1;
+  let pointerX = 0, pointerY = 0, scrollY = 0, lastTouch = -9999;
 
   window.addEventListener('pointermove', (e) => {
     pointerX = (e.clientX / window.innerWidth) * 2 - 1;
     pointerY = (e.clientY / window.innerHeight) * 2 - 1;
   }, { passive: true });
+  window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
 
+  const railEls = [];
   document.querySelectorAll('[data-zone]').forEach((el) => {
     const i = ZONES.findIndex((z) => z.id === el.dataset.zone);
-    const on = () => { active = i; el.classList.add('is-active'); };
-    const off = () => { active = -1; el.classList.remove('is-active'); };
+    railEls[i] = el;
+    const on = () => { hovered = i; lastTouch = performance.now(); };
+    const off = () => { hovered = -1; lastTouch = performance.now(); };
     el.addEventListener('mouseenter', on);
     el.addEventListener('focus', on);
     el.addEventListener('mouseleave', off);
     el.addEventListener('blur', off);
   });
 
-  /* ---- Resize ---- */
   function resize() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    camera.fov = w < 760 ? 62 : 46;
+    camera.fov = w < 760 ? 64 : 46;
     group.position.x = w < 900 ? 0 : 1.7;
-    group.position.y = w < 900 ? -0.6 : 0;
+    group.position.y = w < 900 ? -0.5 : 0;
     camera.updateProjectionMatrix();
   }
   window.addEventListener('resize', resize);
   resize();
 
-  /* ---- Assemble + animate ---- */
   const t0 = performance.now();
-  const ASSEMBLE = reduced ? 1 : 2600;
-  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-
+  const ASSEMBLE = reduced ? 1 : 3000;
+  const easeOut = (t) => 1 - Math.pow(1 - t, 4);
   const tmpCol = new THREE.Color();
+  const vec = new THREE.Vector3();
+
   let running = true;
-  const io = new IntersectionObserver(([e]) => { running = e.isIntersecting; }, { threshold: 0 });
-  io.observe(canvas);
+  new IntersectionObserver(([e]) => { running = e.isIntersecting; },
+    { threshold: 0 }).observe(canvas);
+
+  let cycleAt = 3600, cycleIdx = 0;
 
   function frame(now) {
     requestAnimationFrame(frame);
@@ -219,40 +328,76 @@
     const p = easeOut(Math.min(elapsed / ASSEMBLE, 1));
     const time = elapsed * 0.001;
 
+    if (hovered >= 0) {
+      active = hovered;
+    } else if (!reduced && now - lastTouch > 2200) {
+      if (elapsed > cycleAt) { cycleAt = elapsed + 2400; cycleIdx = (cycleIdx + 1) % ZONES.length; }
+      active = cycleIdx;
+    } else {
+      active = -1;
+    }
+
+    railEls.forEach((el, i) => { if (el) el.classList.toggle('is-active', i === active); });
+
+    if (!reduced) paintAurora(time);
+
     const pos = geo.attributes.position.array;
     const col = geo.attributes.color.array;
-
     for (let i = 0; i < COUNT; i++) {
       const i3 = i * 3;
-      const drift = reduced ? 0 : Math.sin(time * 0.65 + seeds[i]) * 0.026;
-      pos[i3]     = posArr[i3]     + (tgtArr[i3]     - posArr[i3])     * p;
-      pos[i3 + 1] = posArr[i3 + 1] + (tgtArr[i3 + 1] - posArr[i3 + 1]) * p + drift;
-      pos[i3 + 2] = posArr[i3 + 2] + (tgtArr[i3 + 2] - posArr[i3 + 2]) * p;
-
+      const dr = reduced ? 0 : Math.sin(time * 0.7 + seeds[i]) * 0.032;
+      const dz = reduced ? 0 : Math.cos(time * 0.5 + seeds[i]) * 0.05;
+      pos[i3]   = posArr[i3]   + (tgtArr[i3]   - posArr[i3])   * p;
+      pos[i3+1] = posArr[i3+1] + (tgtArr[i3+1] - posArr[i3+1]) * p + dr;
+      pos[i3+2] = posArr[i3+2] + (tgtArr[i3+2] - posArr[i3+2]) * p + dz;
       const want = active >= 0 && zoneIdx[i] === active ? 1 : 0;
-      tmpCol.copy(BASE).lerp(LIT, want * 0.85);
-      col[i3]     += (tmpCol.r - col[i3])     * 0.09;
-      col[i3 + 1] += (tmpCol.g - col[i3 + 1]) * 0.09;
-      col[i3 + 2] += (tmpCol.b - col[i3 + 2]) * 0.09;
+      tmpCol.copy(BASE).lerp(LIT, want * 0.92);
+      col[i3]   += (tmpCol.r - col[i3])   * 0.075;
+      col[i3+1] += (tmpCol.g - col[i3+1]) * 0.075;
+      col[i3+2] += (tmpCol.b - col[i3+2]) * 0.075;
     }
     geo.attributes.position.needsUpdate = true;
     geo.attributes.color.needsUpdate = true;
 
+    if (PULSES) {
+      for (let i = 0; i < PULSES; i++) {
+        const q = pulses[i];
+        q.t += q.speed * 0.016;
+        if (q.t > 1) { q.t = 0; q.link = Math.floor(Math.random() * linkCurves.length); }
+        linkCurves[q.link].curve.getPoint(q.t, vec);
+        pulsePos[i*3] = vec.x; pulsePos[i*3+1] = vec.y; pulsePos[i*3+2] = vec.z;
+        const glow = Math.sin(q.t * Math.PI) * p;
+        pulseCol[i*3] = 0.95*glow; pulseCol[i*3+1] = 0.78*glow; pulseCol[i*3+2] = 0.35*glow;
+      }
+      pulseGeo.attributes.position.needsUpdate = true;
+      pulseGeo.attributes.color.needsUpdate = true;
+    }
+
+    linkCurves.forEach((l) => {
+      const near = active >= 0 && (l.a === active || l.b === active);
+      const want = (near ? 0.85 : 0.3) * p;
+      l.line.material.opacity += (want - l.line.material.opacity) * 0.08;
+    });
+
     nodes.forEach((n, i) => {
       const want = active === i ? 1 : 0;
-      n.glow += (want - n.glow) * 0.1;
-      const pulse = reduced ? 0 : Math.sin(time * 1.5 + n.phase) * 0.5 + 0.5;
-      const s = 1 + n.glow * 0.85 + pulse * 0.09;
-      n.g.scale.setScalar(s * p);
-      n.ring.material.opacity = (n.pending ? 0.3 : 0.5) + n.glow * 0.5;
-      n.halo.material.opacity = n.glow * 0.28;
-      n.halo.scale.setScalar(1 + n.glow * 0.45);
+      n.glow += (want - n.glow) * 0.09;
+      const beat = reduced ? 0 : Math.sin(time * 1.7 + n.phase) * 0.5 + 0.5;
+      n.g.scale.setScalar((1 + n.glow * 0.9 + beat * 0.11) * p);
+      n.ring.material.opacity = (n.pending ? 0.32 : 0.55) + n.glow * 0.45;
+      n.halo.material.opacity = n.glow * 0.2 + beat * 0.035;
+      const w = ((time * 0.55 + n.phase) % 1);
+      n.wave.scale.setScalar(1 + w * 2.6);
+      n.wave.material.opacity = (1 - w) * (0.3 + n.glow * 0.5);
       n.g.lookAt(camera.position);
     });
 
     const tilt = reduced ? 0 : 1;
-    group.rotation.y += (pointerX * 0.17 * tilt - group.rotation.y) * 0.045;
-    group.rotation.x += (pointerY * 0.09 * tilt - group.rotation.x) * 0.045;
+    group.rotation.y += (pointerX * 0.22 * tilt - group.rotation.y) * 0.04;
+    group.rotation.x += (pointerY * 0.12 * tilt - group.rotation.x) * 0.04;
+    world.position.y = scrollY * 0.0022;
+    world.rotation.z = Math.sin(time * 0.12) * 0.012 * tilt;
+    aurora.rotation.z = time * 0.012 * tilt;
 
     renderer.render(scene, camera);
   }

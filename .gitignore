@@ -3,6 +3,3 @@ Thumbs.db
 node_modules/
 .vscode/
 *.log
-.next/
-out/
-.env*.local

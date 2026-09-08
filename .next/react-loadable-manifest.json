@@ -1,0 +1,21 @@
+{
+  "app\\components\\HeroSection.tsx -> ./OdishaHeroMap": {
+    "id": 3488,
+    "files": [
+      "static/chunks/b536a0f1.68e92c0ba64c3b13.js",
+      "static/chunks/488.2d431763f10e01e2.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": 5139,
+    "files": [
+      "static/chunks/139.7a5a8e93a21948c1.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": 1646,
+    "files": [
+      "static/chunks/646.f342b7cffc01feb0.js"
+    ]
+  }
+}
