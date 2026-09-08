@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Member schools &mdash; AOPSTSMA</title>
+<meta name="description" content="Directory of private secondary training schools that are members of the association, searchable by name, zone and district.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="index.html">
+      <span class="brand__seal">1980</span>
+      <span class="brand__name">
+        <b>AOPSTSMA</b>
+        <span>ALL ORISSA &middot; SINCE 1980</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="zones.html">Zones</a>
+      <a href="schools.html">Member schools</a>
+      <a href="achievements.html">Legal records</a>
+      <a href="services.html">Services</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Member schools</h1>
+      <p class="lede">Search by school name, district or zone.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="filters">
+        <label class="visually-hidden" for="school-search">Search member schools</label>
+        <input type="search" id="school-search" placeholder="Search a school, district or zone">
+        <button class="chip" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" data-filter="balasore" aria-pressed="false">Balasore</button>
+        <button class="chip" data-filter="cuttack" aria-pressed="false">Cuttack</button>
+        <button class="chip" data-filter="bhubaneswar" aria-pressed="false">Bhubaneswar</button>
+        <button class="chip" data-filter="sambalpur" aria-pressed="false">Sambalpur</button>
+        <button class="chip" data-filter="berhampur" aria-pressed="false">Berhampur</button>
+      </div>
+
+      <p class="school-count" id="school-count"></p>
+
+      <table class="school-table">
+        <thead>
+          <tr><th>School</th><th>Zone</th><th>District</th></tr>
+        </thead>
+        <tbody id="school-rows"></tbody>
+      </table>
+
+      <div class="note reveal" style="margin-top:2.5rem">
+        This directory is drawn from the association's zonal records. Contact details for
+        each school are being added. If an entry is wrong or your school is missing,
+        <a href="contact.html" style="color:var(--brass-hi)">tell us</a> and we will correct it.
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div>
+        <h4>THE ASSOCIATION</h4>
+        <p style="font-size:var(--t-sm)">All Orissa Private Secondary Training Schools
+        Management Association. Representing private secondary training schools across
+        Odisha since 1980.</p>
+      </div>
+      <div>
+        <h4>PAGES</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="zones.html">Zones</a></li>
+          <li><a href="schools.html">Member schools</a></li>
+          <li><a href="achievements.html">Legal records</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>MEMBERS</h4>
+        <ul>
+          <li><a href="services.html">Services and fees</a></li>
+          <li><a href="contact.html">Join the association</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>REACH US</h4>
+        <ul>
+          <li><a href="tel:+916370987576">63709 87576</a></li>
+          <li><a href="mailto:info.aopstsma@gmail.com">info.aopstsma@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-footer__base">
+      <span>&copy; <span id="yr">2026</span> AOPSTSMA. All rights reserved.</span>
+      <span>aopstsma.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/data/schools.js"></script>
+<script src="assets/js/site.js"></script>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All Orissa Private Secondary Training Schools Management Association</title>
+<meta name="description" content="The association of private secondary training schools across Odisha. Six zones, member schools, legal records and services. Established 1980.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="index.html">
+      <span class="brand__seal">1980</span>
+      <span class="brand__name">
+        <b>AOPSTSMA</b>
+        <span>ALL ORISSA &middot; SINCE 1980</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="zones.html">Zones</a>
+      <a href="schools.html">Member schools</a>
+      <a href="achievements.html">Legal records</a>
+      <a href="services.html">Services</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <canvas id="odisha-canvas" aria-hidden="true"></canvas>
+    <div class="wrap hero__inner">
+      <div>
+        <p class="hero__est">Established 1980</p>
+        <h1>The training schools of Odisha, standing <em>together</em>.</h1>
+        <p class="hero__sub">
+          For forty-five years this association has represented private secondary
+          training schools across the state &mdash; carrying their case through the
+          High Court and the Supreme Court, and speaking for them where decisions
+          are made.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="schools.html">Find your school</a>
+          <a class="btn btn--ghost" href="achievements.html">Read the legal record</a>
+        </div>
+      </div>
+
+      <div class="zone-rail">
+        <p class="zone-rail__title">SIX ZONES</p>
+        <button type="button" data-zone="balasore"    onclick="location.href='schools.html?zone=balasore'">Balasore <span>30</span></button>
+        <button type="button" data-zone="cuttack"     onclick="location.href='schools.html?zone=cuttack'">Cuttack <span>18</span></button>
+        <button type="button" data-zone="bhubaneswar" onclick="location.href='schools.html?zone=bhubaneswar'">Bhubaneswar <span>&mdash;</span></button>
+        <button type="button" data-zone="zone-four"   onclick="location.href='zones.html'">Fourth zone <span>pending</span></button>
+        <button type="button" data-zone="sambalpur"   onclick="location.href='schools.html?zone=sambalpur'">Sambalpur <span>8</span></button>
+        <button type="button" data-zone="berhampur"   onclick="location.href='schools.html?zone=berhampur'">Berhampur <span>&mdash;</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FACTS ============ -->
+  <section class="facts">
+    <div class="wrap facts__grid">
+      <div class="facts__item">
+        <div class="facts__n">45</div>
+        <div class="facts__l">Years representing member schools</div>
+      </div>
+      <div class="facts__item">
+        <div class="facts__n" id="stat-schools">56</div>
+        <div class="facts__l">Schools listed in the directory</div>
+      </div>
+      <div class="facts__item">
+        <div class="facts__n">6</div>
+        <div class="facts__l">Zones covering the state</div>
+      </div>
+      <div class="facts__item">
+        <div class="facts__n">3</div>
+        <div class="facts__l">Writ petitions carried to judgment</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHAT WE DO ============ -->
+  <section class="section section--light">
+    <div class="wrap">
+      <div class="head reveal">
+        <div class="head__rule"></div>
+        <h2>What the association does</h2>
+        <p class="lede">
+          A single training school rarely has the time or the resources to fight a
+          departmental order on its own. Together, they do.
+        </p>
+      </div>
+
+      <div class="services reveal">
+        <article class="service">
+          <h3>Legal representation</h3>
+          <p>The association files and funds cases on behalf of member schools, from the
+          Orissa High Court through to the Supreme Court, and circulates every order it
+          obtains to the full membership.</p>
+        </article>
+        <article class="service">
+          <h3>Recognition and renewal</h3>
+          <p>Guidance on DIR recognition, renewal timelines and the paperwork the Board
+          of Secondary Education expects, so a school is never caught out by a deadline
+          it did not know about.</p>
+        </article>
+        <article class="service">
+          <h3>A voice with government</h3>
+          <p>Representations to the School and Mass Education Department and the Board,
+          made on behalf of all member schools rather than one at a time.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ZONES ============ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="head reveal">
+        <div class="head__rule"></div>
+        <h2>Six zones, one association</h2>
+        <p class="lede">Every member school belongs to a zone. Choose yours to see the
+        schools listed under it.</p>
+      </div>
+      <div class="zone-grid reveal" id="zone-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ RECORDS ============ -->
+  <section class="section section--deep">
+    <div class="wrap">
+      <div class="head reveal">
+        <div class="head__rule"></div>
+        <h2>The record, in the open</h2>
+        <p class="lede">
+          Court orders, departmental letters and association notices, kept where any
+          member school can find them.
+        </p>
+      </div>
+      <div class="docs reveal" id="doc-list" data-limit="4"></div>
+      <p style="margin-top:2rem">
+        <a class="btn btn--ghost" href="achievements.html">See all records</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ OFFICE BEARERS ============ -->
+  <section class="section section--light">
+    <div class="wrap">
+      <div class="head reveal">
+        <div class="head__rule"></div>
+        <h2>Who to speak to</h2>
+      </div>
+      <div class="bearers reveal">
+        <div class="bearer">
+          <span>President</span>
+          <h3>Nirmal Kant Mohanty</h3>
+        </div>
+        <div class="bearer">
+          <span>Secretary</span>
+          <h3>Aba Pradhan</h3>
+        </div>
+        <div class="bearer">
+          <span>Association office</span>
+          <h3><a href="tel:+916370987576" style="text-decoration:none">63709 87576</a></h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BAND ============ -->
+  <section class="band">
+    <div class="wrap">
+      <h2>Is your school missing from the directory?</h2>
+      <a class="btn btn--primary" href="contact.html">Send us your details</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div>
+        <h4>THE ASSOCIATION</h4>
+        <p style="font-size:var(--t-sm)">All Orissa Private Secondary Training Schools
+        Management Association. Representing private secondary training schools across
+        Odisha since 1980.</p>
+      </div>
+      <div>
+        <h4>PAGES</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="zones.html">Zones</a></li>
+          <li><a href="schools.html">Member schools</a></li>
+          <li><a href="achievements.html">Legal records</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>MEMBERS</h4>
+        <ul>
+          <li><a href="services.html">Services and fees</a></li>
+          <li><a href="contact.html">Join the association</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>REACH US</h4>
+        <ul>
+          <li><a href="tel:+916370987576">63709 87576</a></li>
+          <li><a href="mailto:info.aopstsma@gmail.com">info.aopstsma@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-footer__base">
+      <span>&copy; <span id="yr">2026</span> AOPSTSMA. All rights reserved.</span>
+      <span>aopstsma.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="assets/data/schools.js"></script>
+<script src="assets/js/odisha-map.js"></script>
+<script src="assets/js/site.js"></script>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
