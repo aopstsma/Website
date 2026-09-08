@@ -42,7 +42,22 @@ export default function AchievementsPage() {
                     ) : null}
                   </span>
                   <span>
-                    <span className="doc__title">{d.title}</span>
+                    <span className="doc__title">
+                      {d.badge ? (
+                        <span
+                          className={`doc__badge ${
+                            d.category === 'court_order'
+                              ? 'doc__badge--court'
+                              : d.category === 'department_letter'
+                              ? 'doc__badge--dept'
+                              : 'doc__badge--notice'
+                          }`}
+                        >
+                          {d.badge}
+                        </span>
+                      ) : null}
+                      {d.title}
+                    </span>
                     <span className="doc__meta">{d.note}</span>
                   </span>
                   <span className="doc__get">{action}</span>

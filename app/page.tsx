@@ -5,7 +5,6 @@ import { ZONES, SCHOOLS } from '@/lib/data/schools';
 
 export default function HomePage() {
   const schoolCount = SCHOOLS.length;
-  const previewDocs = DOCUMENTS.slice(0, 4);
 
   const countByZone = (zoneId: string) => {
     return SCHOOLS.filter((s) => s.zone === zoneId).length;
