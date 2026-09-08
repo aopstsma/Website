@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import HeroSection from './components/HeroSection';
-import { ZONES, SCHOOLS, DOCUMENTS } from '@/lib/data/schools';
+import HomeDocumentsSection from './components/HomeDocumentsSection';
+import { ZONES, SCHOOLS } from '@/lib/data/schools';
 
 export default function HomePage() {
   const schoolCount = SCHOOLS.length;
@@ -110,53 +111,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ============ RECORDS ============ */}
-      <section className="section section--deep">
-        <div className="wrap">
-          <div className="head reveal">
-            <div className="head__rule"></div>
-            <h2>The record, in the open</h2>
-            <p className="lede">
-              Court orders, departmental letters and association notices, kept where any
-              member school can find them.
-            </p>
-          </div>
-          <div className="docs reveal" id="doc-list" data-limit="4">
-            {previewDocs.map((d, index) => {
-              const hasFile = Boolean(d.file);
-              const Tag = hasFile ? 'a' : 'div';
-              const fileProps = hasFile
-                ? { href: `/assets/docs/${d.file}`, download: true }
-                : {};
-              const action = hasFile ? 'Download PDF' : 'Copy on request';
-
-              return (
-                <Tag key={index} className="doc" {...fileProps}>
-                  <span className="doc__ref">
-                    {d.ref}
-                    {d.year ? (
-                      <>
-                        <br />
-                        {d.year}
-                      </>
-                    ) : null}
-                  </span>
-                  <span>
-                    <span className="doc__title">{d.title}</span>
-                    <span className="doc__meta">{d.note}</span>
-                  </span>
-                  <span className="doc__get">{action}</span>
-                </Tag>
-              );
-            })}
-          </div>
-          <p style={{ marginTop: '2rem' }}>
-            <Link className="btn btn--ghost" href="/achievements">
-              See all records
-            </Link>
-          </p>
-        </div>
-      </section>
+      {/* ============ RECORDS, LETTERS & NEWS SHOWCASE ============ */}
+      <HomeDocumentsSection />
 
       {/* ============ OFFICE BEARERS ============ */}
       <section className="section section--light">
