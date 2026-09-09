@@ -25,6 +25,11 @@ export interface DocumentRecord {
   category: 'court_order' | 'department_letter' | 'notice';
   badge?: string;
   date?: string;
+  court?: string;
+  petitioner?: string;
+  respondent?: string;
+  bench?: string;
+  operativeParagraph?: string;
 }
 
 export const ZONES: Zone[] = [

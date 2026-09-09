@@ -51,6 +51,18 @@
       "namedRegex": "^/contact(?:/)?$"
     },
     {
+      "page": "/pay",
+      "regex": "^/pay(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/pay(?:/)?$"
+    },
+    {
+      "page": "/pay/school/upload-guide",
+      "regex": "^/pay/school/upload\\-guide(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/pay/school/upload\\-guide(?:/)?$"
+    },
+    {
       "page": "/schools",
       "regex": "^/schools(?:/)?$",
       "routeKeys": {},

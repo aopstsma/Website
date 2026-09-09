@@ -1,10 +1,12 @@
 {
   "/_not-found/page": "/_not-found",
+  "/pay/school/upload-guide/page": "/pay/school/upload-guide",
   "/page": "/",
   "/schools/page": "/schools",
+  "/services/page": "/services",
   "/contact/page": "/contact",
   "/achievements/page": "/achievements",
   "/about/page": "/about",
-  "/services/page": "/services",
-  "/zones/page": "/zones"
+  "/zones/page": "/zones",
+  "/pay/page": "/pay"
 }

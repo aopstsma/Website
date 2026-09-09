@@ -5,7 +5,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 
-// Client-only dynamic import of OdishaHeroMap to prevent any SSR canvas issues
+// Client-only dynamic import of OdishaHeroMap
 const OdishaHeroMap = dynamic(() => import('./OdishaHeroMap'), { ssr: false });
 
 export default function HeroSection() {
@@ -13,50 +13,85 @@ export default function HeroSection() {
   const router = useRouter();
 
   const zones = [
-    { id: 'balasore', name: 'Balasore', count: '30', href: '/schools?zone=balasore' },
-    { id: 'cuttack', name: 'Cuttack', count: '18', href: '/schools?zone=cuttack' },
-    { id: 'bhubaneswar', name: 'Bhubaneswar', count: '—', href: '/schools?zone=bhubaneswar' },
-    { id: 'zone-four', name: 'Fourth zone', count: 'pending', href: '/zones' },
-    { id: 'sambalpur', name: 'Sambalpur', count: '8', href: '/schools?zone=sambalpur' },
-    { id: 'berhampur', name: 'Berhampur', count: '—', href: '/schools?zone=berhampur' },
+    { id: 'balasore', name: 'Balasore Zone', count: '30 Schools', href: '/schools?zone=balasore' },
+    { id: 'cuttack', name: 'Cuttack Zone', count: '18 Schools', href: '/schools?zone=cuttack' },
+    { id: 'bhubaneswar', name: 'Bhubaneswar HQ', count: 'Capital', href: '/schools?zone=bhubaneswar' },
+    { id: 'zone-four', name: 'Baripada Zone', count: 'North Dist.', href: '/zones' },
+    { id: 'sambalpur', name: 'Sambalpur Zone', count: '8 Schools', href: '/schools?zone=sambalpur' },
+    { id: 'berhampur', name: 'Berhampur Zone', count: 'South Dist.', href: '/schools?zone=berhampur' },
   ];
+
+  const handleZoneHover = (zoneId: string | null) => {
+    setActiveZone(zoneId);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('aopstsma:zone-hover', { detail: { zoneId } })
+      );
+    }
+  };
 
   return (
     <section className="hero">
       <OdishaHeroMap />
+
       <div className="wrap hero__inner">
         <div>
-          <p className="hero__est">Established 1980</p>
-          <h1>The training schools of Odisha, standing <em>together</em>.</h1>
+          <div className="hero__est">
+            <span>🏛️ APEX INSTITUTIONAL ASSOCIATION &middot; ESTD. 1980</span>
+          </div>
+
+          <h1>
+            All Orissa Private Secondary Training Schools Management Association
+          </h1>
+
           <p className="hero__sub">
-            For forty-five years this association has represented private secondary
-            training schools across the state &mdash; carrying their case through the
-            High Court and the Supreme Court, and speaking for them where decisions
-            are made.
+            The premier state association representing 56+ recognized D.El.Ed &amp; B.Ed
+            teacher education institutions across all 30 districts of Odisha. Protecting
+            institutional autonomy, securing High Court judgments, and advocating for
+            secondary teacher education.
           </p>
+
           <div className="hero__actions">
-            <Link className="btn btn--primary" href="/schools">Find your school</Link>
-            <Link className="btn btn--ghost" href="/achievements">Read the legal record</Link>
+            <Link className="btn btn--primary" href="/services">
+              💳 Pay Annual Portal Fee
+            </Link>
+            <Link className="btn btn--secondary" href="/achievements">
+              ⚖️ High Court Orders &amp; Judgments
+            </Link>
+            <Link className="btn btn--ghost" href="/schools">
+              🏫 Search Member Schools
+            </Link>
           </div>
         </div>
 
-        <div className="zone-rail">
-          <p className="zone-rail__title">SIX ZONES</p>
-          {zones.map((z) => (
-            <button
-              key={z.id}
-              type="button"
-              data-zone={z.id}
-              className={activeZone === z.id ? 'is-active' : ''}
-              onMouseEnter={() => setActiveZone(z.id)}
-              onMouseLeave={() => setActiveZone(null)}
-              onFocus={() => setActiveZone(z.id)}
-              onBlur={() => setActiveZone(null)}
-              onClick={() => router.push(z.href)}
-            >
-              {z.name} <span>{z.count}</span>
-            </button>
-          ))}
+        {/* 3D Map interactive Zone Navigator */}
+        <div className="hero-map-container">
+          <div className="zone-rail">
+            <div className="zone-rail__title">
+              Interactive 3D Zone Map
+            </div>
+            <p style={{ fontSize: '0.75rem', color: '#94A3B8', marginBottom: '0.75rem' }}>
+              Hover over a zone to highlight on the 3D relief model:
+            </p>
+            <div className="zone-rail__grid">
+              {zones.map((z) => (
+                <button
+                  key={z.id}
+                  type="button"
+                  data-zone={z.id}
+                  className={activeZone === z.id ? 'is-active' : ''}
+                  onMouseEnter={() => handleZoneHover(z.id)}
+                  onMouseLeave={() => handleZoneHover(null)}
+                  onFocus={() => handleZoneHover(z.id)}
+                  onBlur={() => handleZoneHover(null)}
+                  onClick={() => router.push(z.href)}
+                >
+                  <span>{z.name}</span>
+                  <span>{z.count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

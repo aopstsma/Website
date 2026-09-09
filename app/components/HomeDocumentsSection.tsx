@@ -3,27 +3,29 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { DOCUMENTS, DocumentRecord } from '@/lib/data/schools';
+import CourtOrderModal from './CourtOrderModal';
 
 type FilterCategory = 'all' | 'court_order' | 'department_letter' | 'notice';
 
 export default function HomeDocumentsSection() {
   const [filter, setFilter] = useState<FilterCategory>('all');
+  const [selectedDoc, setSelectedDoc] = useState<DocumentRecord | null>(null);
 
   const tabs: { id: FilterCategory; label: string; count: number }[] = [
-    { id: 'all', label: 'All Updates', count: DOCUMENTS.length },
+    { id: 'all', label: 'All Legal Records', count: DOCUMENTS.length },
     {
       id: 'court_order',
-      label: 'Court Orders',
+      label: 'High Court Orders',
       count: DOCUMENTS.filter((d) => d.category === 'court_order').length,
     },
     {
       id: 'department_letter',
-      label: 'Department Letters',
+      label: 'Govt & BSE Letters',
       count: DOCUMENTS.filter((d) => d.category === 'department_letter').length,
     },
     {
       id: 'notice',
-      label: 'News & Circulars',
+      label: 'Association Circulars',
       count: DOCUMENTS.filter((d) => d.category === 'notice').length,
     },
   ];
@@ -49,17 +51,18 @@ export default function HomeDocumentsSection() {
   return (
     <section className="section section--deep">
       <div className="wrap">
-        <div className="head reveal">
+        <div className="head">
           <div className="head__rule"></div>
-          <h2>Court Orders, Letters & News</h2>
+          <h2>High Court Orders &amp; Legal Records</h2>
           <p className="lede">
-            High Court judgments, departmental orders and association circulars,
-            kept in the open where every member school can access them.
+            Certified judgments, stay orders, and writ petitions from the High Court of
+            Orissa and the Supreme Court. Click on any record to view its certified front page
+            and download the official PDF.
           </p>
         </div>
 
         {/* Category filter tabs */}
-        <div className="filters reveal" style={{ marginBottom: '2.2rem' }}>
+        <div className="filters" style={{ marginBottom: '2rem' }}>
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -74,27 +77,34 @@ export default function HomeDocumentsSection() {
           ))}
         </div>
 
-        {/* List of documents */}
-        <div className="docs reveal" id="doc-list">
+        {/* List of documents with Front-Page Preview on Click */}
+        <div className="docs" id="doc-list">
           {displayedDocs.map((d, index) => {
-            const hasFile = Boolean(d.file);
-            const Tag = hasFile ? 'a' : 'div';
-            const fileProps = hasFile
-              ? { href: `/assets/docs/${d.file}`, download: true }
-              : {};
-            const action = hasFile ? 'Download PDF' : 'Copy on request';
-
             return (
-              <Tag key={index} className="doc" {...fileProps}>
+              <div
+                key={index}
+                className="doc"
+                role="button"
+                tabIndex={0}
+                style={{ cursor: 'pointer' }}
+                onClick={() => setSelectedDoc(d)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedDoc(d);
+                  }
+                }}
+              >
                 <span className="doc__ref">
                   {d.ref}
                   {d.year ? (
                     <>
                       <br />
-                      {d.year}
+                      <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>{d.year}</span>
                     </>
                   ) : null}
                 </span>
+
                 <span>
                   <span className="doc__title">
                     <span className={getBadgeClass(d.category)}>
@@ -104,21 +114,27 @@ export default function HomeDocumentsSection() {
                   </span>
                   <span className="doc__meta">{d.note}</span>
                 </span>
-                <span className="doc__get">{action}</span>
-              </Tag>
+
+                <span className="doc__get">
+                  👁️ Preview &amp; PDF &rarr;
+                </span>
+              </div>
             );
           })}
         </div>
 
         <div style={{ marginTop: '2.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-          <Link className="btn btn--ghost" href="/achievements">
-            View all legal records & archives &rarr;
+          <Link className="btn btn--primary" href="/achievements">
+            View All Court Judgments &amp; Archives &rarr;
           </Link>
-          <span style={{ fontSize: 'var(--t-sm)', color: 'var(--body-dark)', opacity: 0.8 }}>
-            Certified copies of High Court petitions and departmental correspondence
+          <span style={{ fontSize: 'var(--t-sm)', color: '#CBD5E1' }}>
+            Maintained under custody of AOPSTSMA Legal Affairs Secretariat
           </span>
         </div>
       </div>
+
+      {/* Modal for Front-Page Preview & Download */}
+      <CourtOrderModal doc={selectedDoc} onClose={() => setSelectedDoc(null)} />
     </section>
   );
 }
