@@ -698,3 +698,331 @@ p { margin: 0 0 1.1em; max-width: 68ch; }
   }
   .cursor-glow.is-on { opacity: 1; }
 }
+
+/* ============================================================
+   v2.1 — CONTRAST AND VISIBILITY FIXES
+   Gradient text is only applied where background-clip is
+   supported, always over a solid colour, so text can never
+   disappear.
+   ============================================================ */
+
+.hero h1 em,
+.facts__n,
+.page-head h1 {
+  -webkit-text-fill-color: currentColor;
+  background: none;
+  filter: none;
+}
+.hero h1 em   { color: var(--brass-hi); }
+.facts__n     { color: var(--brass-hi); }
+.page-head h1 { color: var(--mist); }
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero h1 em {
+    background: linear-gradient(100deg, #FFE9A8 0%, #FFF6D8 45%, var(--brass) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .facts__n {
+    background: linear-gradient(160deg, #FFF6DC 0%, #E0B347 75%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Page headings stay solid — the gradient made them too dim */
+.page-head h1 {
+  color: var(--mist) !important;
+  -webkit-text-fill-color: var(--mist) !important;
+  background: none !important;
+}
+
+/* Failsafe: if a reveal observer never fires, show the content
+   anyway rather than leaving the page half blank. */
+.reveal, .reveal-stagger > * {
+  animation: failsafeShow 0s linear 3s forwards;
+}
+@keyframes failsafeShow { to { opacity: 1; transform: none; } }
+.reveal.is-in, .reveal-stagger.is-in > * { animation: none; }
+
+/* Body copy contrast */
+:root { --body-dark: #C2D4DE; }
+.section:not(.section--light) p,
+.page-head p { color: #C2D4DE; }
+.doc__meta { opacity: .85; }
+.zone-card__dist { opacity: .88; }
+.site-footer a, .site-footer p { color: #B4C7D2; }
+.site-footer__base { color: #7C93A2; }
+
+/* Ambient glows were washing out text */
+.section:not(.section--light)::before,
+.page-head::before { opacity: .55; }
+
+/* Light sections need real contrast */
+.section--light { color: #2C4150; }
+.section--light .service p,
+.section--light .zone-card__dist { color: #3E5666; }
+
+/* ============================================================
+   ═════════════  v3 — LIGHT THEME: GREEN + CREAM  ═════════════
+   Full palette inversion. Everything below overrides the dark
+   theme above. Traditional, warm, high contrast, easy to read
+   on a phone in daylight.
+   ============================================================ */
+
+:root {
+  /* Surfaces */
+  --paper:      #FFFDF7;
+  --cream:      #F5F0E1;
+  --cream-2:    #EDE6D2;
+
+  /* Greens */
+  --green-900:  #13372A;
+  --green-800:  #1A4835;
+  --green-700:  #1F5D45;
+  --green-600:  #2A7457;
+  --green-400:  #4E9C7A;
+
+  /* Gold */
+  --gold:       #B0851C;
+  --gold-hi:    #D4A62F;
+  --gold-soft:  #EBD9A3;
+
+  /* Text */
+  --ink:        #14241C;
+  --body:       #45564D;
+  --muted:      #6E7F76;
+
+  /* Lines */
+  --rule:       rgba(19,55,42,.14);
+  --rule-2:     rgba(19,55,42,.08);
+
+  /* Remap the old dark tokens so untouched rules follow along */
+  --night:      var(--paper);
+  --deep:       var(--cream);
+  --slate:      var(--green-800);
+  --slate-2:    var(--green-400);
+  --brass:      var(--gold);
+  --brass-lo:   var(--green-700);
+  --brass-hi:   var(--gold-hi);
+  --mist:       var(--ink);
+  --mist-2:     var(--body);
+  --body-dark:  var(--body);
+  --body-light: var(--body);
+  --line-dark:  var(--rule);
+  --line-light: var(--rule);
+  --violet:     var(--green-600);
+  --violet-lo:  var(--green-900);
+  --cyan:       var(--gold-hi);
+}
+
+body { background: var(--paper); color: var(--body); }
+h1, h2, h3, h4 { color: var(--ink); }
+
+/* ---- Sections ---- */
+.section { background: var(--paper); color: var(--body); }
+.section--light { background: var(--cream); color: var(--body); }
+.section--deep {
+  background: var(--green-900);
+  color: #CBDDD3;
+}
+.section--deep h1, .section--deep h2,
+.section--deep h3, .section--deep h4 { color: #F2EEE0; }
+.section--deep p { color: #CBDDD3 !important; }
+.section--deep .head__rule { background: var(--gold-hi); }
+
+/* Kill the dark-theme ambient blobs; add a soft warm one instead */
+.section:not(.section--light)::before,
+.page-head::before {
+  background: radial-gradient(circle,
+    rgba(42,116,87,.09) 0%, rgba(176,133,28,.06) 40%, transparent 70%);
+  opacity: 1;
+}
+.section--deep::before {
+  background: radial-gradient(circle,
+    rgba(212,166,47,.16) 0%, transparent 66%);
+}
+
+/* ---- Header: deep green bar ---- */
+.site-header {
+  background: var(--green-900);
+  border-bottom: 1px solid rgba(212,166,47,.24);
+}
+.site-header.is-stuck {
+  background: var(--green-900);
+  box-shadow: 0 8px 30px -14px rgba(19,55,42,.5);
+  border-bottom-color: rgba(212,166,47,.45);
+}
+.brand__name b { color: #F5F0E1; }
+.brand__name span { color: var(--gold-hi); }
+.brand__seal { border-color: var(--gold-hi); color: var(--gold-hi); }
+.nav a { color: #BFD3C8; }
+.nav a:hover { color: #fff; background: rgba(212,166,47,.14); }
+.nav a[aria-current="page"] { color: var(--gold-hi); }
+.nav-toggle { color: #F5F0E1; border-color: rgba(212,166,47,.3); }
+@media (max-width: 940px) {
+  .nav { background: var(--green-800); }
+  .nav a { border-bottom-color: rgba(212,166,47,.16); }
+}
+
+/* ---- Hero on cream ---- */
+.hero { background: linear-gradient(170deg, var(--cream) 0%, var(--paper) 68%); }
+.hero::after {
+  background:
+    radial-gradient(120% 90% at 14% 50%, rgba(255,253,247,.94) 0%, rgba(255,253,247,.6) 44%, transparent 74%),
+    linear-gradient(to top, var(--paper) 0%, transparent 34%);
+}
+.hero h1 { color: var(--ink); text-shadow: none; }
+.hero h1 em { color: var(--green-700) !important; -webkit-text-fill-color: var(--green-700) !important; background: none !important; }
+.hero__sub { color: var(--body); }
+.hero__est {
+  color: var(--green-700);
+  background: rgba(42,116,87,.08);
+  border-color: rgba(19,55,42,.16);
+}
+.hero__est::before { background: var(--gold); }
+.hero::before { background: linear-gradient(to bottom, transparent, var(--green-600)); }
+@media (max-width: 900px) {
+  .hero::after { background: linear-gradient(to top, var(--paper) 4%, rgba(255,253,247,.78) 54%, rgba(255,253,247,.52) 100%); }
+}
+
+/* ---- Zone rail ---- */
+.zone-rail { border-left-color: var(--rule); }
+.zone-rail__title { color: var(--gold); }
+.zone-rail button { color: var(--body); }
+.zone-rail button span { color: var(--muted); }
+.zone-rail button:hover, .zone-rail button.is-active {
+  color: var(--green-700); text-shadow: none;
+}
+.zone-rail button:hover span, .zone-rail button.is-active span { color: var(--gold); }
+.zone-rail button::before { background: var(--slate-2); }
+.zone-rail button:hover::before,
+.zone-rail button.is-active::before {
+  background: var(--gold); box-shadow: 0 0 12px 2px rgba(176,133,28,.4);
+}
+@media (max-width: 900px) { .zone-rail { border-top-color: var(--rule); } }
+
+/* ---- Facts ---- */
+.facts { background: var(--green-900); border-block-color: rgba(212,166,47,.2); }
+.facts__item { border-right-color: rgba(212,166,47,.18); }
+.facts__item:hover { background: rgba(212,166,47,.07); }
+.facts__n {
+  color: var(--gold-hi) !important;
+  -webkit-text-fill-color: var(--gold-hi) !important;
+  background: none !important;
+  filter: none;
+}
+.facts__l { color: #BFD3C8; }
+@media (max-width: 640px) { .facts__item { border-bottom-color: rgba(212,166,47,.18); } }
+
+/* ---- Cards ---- */
+.zone-grid, .services { background: var(--rule); border-color: var(--rule); }
+.zone-card, .service { background: var(--paper); }
+.section--light .zone-card, .section--light .service { background: var(--paper); }
+.section:not(.section--light) .zone-card,
+.section:not(.section--light) .service {
+  background: var(--paper); backdrop-filter: none;
+}
+.zone-card:hover, .service:hover {
+  background: #fff;
+  box-shadow: 0 20px 44px -18px rgba(19,55,42,.28);
+}
+.zone-card::after, .service::after {
+  background: linear-gradient(140deg, rgba(42,116,87,.1), transparent 58%);
+}
+.zone-card:hover h3 { color: var(--green-700); text-shadow: none; }
+.zone-card__n { color: var(--gold); }
+.service__fee { color: var(--green-700); }
+
+/* ---- Documents ---- */
+.docs, .doc { border-color: var(--rule) !important; }
+.doc:hover { background: rgba(42,116,87,.05); }
+.doc::after { background: linear-gradient(90deg, rgba(42,116,87,.08), transparent 60%); }
+.doc__ref { color: var(--gold); }
+.doc:hover .doc__ref { text-shadow: none; }
+.doc__title { color: var(--ink); }
+.doc__get { color: var(--green-700); }
+.section--deep .doc { border-color: rgba(212,166,47,.2) !important; }
+.section--deep .doc__title { color: #F2EEE0; }
+.section--deep .doc__ref, .section--deep .doc__get { color: var(--gold-hi); }
+.section--deep .doc:hover { background: rgba(212,166,47,.08); }
+
+/* ---- Buttons ---- */
+.btn--primary { background: var(--green-700); color: #FFFDF7; }
+.btn--primary:hover { background: var(--green-800); box-shadow: 0 12px 30px -10px rgba(19,55,42,.5); }
+.btn--ghost { border-color: rgba(19,55,42,.24); color: var(--green-800); }
+.btn--ghost:hover { border-color: var(--green-700); color: var(--green-900); background: rgba(42,116,87,.06); box-shadow: none; }
+.section--deep .btn--ghost { border-color: rgba(212,166,47,.4); color: var(--gold-hi); }
+.section--deep .btn--ghost:hover { background: rgba(212,166,47,.1); color: #F2EEE0; }
+.btn::before { background: linear-gradient(100deg, transparent, rgba(255,255,255,.28), transparent); }
+
+/* ---- Page head ---- */
+.page-head {
+  background: linear-gradient(165deg, var(--cream) 0%, var(--paper) 100%);
+  border-bottom-color: var(--rule);
+}
+.page-head h1 {
+  color: var(--ink) !important;
+  -webkit-text-fill-color: var(--ink) !important;
+}
+.page-head p { color: var(--body) !important; }
+
+/* ---- Tables and filters ---- */
+.school-table th { color: var(--green-700); border-bottom-color: var(--rule); }
+.school-table td { border-bottom-color: var(--rule-2); }
+.school-table td:first-child { color: var(--ink); }
+.school-table tbody tr:hover { background: rgba(42,116,87,.05); }
+.school-table tbody tr:hover td:first-child { color: var(--green-700); }
+.filters input[type="search"] { border-color: rgba(19,55,42,.2); color: var(--ink); background: #fff; }
+.chip { border-color: rgba(19,55,42,.2); color: var(--body); }
+.chip:hover { border-color: var(--green-600); }
+.chip[aria-pressed="true"] {
+  background: var(--green-700); border-color: var(--green-700);
+  color: #FFFDF7; box-shadow: 0 6px 16px -6px rgba(19,55,42,.5);
+}
+.school-table td[data-l]::before { color: var(--gold); }
+
+/* ---- Bearers, notes, forms ---- */
+.bearer { border-top-color: var(--gold); }
+.bearer span { color: var(--gold); }
+.bearer:hover h3 { color: var(--green-700); }
+.note {
+  border-left-color: var(--green-600);
+  background: rgba(42,116,87,.07);
+  color: var(--body);
+}
+.note a { color: var(--green-700) !important; font-weight: 500; }
+.contact-line { border-bottom-color: var(--rule); }
+.contact-line small { color: var(--gold); }
+.contact-line b { color: var(--ink); }
+.form-row input, .form-row select, .form-row textarea {
+  border-color: rgba(19,55,42,.2); background: #fff; color: var(--ink);
+}
+
+/* ---- Band and footer ---- */
+.band { background: linear-gradient(120deg, var(--green-900) 0%, var(--green-700) 100%); }
+.band h2 { color: #F5F0E1; }
+.site-footer {
+  background: var(--green-900);
+  border-top-color: rgba(212,166,47,.22);
+}
+.site-footer h4 { color: var(--gold-hi); }
+.site-footer a, .site-footer p { color: #BFD3C8; }
+.site-footer a:hover { color: var(--gold-hi); }
+.site-footer__base { color: #7E958A; border-top-color: rgba(212,166,47,.18); }
+
+/* ---- Progress bar and cursor glow ---- */
+.scroll-progress {
+  height: 3px;
+  background: linear-gradient(90deg, var(--green-600), var(--gold), var(--green-800));
+}
+@media (hover: hover) and (pointer: fine) {
+  .cursor-glow {
+    background: radial-gradient(circle,
+      rgba(42,116,87,.07) 0%, rgba(176,133,28,.05) 40%, transparent 70%);
+  }
+}
+
+/* ---- Focus ring ---- */
+:focus-visible { outline-color: var(--green-600); }
+.site-header :focus-visible { outline-color: var(--gold-hi); }

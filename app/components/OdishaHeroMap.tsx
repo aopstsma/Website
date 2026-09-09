@@ -72,8 +72,8 @@ export default function OdishaHeroMap() {
     const auroraMat = new THREE.MeshBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.5,
-      blending: THREE.AdditiveBlending,
+      opacity: 0.55,
+      blending: THREE.NormalBlending,
       depthWrite: false,
       side: THREE.DoubleSide
     });
@@ -81,9 +81,10 @@ export default function OdishaHeroMap() {
     aurora.position.z = -14;
     world.add(aurora);
 
-    const A1 = new THREE.Color(0x1B4A73);
-    const A2 = new THREE.Color(0x6B3A82);
-    const A3 = new THREE.Color(0xB8801F);
+    const PAPER = new THREE.Color(0xFFFDF7);
+    const A1 = new THREE.Color(0xDCEBE0);
+    const A2 = new THREE.Color(0xE9E2CB);
+    const A3 = new THREE.Color(0xC9DED0);
     const auroraTmp = new THREE.Color();
 
     function paintAurora(t: number) {
@@ -95,9 +96,10 @@ export default function OdishaHeroMap() {
         const w3 = Math.sin((x + y) * 1.25 + t * 0.2) * 0.5 + 0.5;
         auroraTmp.copy(A1).lerp(A2, w1).lerp(A3, w2 * w3 * 0.5);
         const fade = Math.max(0, 1 - Math.hypot(x, y) * 0.72);
-        auroraCols[i * 3] = auroraTmp.r * fade;
-        auroraCols[i * 3 + 1] = auroraTmp.g * fade;
-        auroraCols[i * 3 + 2] = auroraTmp.b * fade;
+        auroraTmp.lerp(PAPER, 1 - fade);
+        auroraCols[i * 3] = auroraTmp.r;
+        auroraCols[i * 3 + 1] = auroraTmp.g;
+        auroraCols[i * 3 + 2] = auroraTmp.b;
       }
       auroraGeo.attributes.color.needsUpdate = true;
     }
@@ -145,8 +147,8 @@ export default function OdishaHeroMap() {
     const colArr = new Float32Array(COUNT * 3);
     const sizeArr = new Float32Array(sizes);
 
-    const BASE = new THREE.Color(0x2E5A73);
-    const LIT  = new THREE.Color(0xF2C75C);
+    const BASE = new THREE.Color(0x2A7457);
+    const LIT  = new THREE.Color(0xB0851C);
     for (let i = 0; i < COUNT; i++) {
       colArr[i * 3] = BASE.r;
       colArr[i * 3 + 1] = BASE.g;
@@ -200,7 +202,7 @@ export default function OdishaHeroMap() {
       fragmentShader: FRAG,
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       vertexColors: true
     });
     group.add(new THREE.Points(geo, mat));
@@ -219,23 +221,22 @@ export default function OdishaHeroMap() {
 
       const lg = new THREE.BufferGeometry().setFromPoints(pts);
       const lc = new Float32Array(pts.length * 3);
-      const c1 = new THREE.Color(0x3E7FA8), c2 = new THREE.Color(0xD4A537);
+      const c1 = new THREE.Color(0x2A7457), c2 = new THREE.Color(0xB0851C);
       const tc = new THREE.Color();
       pts.forEach((_, i) => {
         const t = i / (pts.length - 1);
         tc.copy(c1).lerp(c2, Math.sin(t * Math.PI) * 0.7);
-        const fade = Math.sin(t * Math.PI);
-        lc[i * 3] = tc.r * fade;
-        lc[i * 3 + 1] = tc.g * fade;
-        lc[i * 3 + 2] = tc.b * fade;
+        lc[i * 3] = tc.r;
+        lc[i * 3 + 1] = tc.g;
+        lc[i * 3 + 2] = tc.b;
       });
       lg.setAttribute('color', new THREE.BufferAttribute(lc, 3));
 
       const lineMat = new THREE.LineBasicMaterial({
         vertexColors: true,
         transparent: true,
-        opacity: 0.34,
-        blending: THREE.AdditiveBlending,
+        opacity: 0.3,
+        blending: THREE.NormalBlending,
         depthWrite: false
       });
       const line = new THREE.Line(lg, lineMat);
@@ -258,7 +259,7 @@ export default function OdishaHeroMap() {
       fragmentShader: FRAG,
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       vertexColors: true
     });
     if (PULSES) group.add(new THREE.Points(pulseGeo, pulseMat));
@@ -279,37 +280,37 @@ export default function OdishaHeroMap() {
       g.position.set(px(z.lon), py(z.lat), 0.45);
       const core = new THREE.Mesh(
         new THREE.SphereGeometry(0.09, 18, 18),
-        new THREE.MeshBasicMaterial({ color: z.pending ? 0x6C8497 : 0xFFF0C4 })
+        new THREE.MeshBasicMaterial({ color: z.pending ? 0x8FA69A : 0x1F5D45 })
       );
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(0.17, 0.2, 48),
         new THREE.MeshBasicMaterial({
-          color: z.pending ? 0x6C8497 : 0xD4A537,
+          color: z.pending ? 0x8FA69A : 0xB0851C,
           transparent: true,
           opacity: 0.6,
           side: THREE.DoubleSide,
-          blending: THREE.AdditiveBlending,
+          blending: THREE.NormalBlending,
           depthWrite: false
         })
       );
       const wave = new THREE.Mesh(
         new THREE.RingGeometry(0.22, 0.26, 48),
         new THREE.MeshBasicMaterial({
-          color: 0xD4A537,
+          color: 0xB0851C,
           transparent: true,
           opacity: 0,
           side: THREE.DoubleSide,
-          blending: THREE.AdditiveBlending,
+          blending: THREE.NormalBlending,
           depthWrite: false
         })
       );
       const halo = new THREE.Mesh(
         new THREE.CircleGeometry(0.75, 40),
         new THREE.MeshBasicMaterial({
-          color: 0xD4A537,
+          color: 0xD4A62F,
           transparent: true,
           opacity: 0,
-          blending: THREE.AdditiveBlending,
+          blending: THREE.NormalBlending,
           depthWrite: false
         })
       );
@@ -440,10 +441,12 @@ export default function OdishaHeroMap() {
           pulsePos[i * 3]     = vec.x;
           pulsePos[i * 3 + 1] = vec.y;
           pulsePos[i * 3 + 2] = vec.z;
+          // Fade toward the paper colour, not toward black —
+          // on a light background black would show as a dark blob.
           const glow = Math.sin(q.t * Math.PI) * p;
-          pulseCol[i * 3]     = 0.95 * glow;
-          pulseCol[i * 3 + 1] = 0.78 * glow;
-          pulseCol[i * 3 + 2] = 0.35 * glow;
+          pulseCol[i * 3]     = 1.000 + (0.690 - 1.000) * glow;
+          pulseCol[i * 3 + 1] = 0.992 + (0.522 - 0.992) * glow;
+          pulseCol[i * 3 + 2] = 0.969 + (0.110 - 0.969) * glow;
         }
         pulseGeo.attributes.position.needsUpdate = true;
         pulseGeo.attributes.color.needsUpdate = true;
@@ -464,7 +467,7 @@ export default function OdishaHeroMap() {
         (n.ring.material as THREE.MeshBasicMaterial).opacity =
           (n.pending ? 0.32 : 0.55) + n.glow * 0.45;
         (n.halo.material as THREE.MeshBasicMaterial).opacity =
-          n.glow * 0.2 + beat * 0.035;
+          n.glow * 0.14 + beat * 0.02;
         const w = (time * 0.55 + n.phase) % 1;
         n.wave.scale.setScalar(1 + w * 2.6);
         (n.wave.material as THREE.MeshBasicMaterial).opacity =
