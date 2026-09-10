@@ -136,7 +136,7 @@ function countByZone(id) {
 
     body.innerHTML = list.length
       ? list.map((s, idx) => `<tr>
-          <td data-l="School" style="color: #FFFFFF !important; font-weight: 600; font-family: var(--display); font-size: 1.05rem;">${s.name}</td>
+          <td data-l="School" style="color: #0F172A !important; font-weight: 600; font-family: var(--display); font-size: 1.05rem;">${s.name}</td>
           <td data-l="Zone" style="color: #FBBF24 !important; font-weight: 600;">${zoneName(s.zone)}</td>
           <td data-l="District" style="color: #E2E8F0 !important;">${s.district || 'Odisha'}</td>
         </tr>`).join('')

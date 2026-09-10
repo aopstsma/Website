@@ -102,8 +102,8 @@ export default function SchoolsClient() {
           {filteredSchools.length > 0 ? (
             filteredSchools.map((s, idx) => (
               <tr key={idx}>
-                <td style={{ color: '#94A3B8', fontWeight: 600 }}>{s.slNo || idx + 1}</td>
-                <td data-l="School" style={{ fontWeight: 600, color: '#FFFFFF' }}>{s.name}</td>
+                <td style={{ color: '#64748B', fontWeight: 600 }}>{s.slNo || idx + 1}</td>
+                <td data-l="School" style={{ fontWeight: 600, color: '#0F172A', fontSize: '1rem' }}>{s.name}</td>
                 <td data-l="Zone">
                   <Link
                     href={`/schools?zone=${s.zone}`}
@@ -116,7 +116,7 @@ export default function SchoolsClient() {
                     {zoneName(s.zone)}
                   </Link>
                 </td>
-                <td data-l="District">{s.district || 'Odisha'}</td>
+                <td data-l="District" style={{ color: '#334155', fontWeight: 500 }}>{s.district || 'Odisha'}</td>
               </tr>
             ))
           ) : (

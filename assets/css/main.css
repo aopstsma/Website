@@ -306,27 +306,27 @@ p { margin: 0 0 1.1em; max-width: 68ch; }
 
 .school-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
 .school-table th {
-  text-align: left; font-weight: 700; font-size: var(--t-xs);
-  letter-spacing: .1em; color: var(--brass-hi);
-  padding: 1rem 1rem 1rem 0; border-bottom: 1px solid var(--line-dark);
+  text-align: left; font-weight: 800; font-size: 0.8rem;
+  letter-spacing: .08em; color: #0B2545;
+  padding: 1rem 1rem 1rem 0; border-bottom: 2px solid #D97706;
   text-transform: uppercase;
 }
 .school-table td {
   padding: 1.1rem 1rem 1.1rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #E2E8F0;
   vertical-align: middle;
-  color: var(--mist);
+  color: #334155;
 }
 .school-table tbody tr { transition: background .18s; }
-.school-table tbody tr:hover { background: rgba(212,165,55,.1); }
+.school-table tbody tr:hover { background: #FEF3C7; }
 .school-table td:first-child {
-  font-family: var(--display);
+  font-family: var(--ui);
   font-size: var(--t-base);
-  font-weight: 600;
-  color: #FFFFFF !important;
+  font-weight: 700;
+  color: #0F172A !important;
   letter-spacing: .01em;
 }
-.school-count { font-size: var(--t-sm); color: var(--mist-2); margin-bottom: 1.2rem; font-weight: 500; }
+.school-count { font-size: var(--t-sm); color: #475569; margin-bottom: 1.2rem; font-weight: 600; }
 .empty { padding: 3rem 0; text-align: center; color: var(--mist-2); }
 @media (max-width: 720px) {
   .school-table thead { display: none; }
