@@ -136,11 +136,11 @@ function countByZone(id) {
 
     body.innerHTML = list.length
       ? list.map((s, idx) => `<tr>
-          <td>${s.name}</td>
-          <td data-l="Zone">${zoneName(s.zone)}</td>
-          <td data-l="District">${s.district || 'Odisha'}</td>
+          <td data-l="School" style="color: #FFFFFF !important; font-weight: 600; font-family: var(--display); font-size: 1.05rem;">${s.name}</td>
+          <td data-l="Zone" style="color: #FBBF24 !important; font-weight: 600;">${zoneName(s.zone)}</td>
+          <td data-l="District" style="color: #E2E8F0 !important;">${s.district || 'Odisha'}</td>
         </tr>`).join('')
-      : `<tr><td colspan="3" class="empty">No schools match &ldquo;${query}&rdquo; in this zone. Select &ldquo;All&rdquo; or check spelling.</td></tr>`;
+      : `<tr><td colspan="3" class="empty" style="color: #CBD5E1 !important;">No schools match &ldquo;${query}&rdquo; in this zone. Select &ldquo;All&rdquo; or check spelling.</td></tr>`;
 
     chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.filter === zone)));
   }
