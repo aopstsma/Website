@@ -22,8 +22,8 @@ export default function SiteHeader() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/about', label: 'About Us' },
-    { href: '/zones', label: '6 Zones' },
-    { href: '/schools', label: 'Member Schools' },
+    { href: '/zones', label: '5 Zones' },
+    { href: '/schools', label: 'Member Schools (90)' },
     { href: '/achievements', label: 'Court Orders & Records' },
     { href: '/services', label: 'Services' },
     { href: '/contact', label: 'Contact' },
@@ -49,7 +49,7 @@ export default function SiteHeader() {
             <div className="top-bar__ticker">
               <span className="top-bar__ticker-dot"></span>
               <span className="top-bar__ticker-text">
-                High Court of Orissa Landmark Precedent Protected &middot; 56+ D.El.Ed &amp; B.Ed Colleges
+                High Court of Orissa Landmark Precedent Protected &middot; 90 Recognized Member Institutions
               </span>
             </div>
             <a className="top-bar__link" href="tel:+916370987576">

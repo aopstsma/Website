@@ -1,8 +1,6 @@
 /* ============================================================
-   Odisha network map — hero visual, v2
-   Particle state map + glowing zone nodes + live network lines
-   with travelling light pulses, aurora backdrop, and an idle
-   auto-cycle so the scene is never static.
+   Odisha 3D Interactive Map — High-Contrast Hero Visual
+   All Orissa Private Secondary Training Schools Management Association
    ============================================================ */
 
 (function () {
@@ -11,395 +9,331 @@
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const OUTLINE = [
-    [86.90, 22.55], [87.20, 22.20], [87.48, 21.75], [87.10, 21.60],
-    [86.95, 21.48], [86.92, 21.05], [86.80, 20.75], [86.72, 20.32],
-    [86.35, 20.15], [86.00, 19.95], [85.60, 19.62], [85.20, 19.48],
-    [84.90, 19.30], [84.60, 19.00], [84.25, 18.82], [83.95, 18.32],
-    [83.40, 18.25], [82.90, 18.20], [82.35, 18.55], [82.05, 19.15],
-    [81.55, 19.55], [81.42, 20.10], [81.60, 20.55], [82.05, 20.72],
-    [82.30, 21.28], [82.80, 21.55], [83.15, 21.62], [83.52, 22.00],
-    [84.02, 22.05], [84.40, 22.32], [84.90, 22.58], [85.35, 22.50],
-    [85.72, 22.38], [86.22, 22.42], [86.55, 22.25]
+  // 95 boundary points extracted directly from official Mercator map of Odisha
+  const ODISHA_BORDER = [
+    [87.52, 21.749], [87.341, 21.8], [87.272, 21.979], [87.079, 21.877], [87.052, 22.043],
+    [86.473, 22.299], [86.088, 22.58], [86.005, 22.478], [86.129, 22.35], [85.977, 22.209],
+    [86.019, 22.056], [85.936, 21.979], [85.812, 22.005], [85.854, 22.107], [85.73, 22.069],
+    [85.454, 22.171], [85.261, 22.043], [85.041, 22.12], [85.137, 22.312], [85.096, 22.516],
+    [84.297, 22.363], [83.981, 22.542], [84.049, 22.465], [84.008, 22.388], [83.636, 22.222],
+    [83.526, 22.03], [83.595, 21.864], [83.485, 21.8], [83.43, 21.673], [83.485, 21.609],
+    [83.375, 21.596], [83.333, 21.455], [83.402, 21.34], [83.251, 21.34], [83.127, 21.11],
+    [82.975, 21.187], [82.631, 21.161], [82.466, 20.842], [82.342, 20.88], [82.342, 20.548],
+    [82.424, 20.446], [82.397, 20.037], [82.741, 19.973], [82.755, 19.819], [82.631, 19.755],
+    [82.521, 19.896], [82.369, 19.807], [82.231, 19.973], [81.915, 20.088], [81.846, 20.024],
+    [81.915, 19.755], [82.039, 19.768], [82.039, 19.513], [82.163, 19.398], [82.231, 18.899],
+    [82.135, 18.759], [81.928, 18.669], [81.928, 18.567], [81.722, 18.324], [81.488, 18.235],
+    [81.35, 17.8], [81.598, 17.8], [82.066, 18.056], [82.231, 17.966], [82.452, 18.529],
+    [82.617, 18.222], [82.782, 18.413], [82.892, 18.337], [83.085, 18.35], [83.113, 18.503],
+    [83.044, 18.605], [83.14, 18.72], [83.416, 18.822], [83.333, 18.963], [83.485, 18.937],
+    [83.622, 19.142], [83.953, 18.759], [84.325, 18.759], [84.463, 18.976], [84.628, 19.014],
+    [84.71, 19.129], [84.821, 19.104], [85.427, 19.589], [86.446, 19.934], [86.583, 20.152],
+    [86.873, 20.343], [86.873, 20.484], [86.859, 20.356], [86.776, 20.343], [86.831, 20.497],
+    [87.121, 20.688], [86.886, 21.097], [86.942, 21.276], [87.245, 21.532], [87.492, 21.558]
   ];
 
+  // 5 Active Administrative Zones
   const ZONES = [
-    { id: 'balasore',    lon: 86.93, lat: 21.49 },
-    { id: 'cuttack',     lon: 85.95, lat: 20.52 },
-    { id: 'bhubaneswar', lon: 85.78, lat: 20.16 },
-    { id: 'zone-four',   lon: 84.85, lat: 22.20, pending: true },
-    { id: 'sambalpur',   lon: 83.97, lat: 21.47 },
-    { id: 'berhampur',   lon: 84.79, lat: 19.31 }
+    { id: 'balasore',    name: 'Baleswar',    count: '40 Schools', lon: 86.85, lat: 21.60, color: 0xF59E0B },
+    { id: 'central',     name: 'Central',     count: '24 Schools', lon: 85.92, lat: 20.52, color: 0x38BDF8 },
+    { id: 'bhubaneswar', name: 'BBSR HQ',     count: '15 Schools', lon: 85.83, lat: 20.26, color: 0x10B981 },
+    { id: 'sambalpur',   name: 'Sambalpur',   count: '9 Schools',  lon: 83.98, lat: 21.48, color: 0xEC4899 },
+    { id: 'ganjam',      name: 'Ganjam',      count: '2 Schools',  lon: 84.85, lat: 19.35, color: 0xA78BFA },
   ];
 
-  const LON0 = 84.45, LAT0 = 20.4, SCALE = 3.05;
-  const px = (lon) => (lon - LON0) * SCALE;
-  const py = (lat) => (lat - LAT0) * SCALE * 1.06;
-
-  function inside(lon, lat) {
-    let hit = false;
-    for (let i = 0, j = OUTLINE.length - 1; i < OUTLINE.length; j = i++) {
-      const [xi, yi] = OUTLINE[i], [xj, yj] = OUTLINE[j];
-      if ((yi > lat) !== (yj > lat) &&
-          lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) hit = !hit;
-    }
-    return hit;
-  }
+  const LON0 = 84.45, LAT0 = 20.20, SC = 0.95;
+  const gx = (lon) => (lon - LON0) * SC;
+  const gy = (lat) => (lat - LAT0) * SC * 1.06;
+  const MAP_TOP_Z = 0.36;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
-  camera.position.set(0, 0, 12.6);
+  scene.fog = new THREE.FogExp2(0x071526, 0.035);
+
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  camera.position.set(0, 3.6, 8.4);
+  camera.lookAt(0, 0, 0);
 
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  } catch (e) { return; }
-  renderer.setClearColor(0x000000, 0);
+  } catch (e) {
+    return;
+  }
+
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.35;
 
   const world = new THREE.Group();
+  world.rotation.x = 0.52;
   scene.add(world);
-  const group = new THREE.Group();
-  group.position.x = 1.7;
-  world.add(group);
 
-  /* ---- Aurora backdrop ---- */
-  const auroraGeo = new THREE.PlaneGeometry(60, 40, 40, 26);
-  const auroraCols = new Float32Array(auroraGeo.attributes.position.count * 3);
-  auroraGeo.setAttribute('color', new THREE.BufferAttribute(auroraCols, 3));
-  const aurora = new THREE.Mesh(auroraGeo, new THREE.MeshBasicMaterial({
-    vertexColors: true, transparent: true, opacity: 0.5,
-    blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
-  }));
-  aurora.position.z = -14;
-  world.add(aurora);
+  // Lighting
+  scene.add(new THREE.AmbientLight(0x243b55, 0.8));
 
-  const A1 = new THREE.Color(0x1B4A73);
-  const A2 = new THREE.Color(0x6B3A82);
-  const A3 = new THREE.Color(0xB8801F);
-  const auroraTmp = new THREE.Color();
+  const keyLight = new THREE.DirectionalLight(0xfff0cc, 1.4);
+  keyLight.position.set(6, 10, 8);
+  scene.add(keyLight);
 
-  function paintAurora(t) {
-    const p = auroraGeo.attributes.position;
-    for (let i = 0; i < p.count; i++) {
-      const x = p.getX(i) / 30, y = p.getY(i) / 20;
-      const w1 = Math.sin(x * 1.6 + t * 0.16) * 0.5 + 0.5;
-      const w2 = Math.sin(y * 2.1 - t * 0.11 + 1.7) * 0.5 + 0.5;
-      const w3 = Math.sin((x + y) * 1.25 + t * 0.2) * 0.5 + 0.5;
-      auroraTmp.copy(A1).lerp(A2, w1).lerp(A3, w2 * w3 * 0.5);
-      const fade = Math.max(0, 1 - Math.hypot(x, y) * 0.72);
-      auroraCols[i*3] = auroraTmp.r * fade;
-      auroraCols[i*3+1] = auroraTmp.g * fade;
-      auroraCols[i*3+2] = auroraTmp.b * fade;
-    }
-    auroraGeo.attributes.color.needsUpdate = true;
+  const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.9);
+  rimLight.position.set(-6, -2, -6);
+  scene.add(rimLight);
+
+  const topLight = new THREE.DirectionalLight(0xf59e0b, 0.5);
+  topLight.position.set(0, 8, 2);
+  scene.add(topLight);
+
+  // 3D Extruded Terrain Mesh
+  const shape = new THREE.Shape();
+  shape.moveTo(gx(ODISHA_BORDER[0][0]), gy(ODISHA_BORDER[0][1]));
+  for (let i = 1; i < ODISHA_BORDER.length; i++) {
+    shape.lineTo(gx(ODISHA_BORDER[i][0]), gy(ODISHA_BORDER[i][1]));
   }
-  paintAurora(0);
+  shape.closePath();
 
-  /* ---- Fill particles ---- */
-  const dense = window.innerWidth > 900 && !reduced;
-  const step = dense ? 0.068 : 0.115;
-  const positions = [], targets = [], seeds = [], zoneIdx = [], sizes = [];
+  const mapGeo = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.36,
+    bevelEnabled: true,
+    bevelThickness: 0.07,
+    bevelSize: 0.05,
+    bevelSegments: 4,
+  });
+  mapGeo.computeVertexNormals();
 
-  function pushPoint(x, y, z, big) {
-    targets.push(x, y, z);
-    const a = Math.random() * Math.PI * 2, r = 9 + Math.random() * 9;
-    positions.push(Math.cos(a) * r, Math.sin(a) * r * 0.7, (Math.random() - 0.5) * 16);
-    seeds.push(Math.random() * Math.PI * 2);
-    sizes.push(big ? 1.9 : 0.7 + Math.random() * 0.7);
-    let best = 0, bestD = Infinity;
-    ZONES.forEach((z, i) => {
-      const d = (px(z.lon) - x) ** 2 + (py(z.lat) - y) ** 2;
-      if (d < bestD) { bestD = d; best = i; }
-    });
-    zoneIdx.push(best);
-  }
+  const mapMat = new THREE.MeshStandardMaterial({
+    color: 0x132e4d,
+    roughness: 0.28,
+    metalness: 0.78,
+    emissive: 0x0b2545,
+    emissiveIntensity: 0.45,
+  });
 
-  for (let lon = 81.3; lon <= 87.6; lon += step) {
-    for (let lat = 18.1; lat <= 22.7; lat += step) {
-      const jl = lon + (Math.random() - 0.5) * step * 0.9;
-      const ja = lat + (Math.random() - 0.5) * step * 0.9;
-      if (!inside(jl, ja)) continue;
-      pushPoint(px(jl), py(ja), (Math.random() - 0.5) * 0.4, false);
-    }
-  }
-  for (let i = 0; i < OUTLINE.length; i++) {
-    const a = OUTLINE[i], b = OUTLINE[(i + 1) % OUTLINE.length];
-    const segs = dense ? 34 : 18;
-    for (let s = 0; s < segs; s++) {
-      const t = s / segs;
-      pushPoint(px(a[0] + (b[0]-a[0]) * t), py(a[1] + (b[1]-a[1]) * t), 0.05, true);
-    }
-  }
+  const mapMesh = new THREE.Mesh(mapGeo, mapMat);
+  world.add(mapMesh);
 
-  const COUNT = seeds.length;
-  const posArr = new Float32Array(positions);
-  const tgtArr = new Float32Array(targets);
-  const colArr = new Float32Array(COUNT * 3);
-  const sizeArr = new Float32Array(sizes);
+  // Glowing Golden Perimeter Border
+  const borderPts = ODISHA_BORDER.map(([lo, la]) => new THREE.Vector3(gx(lo), gy(la), MAP_TOP_Z + 0.02));
+  borderPts.push(borderPts[0].clone());
 
-  const BASE = new THREE.Color(0x2E5A73);
-  const LIT  = new THREE.Color(0xF2C75C);
-  for (let i = 0; i < COUNT; i++) {
-    colArr[i*3] = BASE.r; colArr[i*3+1] = BASE.g; colArr[i*3+2] = BASE.b;
-  }
+  const borderGeo = new THREE.BufferGeometry().setFromPoints(borderPts);
+  const borderMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, linewidth: 2 });
+  world.add(new THREE.Line(borderGeo, borderMat));
 
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-  geo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
-  geo.setAttribute('aScale', new THREE.BufferAttribute(sizeArr, 1));
+  // Outer Shimmer
+  const glowPts = borderPts.map(p => { const c = p.clone(); c.z += 0.006; return c; });
+  const glowGeo = new THREE.BufferGeometry().setFromPoints(glowPts);
+  const glowMat = new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending });
+  world.add(new THREE.Line(glowGeo, glowMat));
 
-  function dotTexture() {
+  // Coastal Shimmer along Bay of Bengal
+  const coastPts = ODISHA_BORDER.slice(75, 95).map(([lo, la]) => new THREE.Vector3(gx(lo), gy(la), MAP_TOP_Z + 0.03));
+  const coastGeo = new THREE.BufferGeometry().setFromPoints(coastPts);
+  const coastMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
+  world.add(new THREE.Line(coastGeo, coastMat));
+
+  // Internal Zonal Division Lines
+  const INTERNAL_LINES = [
+    [[85.80, 21.40], [86.15, 21.05], [86.60, 20.85], [87.05, 20.80]],
+    [[85.20, 20.35], [85.70, 20.38], [86.25, 20.20], [86.65, 20.00]],
+    [[84.60, 21.65], [84.95, 21.15], [84.90, 20.60], [84.55, 20.30]],
+    [[84.75, 19.80], [85.15, 19.65], [85.35, 19.55]],
+    [[83.60, 20.40], [83.10, 20.10], [82.70, 19.80]],
+  ];
+
+  INTERNAL_LINES.forEach((line) => {
+    const pts = line.map(([lo, la]) => new THREE.Vector3(gx(lo), gy(la), MAP_TOP_Z + 0.015));
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.45 });
+    world.add(new THREE.Line(g, m));
+  });
+
+  // Zone Beacons & Labels
+  function makeBillboardLabel(zoneName, schoolCount, colorHex) {
     const c = document.createElement('canvas');
-    c.width = c.height = 64;
-    const g = c.getContext('2d');
-    const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-    grad.addColorStop(0, 'rgba(255,255,255,1)');
-    grad.addColorStop(0.35, 'rgba(255,255,255,0.55)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
-    g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
-    const t = new THREE.Texture(c); t.needsUpdate = true; return t;
-  }
-  const sprite = dotTexture();
+    c.width = 320;
+    c.height = 100;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = 'rgba(7, 21, 38, 0.92)';
+    ctx.strokeStyle = colorHex;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(8, 8, 304, 84, 12) : ctx.rect(8, 8, 304, 84);
+    ctx.fill();
+    ctx.stroke();
 
-  const VERT = `
-    attribute float aScale;
-    varying vec3 vColor;
-    uniform float uSize;
-    void main() {
-      vColor = color;
-      vec4 mv = modelViewMatrix * vec4(position, 1.0);
-      gl_PointSize = uSize * aScale * (1.0 / -mv.z) * 3.0;
-      gl_Position = projectionMatrix * mv;
-    }`;
-  const FRAG = `
-    uniform sampler2D uMap;
-    varying vec3 vColor;
-    void main() {
-      vec4 tex = texture2D(uMap, gl_PointCoord);
-      gl_FragColor = vec4(vColor, tex.a);
-    }`;
+    ctx.fillStyle = colorHex;
+    ctx.beginPath();
+    ctx.arc(36, 42, 12, 0, Math.PI * 2);
+    ctx.fill();
 
-  const mat = new THREE.ShaderMaterial({
-    uniforms: { uMap: { value: sprite }, uSize: { value: dense ? 13.0 : 17.0 } },
-    vertexShader: VERT, fragmentShader: FRAG,
-    transparent: true, depthWrite: false,
-    blending: THREE.AdditiveBlending, vertexColors: true
-  });
-  group.add(new THREE.Points(geo, mat));
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 26px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(zoneName, 58, 40);
 
-  /* ---- Network links + pulses ---- */
-  const LINKS = [[0,1],[1,2],[1,4],[4,3],[3,0],[2,5],[4,5],[1,5]];
-  const linkCurves = [];
+    ctx.fillStyle = '#FBBF24';
+    ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText(schoolCount, 58, 70);
 
-  LINKS.forEach(([a, b]) => {
-    const pa = new THREE.Vector3(px(ZONES[a].lon), py(ZONES[a].lat), 0.4);
-    const pb = new THREE.Vector3(px(ZONES[b].lon), py(ZONES[b].lat), 0.4);
-    const mid = pa.clone().add(pb).multiplyScalar(0.5);
-    mid.z += 1.4 + Math.random() * 0.8;
-    const curve = new THREE.QuadraticBezierCurve3(pa, mid, pb);
-    const pts = curve.getPoints(44);
-
-    const lg = new THREE.BufferGeometry().setFromPoints(pts);
-    const lc = new Float32Array(pts.length * 3);
-    const c1 = new THREE.Color(0x3E7FA8), c2 = new THREE.Color(0xD4A537);
-    const tc = new THREE.Color();
-    pts.forEach((_, i) => {
-      const t = i / (pts.length - 1);
-      tc.copy(c1).lerp(c2, Math.sin(t * Math.PI) * 0.7);
-      const fade = Math.sin(t * Math.PI);
-      lc[i*3] = tc.r * fade; lc[i*3+1] = tc.g * fade; lc[i*3+2] = tc.b * fade;
-    });
-    lg.setAttribute('color', new THREE.BufferAttribute(lc, 3));
-
-    const line = new THREE.Line(lg, new THREE.LineBasicMaterial({
-      vertexColors: true, transparent: true, opacity: 0.34,
-      blending: THREE.AdditiveBlending, depthWrite: false
-    }));
-    group.add(line);
-    linkCurves.push({ curve, line, a, b });
-  });
-
-  const PULSES = reduced ? 0 : 14;
-  const pulseGeo = new THREE.BufferGeometry();
-  const pulsePos = new Float32Array(Math.max(PULSES,1) * 3);
-  const pulseCol = new Float32Array(Math.max(PULSES,1) * 3);
-  const pulseSize = new Float32Array(Math.max(PULSES,1));
-  pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
-  pulseGeo.setAttribute('color', new THREE.BufferAttribute(pulseCol, 3));
-  pulseGeo.setAttribute('aScale', new THREE.BufferAttribute(pulseSize, 1));
-
-  const pulseMat = new THREE.ShaderMaterial({
-    uniforms: { uMap: { value: sprite }, uSize: { value: 26.0 } },
-    vertexShader: VERT, fragmentShader: FRAG,
-    transparent: true, depthWrite: false,
-    blending: THREE.AdditiveBlending, vertexColors: true
-  });
-  if (PULSES) group.add(new THREE.Points(pulseGeo, pulseMat));
-
-  const pulses = [];
-  for (let i = 0; i < PULSES; i++) {
-    pulses.push({
-      link: Math.floor(Math.random() * linkCurves.length),
-      t: Math.random(),
-      speed: 0.09 + Math.random() * 0.13
-    });
-    pulseSize[i] = 0.8 + Math.random() * 0.7;
+    const tex = new THREE.CanvasTexture(c);
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+    const s = new THREE.Sprite(mat);
+    s.scale.set(1.25, 0.39, 1);
+    return s;
   }
 
-  /* ---- Zone nodes ---- */
-  const nodes = ZONES.map((z) => {
-    const g = new THREE.Group();
-    g.position.set(px(z.lon), py(z.lat), 0.45);
-    const core = new THREE.Mesh(
-      new THREE.SphereGeometry(0.09, 18, 18),
-      new THREE.MeshBasicMaterial({ color: z.pending ? 0x6C8497 : 0xFFF0C4 }));
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.17, 0.2, 48),
-      new THREE.MeshBasicMaterial({ color: z.pending ? 0x6C8497 : 0xD4A537,
-        transparent: true, opacity: 0.6, side: THREE.DoubleSide,
-        blending: THREE.AdditiveBlending, depthWrite: false }));
-    const wave = new THREE.Mesh(
-      new THREE.RingGeometry(0.22, 0.26, 48),
-      new THREE.MeshBasicMaterial({ color: 0xD4A537, transparent: true, opacity: 0,
-        side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }));
-    const halo = new THREE.Mesh(
-      new THREE.CircleGeometry(0.75, 40),
-      new THREE.MeshBasicMaterial({ color: 0xD4A537, transparent: true, opacity: 0,
-        blending: THREE.AdditiveBlending, depthWrite: false }));
-    halo.position.z = -0.05;
-    g.add(halo, wave, ring, core);
-    group.add(g);
-    return { g, ring, wave, halo, phase: Math.random()*Math.PI*2, glow: 0, pending: !!z.pending };
+  const beaconRings = [];
+  const beaconPointers = [];
+  const zonePositions = {};
+
+  ZONES.forEach((zb) => {
+    const pos = new THREE.Vector3(gx(zb.lon), gy(zb.lat), MAP_TOP_Z);
+    zonePositions[zb.id] = pos;
+
+    const pinGeo = new THREE.CylinderGeometry(0.025, 0.015, 0.55, 12);
+    pinGeo.rotateX(Math.PI / 2);
+    const pinMat = new THREE.MeshStandardMaterial({
+      color: zb.color,
+      emissive: zb.color,
+      emissiveIntensity: 0.6,
+      metalness: 0.8,
+      roughness: 0.2,
+    });
+    const pinMesh = new THREE.Mesh(pinGeo, pinMat);
+    pinMesh.position.set(pos.x, pos.y, pos.z + 0.28);
+    world.add(pinMesh);
+    beaconPointers.push(pinMesh);
+
+    const sphereGeo = new THREE.SphereGeometry(0.065, 16, 16);
+    const sphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    sphereMesh.position.set(pos.x, pos.y, pos.z + 0.56);
+    world.add(sphereMesh);
+
+    const ringGeo = new THREE.RingGeometry(0.04, 0.08, 24);
+    const ringMat = new THREE.MeshBasicMaterial({ color: zb.color, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.position.set(pos.x, pos.y, pos.z + 0.02);
+    world.add(ringMesh);
+    beaconRings.push({ mesh: ringMesh, maxScale: 3.5, speed: 0.025 });
+
+    const colorHexStr = '#' + zb.color.toString(16).padStart(6, '0');
+    const label = makeBillboardLabel(zb.name, zb.count, colorHexStr);
+    label.position.set(pos.x, pos.y + 0.38, pos.z + 0.72);
+    world.add(label);
   });
 
-  /* ---- Interaction ---- */
-  let active = -1, hovered = -1;
-  let pointerX = 0, pointerY = 0, scrollY = 0, lastTouch = -9999;
+  // Interconnecting Live Beam Network
+  const bbsrPos = zonePositions['bhubaneswar'];
+  if (bbsrPos) {
+    ZONES.forEach((zb) => {
+      if (zb.id === 'bhubaneswar') return;
+      const targetPos = zonePositions[zb.id];
+      if (!targetPos) return;
 
-  window.addEventListener('pointermove', (e) => {
-    pointerX = (e.clientX / window.innerWidth) * 2 - 1;
-    pointerY = (e.clientY / window.innerHeight) * 2 - 1;
+      const pts = [];
+      const steps = 24;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = THREE.MathUtils.lerp(bbsrPos.x, targetPos.x, t);
+        const y = THREE.MathUtils.lerp(bbsrPos.y, targetPos.y, t);
+        const arcZ = Math.sin(t * Math.PI) * 0.45;
+        pts.push(new THREE.Vector3(x, y, MAP_TOP_Z + arcZ + 0.04));
+      }
+
+      const curveGeo = new THREE.BufferGeometry().setFromPoints(pts);
+      const curveMat = new THREE.LineBasicMaterial({
+        color: 0xf59e0b,
+        transparent: true,
+        opacity: 0.4,
+        blending: THREE.AdditiveBlending,
+      });
+      world.add(new THREE.Line(curveGeo, curveMat));
+    });
+  }
+
+  // Interactive Mouse / Touch Dragging
+  let isDragging = false;
+  let prevMouseX = 0, prevMouseY = 0;
+
+  canvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - prevMouseX;
+    const dy = e.clientY - prevMouseY;
+    world.rotation.y += dx * 0.007;
+    world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + dy * 0.004, 0.25, 0.95);
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  // Touch Support
+  let touchX = 0, touchY = 0;
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+    }
   }, { passive: true });
-  window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
 
-  const railEls = [];
-  document.querySelectorAll('[data-zone]').forEach((el) => {
-    const i = ZONES.findIndex((z) => z.id === el.dataset.zone);
-    railEls[i] = el;
-    const on = () => { hovered = i; lastTouch = performance.now(); };
-    const off = () => { hovered = -1; lastTouch = performance.now(); };
-    el.addEventListener('mouseenter', on);
-    el.addEventListener('focus', on);
-    el.addEventListener('mouseleave', off);
-    el.addEventListener('blur', off);
-  });
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1) {
+      const dx = e.touches[0].clientX - touchX;
+      const dy = e.touches[0].clientY - touchY;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        world.rotation.y += dx * 0.008;
+        touchX = e.touches[0].clientX;
+        touchY = e.touches[0].clientY;
+      }
+    }
+  }, { passive: true });
 
+  // Resize
   function resize() {
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) return;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.fov = w < 760 ? 64 : 46;
-    group.position.x = w < 900 ? 0 : 1.7;
-    group.position.y = w < 900 ? -0.5 : 0;
+    const parent = canvas.parentElement;
+    const w = (parent ? parent.clientWidth : window.innerWidth);
+    const h = (parent ? parent.clientHeight : 500) || 500;
+    camera.aspect = w / Math.max(h, 1);
     camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
   }
   window.addEventListener('resize', resize);
   resize();
 
-  const t0 = performance.now();
-  const ASSEMBLE = reduced ? 1 : 3000;
-  const easeOut = (t) => 1 - Math.pow(1 - t, 4);
-  const tmpCol = new THREE.Color();
-  const vec = new THREE.Vector3();
+  // Animation Loop
+  let clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime();
 
-  let running = true;
-  new IntersectionObserver(([e]) => { running = e.isIntersecting; },
-    { threshold: 0 }).observe(canvas);
-
-  let cycleAt = 3600, cycleIdx = 0;
-
-  function frame(now) {
-    requestAnimationFrame(frame);
-    if (!running) return;
-
-    const elapsed = now - t0;
-    const p = easeOut(Math.min(elapsed / ASSEMBLE, 1));
-    const time = elapsed * 0.001;
-
-    if (hovered >= 0) {
-      active = hovered;
-    } else if (!reduced && now - lastTouch > 2200) {
-      if (elapsed > cycleAt) { cycleAt = elapsed + 2400; cycleIdx = (cycleIdx + 1) % ZONES.length; }
-      active = cycleIdx;
-    } else {
-      active = -1;
+    if (!isDragging && !reduced) {
+      world.rotation.y += 0.0035;
     }
 
-    railEls.forEach((el, i) => { if (el) el.classList.toggle('is-active', i === active); });
+    world.position.y = Math.sin(elapsed * 1.2) * 0.04;
 
-    if (!reduced) paintAurora(time);
-
-    const pos = geo.attributes.position.array;
-    const col = geo.attributes.color.array;
-    for (let i = 0; i < COUNT; i++) {
-      const i3 = i * 3;
-      const dr = reduced ? 0 : Math.sin(time * 0.7 + seeds[i]) * 0.032;
-      const dz = reduced ? 0 : Math.cos(time * 0.5 + seeds[i]) * 0.05;
-      pos[i3]   = posArr[i3]   + (tgtArr[i3]   - posArr[i3])   * p;
-      pos[i3+1] = posArr[i3+1] + (tgtArr[i3+1] - posArr[i3+1]) * p + dr;
-      pos[i3+2] = posArr[i3+2] + (tgtArr[i3+2] - posArr[i3+2]) * p + dz;
-      const want = active >= 0 && zoneIdx[i] === active ? 1 : 0;
-      tmpCol.copy(BASE).lerp(LIT, want * 0.92);
-      col[i3]   += (tmpCol.r - col[i3])   * 0.075;
-      col[i3+1] += (tmpCol.g - col[i3+1]) * 0.075;
-      col[i3+2] += (tmpCol.b - col[i3+2]) * 0.075;
-    }
-    geo.attributes.position.needsUpdate = true;
-    geo.attributes.color.needsUpdate = true;
-
-    if (PULSES) {
-      for (let i = 0; i < PULSES; i++) {
-        const q = pulses[i];
-        q.t += q.speed * 0.016;
-        if (q.t > 1) { q.t = 0; q.link = Math.floor(Math.random() * linkCurves.length); }
-        linkCurves[q.link].curve.getPoint(q.t, vec);
-        pulsePos[i*3] = vec.x; pulsePos[i*3+1] = vec.y; pulsePos[i*3+2] = vec.z;
-        const glow = Math.sin(q.t * Math.PI) * p;
-        pulseCol[i*3] = 0.95*glow; pulseCol[i*3+1] = 0.78*glow; pulseCol[i*3+2] = 0.35*glow;
+    beaconRings.forEach((br) => {
+      br.mesh.scale.x += br.speed;
+      br.mesh.scale.y += br.speed;
+      br.mesh.material.opacity = Math.max(0, 1 - br.mesh.scale.x / br.maxScale);
+      if (br.mesh.scale.x >= br.maxScale) {
+        br.mesh.scale.set(1, 1, 1);
+        br.mesh.material.opacity = 0.8;
       }
-      pulseGeo.attributes.position.needsUpdate = true;
-      pulseGeo.attributes.color.needsUpdate = true;
-    }
-
-    linkCurves.forEach((l) => {
-      const near = active >= 0 && (l.a === active || l.b === active);
-      const want = (near ? 0.85 : 0.3) * p;
-      l.line.material.opacity += (want - l.line.material.opacity) * 0.08;
     });
 
-    nodes.forEach((n, i) => {
-      const want = active === i ? 1 : 0;
-      n.glow += (want - n.glow) * 0.09;
-      const beat = reduced ? 0 : Math.sin(time * 1.7 + n.phase) * 0.5 + 0.5;
-      n.g.scale.setScalar((1 + n.glow * 0.9 + beat * 0.11) * p);
-      n.ring.material.opacity = (n.pending ? 0.32 : 0.55) + n.glow * 0.45;
-      n.halo.material.opacity = n.glow * 0.2 + beat * 0.035;
-      const w = ((time * 0.55 + n.phase) % 1);
-      n.wave.scale.setScalar(1 + w * 2.6);
-      n.wave.material.opacity = (1 - w) * (0.3 + n.glow * 0.5);
-      n.g.lookAt(camera.position);
+    beaconPointers.forEach((pin, idx) => {
+      pin.scale.z = 1 + Math.sin(elapsed * 2.5 + idx) * 0.08;
     });
-
-    const tilt = reduced ? 0 : 1;
-    group.rotation.y += (pointerX * 0.22 * tilt - group.rotation.y) * 0.04;
-    group.rotation.x += (pointerY * 0.12 * tilt - group.rotation.x) * 0.04;
-    world.position.y = scrollY * 0.0022;
-    world.rotation.z = Math.sin(time * 0.12) * 0.012 * tilt;
-    aurora.rotation.z = time * 0.012 * tilt;
 
     renderer.render(scene, camera);
   }
-  requestAnimationFrame(frame);
+  animate();
 })();

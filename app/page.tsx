@@ -24,7 +24,7 @@ export default function HomePage() {
             <div className="quick-card__icon">🏫</div>
             <h3>School Directory</h3>
             <p>
-              Search 56+ member training schools across all 30 districts of Odisha with registration numbers and zone details.
+              Search 90 member training schools across all 30 districts of Odisha with registration numbers and zone details.
             </p>
             <span className="quick-card__action">Browse Schools &rarr;</span>
           </Link>
@@ -79,7 +79,7 @@ export default function HomePage() {
             <div className="facts__l">Affiliated Training Institutions</div>
           </div>
           <div className="facts__item">
-            <div className="facts__n">6</div>
+            <div className="facts__n">5</div>
             <div className="facts__l">Administrative Regional Zones</div>
           </div>
           <div className="facts__item">
@@ -132,12 +132,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ============ 8. SIX REGIONAL ZONES ============ */}
+      {/* ============ 8. FIVE REGIONAL ZONES ============ */}
       <section className="section section--light">
         <div className="wrap">
           <div className="head">
             <div className="head__rule"></div>
-            <h2>Six Zones, One Association</h2>
+            <h2>Five Zones, One Association</h2>
             <p className="lede">
               Every member institution is affiliated through its designated regional zone.
               Select your zone to view affiliated institutions and regional coordinators.
@@ -155,7 +155,6 @@ export default function HomePage() {
                   key={z.id}
                   className="zone-card"
                   href={`/schools?zone=${z.id}`}
-                  data-pending={z.pending ? 'true' : undefined}
                 >
                   <h3>{z.name}</h3>
                   <p className="zone-card__dist">{z.districts}</p>

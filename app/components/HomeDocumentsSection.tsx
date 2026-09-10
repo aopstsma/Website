@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { DOCUMENTS, DocumentRecord } from '@/lib/data/schools';
 import CourtOrderModal from './CourtOrderModal';
 
@@ -57,7 +58,7 @@ export default function HomeDocumentsSection() {
           <p className="lede">
             Certified judgments, stay orders, and writ petitions from the High Court of
             Orissa and the Supreme Court. Click on any record to view its certified front page
-            and download the official PDF.
+            scan and download the official PDF copy.
           </p>
         </div>
 
@@ -105,7 +106,7 @@ export default function HomeDocumentsSection() {
                   ) : null}
                 </span>
 
-                <span>
+                <span style={{ flex: 1 }}>
                   <span className="doc__title">
                     <span className={getBadgeClass(d.category)}>
                       {d.badge || d.category.replace('_', ' ')}
@@ -113,10 +114,39 @@ export default function HomeDocumentsSection() {
                     {d.title}
                   </span>
                   <span className="doc__meta">{d.note}</span>
+                  {d.image && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.4rem', fontSize: '0.75rem', color: '#B45309', fontWeight: 600 }}>
+                      <span>📜</span> Official Scanned Front Page &amp; Coram Sheet Available
+                    </span>
+                  )}
                 </span>
 
+                {d.image && (
+                  <div
+                    style={{
+                      width: '42px',
+                      height: '56px',
+                      position: 'relative',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: '3px',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                      marginRight: '0.5rem',
+                    }}
+                    className="doc-scan-thumb"
+                  >
+                    <Image
+                      src={d.image}
+                      alt={`Thumbnail of ${d.title}`}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
+
                 <span className="doc__get">
-                  👁️ Preview &amp; PDF &rarr;
+                  👁️ Inspect Order &rarr;
                 </span>
               </div>
             );

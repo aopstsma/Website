@@ -1,7 +1,6 @@
 /* ============================================================
-   Odisha particle map — hero visual
-   Points fill the state outline; six zone nodes glow on top.
-   Hovering a zone in the rail lights that node and its region.
+   Odisha 3D Interactive Map — High-Contrast Hero Visual
+   All Orissa Private Secondary Training Schools Management Association
    ============================================================ */
 
 (function () {
@@ -10,251 +9,331 @@
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- Simplified Odisha boundary (lon, lat), clockwise ---- */
-  const OUTLINE = [
-    [86.90, 22.55], [87.20, 22.20], [87.48, 21.75], [87.10, 21.60],
-    [86.95, 21.48], [86.92, 21.05], [86.80, 20.75], [86.72, 20.32],
-    [86.35, 20.15], [86.00, 19.95], [85.60, 19.62], [85.20, 19.48],
-    [84.90, 19.30], [84.60, 19.00], [84.25, 18.82], [83.95, 18.32],
-    [83.40, 18.25], [82.90, 18.20], [82.35, 18.55], [82.05, 19.15],
-    [81.55, 19.55], [81.42, 20.10], [81.60, 20.55], [82.05, 20.72],
-    [82.30, 21.28], [82.80, 21.55], [83.15, 21.62], [83.52, 22.00],
-    [84.02, 22.05], [84.40, 22.32], [84.90, 22.58], [85.35, 22.50],
-    [85.72, 22.38], [86.22, 22.42], [86.55, 22.25]
+  // 95 boundary points extracted directly from official Mercator map of Odisha
+  const ODISHA_BORDER = [
+    [87.52, 21.749], [87.341, 21.8], [87.272, 21.979], [87.079, 21.877], [87.052, 22.043],
+    [86.473, 22.299], [86.088, 22.58], [86.005, 22.478], [86.129, 22.35], [85.977, 22.209],
+    [86.019, 22.056], [85.936, 21.979], [85.812, 22.005], [85.854, 22.107], [85.73, 22.069],
+    [85.454, 22.171], [85.261, 22.043], [85.041, 22.12], [85.137, 22.312], [85.096, 22.516],
+    [84.297, 22.363], [83.981, 22.542], [84.049, 22.465], [84.008, 22.388], [83.636, 22.222],
+    [83.526, 22.03], [83.595, 21.864], [83.485, 21.8], [83.43, 21.673], [83.485, 21.609],
+    [83.375, 21.596], [83.333, 21.455], [83.402, 21.34], [83.251, 21.34], [83.127, 21.11],
+    [82.975, 21.187], [82.631, 21.161], [82.466, 20.842], [82.342, 20.88], [82.342, 20.548],
+    [82.424, 20.446], [82.397, 20.037], [82.741, 19.973], [82.755, 19.819], [82.631, 19.755],
+    [82.521, 19.896], [82.369, 19.807], [82.231, 19.973], [81.915, 20.088], [81.846, 20.024],
+    [81.915, 19.755], [82.039, 19.768], [82.039, 19.513], [82.163, 19.398], [82.231, 18.899],
+    [82.135, 18.759], [81.928, 18.669], [81.928, 18.567], [81.722, 18.324], [81.488, 18.235],
+    [81.35, 17.8], [81.598, 17.8], [82.066, 18.056], [82.231, 17.966], [82.452, 18.529],
+    [82.617, 18.222], [82.782, 18.413], [82.892, 18.337], [83.085, 18.35], [83.113, 18.503],
+    [83.044, 18.605], [83.14, 18.72], [83.416, 18.822], [83.333, 18.963], [83.485, 18.937],
+    [83.622, 19.142], [83.953, 18.759], [84.325, 18.759], [84.463, 18.976], [84.628, 19.014],
+    [84.71, 19.129], [84.821, 19.104], [85.427, 19.589], [86.446, 19.934], [86.583, 20.152],
+    [86.873, 20.343], [86.873, 20.484], [86.859, 20.356], [86.776, 20.343], [86.831, 20.497],
+    [87.121, 20.688], [86.886, 21.097], [86.942, 21.276], [87.245, 21.532], [87.492, 21.558]
   ];
 
-  /* ---- Zone anchors ---- */
+  // 5 Active Administrative Zones
   const ZONES = [
-    { id: 'balasore',    lon: 86.93, lat: 21.49 },
-    { id: 'cuttack',     lon: 85.95, lat: 20.52 },
-    { id: 'bhubaneswar', lon: 85.78, lat: 20.20 },
-    { id: 'zone-four',   lon: 84.85, lat: 22.20, pending: true },
-    { id: 'sambalpur',   lon: 83.97, lat: 21.47 },
-    { id: 'berhampur',   lon: 84.79, lat: 19.31 }
+    { id: 'balasore',    name: 'Baleswar',    count: '40 Schools', lon: 86.85, lat: 21.60, color: 0xF59E0B },
+    { id: 'central',     name: 'Central',     count: '24 Schools', lon: 85.92, lat: 20.52, color: 0x38BDF8 },
+    { id: 'bhubaneswar', name: 'BBSR HQ',     count: '15 Schools', lon: 85.83, lat: 20.26, color: 0x10B981 },
+    { id: 'sambalpur',   name: 'Sambalpur',   count: '9 Schools',  lon: 83.98, lat: 21.48, color: 0xEC4899 },
+    { id: 'ganjam',      name: 'Ganjam',      count: '2 Schools',  lon: 84.85, lat: 19.35, color: 0xA78BFA },
   ];
 
-  /* ---- Projection: lon/lat -> local units ---- */
-  const LON0 = 84.45, LAT0 = 20.4, SCALE = 3.05;
-  const px = (lon) => (lon - LON0) * SCALE;
-  const py = (lat) => (lat - LAT0) * SCALE * 1.06;
+  const LON0 = 84.45, LAT0 = 20.20, SC = 0.95;
+  const gx = (lon) => (lon - LON0) * SC;
+  const gy = (lat) => (lat - LAT0) * SC * 1.06;
+  const MAP_TOP_Z = 0.36;
 
-  function inside(lon, lat) {
-    let hit = false;
-    for (let i = 0, j = OUTLINE.length - 1; i < OUTLINE.length; j = i++) {
-      const [xi, yi] = OUTLINE[i], [xj, yj] = OUTLINE[j];
-      if ((yi > lat) !== (yj > lat) &&
-          lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) hit = !hit;
-    }
-    return hit;
-  }
-
-  /* ---- Scene ---- */
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
-  camera.position.set(0, 0, 12.6);
+  scene.fog = new THREE.FogExp2(0x071526, 0.035);
+
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  camera.position.set(0, 3.6, 8.4);
+  camera.lookAt(0, 0, 0);
 
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
-  } catch (e) { return; }
-  renderer.setClearColor(0x000000, 0);
-
-  const group = new THREE.Group();
-  group.position.x = 1.7;
-  scene.add(group);
-
-  /* ---- Fill points ---- */
-  const dense = window.innerWidth > 900 && !reduced;
-  const step = dense ? 0.075 : 0.125;
-
-  const positions = [], targets = [], seeds = [], zoneIdx = [];
-  for (let lon = 81.3; lon <= 87.6; lon += step) {
-    for (let lat = 18.1; lat <= 22.7; lat += step) {
-      const jl = lon + (Math.random() - 0.5) * step * 0.9;
-      const ja = lat + (Math.random() - 0.5) * step * 0.9;
-      if (!inside(jl, ja)) continue;
-
-      const x = px(jl), y = py(ja);
-      targets.push(x, y, (Math.random() - 0.5) * 0.35);
-      positions.push(
-        x + (Math.random() - 0.5) * 16,
-        y + (Math.random() - 0.5) * 12,
-        (Math.random() - 0.5) * 14
-      );
-      seeds.push(Math.random() * Math.PI * 2);
-
-      // nearest zone, for the highlight sweep
-      let best = 0, bestD = Infinity;
-      ZONES.forEach((z, i) => {
-        const d = (px(z.lon) - x) ** 2 + (py(z.lat) - y) ** 2;
-        if (d < bestD) { bestD = d; best = i; }
-      });
-      zoneIdx.push(best);
-    }
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  } catch (e) {
+    return;
   }
 
-  // Denser trace along the coastline / borders
-  for (let i = 0; i < OUTLINE.length; i++) {
-    const a = OUTLINE[i], b = OUTLINE[(i + 1) % OUTLINE.length];
-    const segs = dense ? 26 : 14;
-    for (let s = 0; s < segs; s++) {
-      const t = s / segs;
-      const x = px(a[0] + (b[0] - a[0]) * t);
-      const y = py(a[1] + (b[1] - a[1]) * t);
-      targets.push(x, y, 0);
-      positions.push(x + (Math.random() - 0.5) * 16, y + (Math.random() - 0.5) * 12, (Math.random() - 0.5) * 14);
-      seeds.push(Math.random() * Math.PI * 2);
-      let best = 0, bestD = Infinity;
-      ZONES.forEach((z, k) => {
-        const d = (px(z.lon) - x) ** 2 + (py(z.lat) - y) ** 2;
-        if (d < bestD) { bestD = d; best = k; }
-      });
-      zoneIdx.push(best);
-    }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.35;
+
+  const world = new THREE.Group();
+  world.rotation.x = 0.52;
+  scene.add(world);
+
+  // Lighting
+  scene.add(new THREE.AmbientLight(0x243b55, 0.8));
+
+  const keyLight = new THREE.DirectionalLight(0xfff0cc, 1.4);
+  keyLight.position.set(6, 10, 8);
+  scene.add(keyLight);
+
+  const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.9);
+  rimLight.position.set(-6, -2, -6);
+  scene.add(rimLight);
+
+  const topLight = new THREE.DirectionalLight(0xf59e0b, 0.5);
+  topLight.position.set(0, 8, 2);
+  scene.add(topLight);
+
+  // 3D Extruded Terrain Mesh
+  const shape = new THREE.Shape();
+  shape.moveTo(gx(ODISHA_BORDER[0][0]), gy(ODISHA_BORDER[0][1]));
+  for (let i = 1; i < ODISHA_BORDER.length; i++) {
+    shape.lineTo(gx(ODISHA_BORDER[i][0]), gy(ODISHA_BORDER[i][1]));
   }
+  shape.closePath();
 
-  const COUNT = seeds.length;
-  const posArr = new Float32Array(positions);
-  const tgtArr = new Float32Array(targets);
-  const colArr = new Float32Array(COUNT * 3);
-
-  const BASE = new THREE.Color(0x2C5064);
-  const LIT  = new THREE.Color(0xD4A537);
-  for (let i = 0; i < COUNT; i++) {
-    colArr[i * 3] = BASE.r; colArr[i * 3 + 1] = BASE.g; colArr[i * 3 + 2] = BASE.b;
-  }
-
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-  geo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
-
-  const mat = new THREE.PointsMaterial({
-    size: dense ? 0.052 : 0.072,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.95,
-    sizeAttenuation: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending
+  const mapGeo = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.36,
+    bevelEnabled: true,
+    bevelThickness: 0.07,
+    bevelSize: 0.05,
+    bevelSegments: 4,
   });
-  const cloud = new THREE.Points(geo, mat);
-  group.add(cloud);
+  mapGeo.computeVertexNormals();
 
-  /* ---- Zone nodes ---- */
-  const nodes = ZONES.map((z) => {
-    const g = new THREE.Group();
-    g.position.set(px(z.lon), py(z.lat), 0.42);
-
-    const core = new THREE.Mesh(
-      new THREE.SphereGeometry(0.085, 16, 16),
-      new THREE.MeshBasicMaterial({ color: z.pending ? 0x5C7386 : 0xF0D48A })
-    );
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.16, 0.185, 40),
-      new THREE.MeshBasicMaterial({
-        color: z.pending ? 0x5C7386 : 0xD4A537,
-        transparent: true, opacity: 0.55, side: THREE.DoubleSide
-      })
-    );
-    const halo = new THREE.Mesh(
-      new THREE.RingGeometry(0.2, 0.5, 40),
-      new THREE.MeshBasicMaterial({
-        color: 0xD4A537, transparent: true, opacity: 0, side: THREE.DoubleSide
-      })
-    );
-    g.add(core, ring, halo);
-    group.add(g);
-    return { g, core, ring, halo, phase: Math.random() * Math.PI * 2, glow: 0, pending: !!z.pending };
+  const mapMat = new THREE.MeshStandardMaterial({
+    color: 0x132e4d,
+    roughness: 0.28,
+    metalness: 0.78,
+    emissive: 0x0b2545,
+    emissiveIntensity: 0.45,
   });
 
-  /* ---- Interaction state ---- */
-  let active = -1;
-  let pointerX = 0, pointerY = 0;
+  const mapMesh = new THREE.Mesh(mapGeo, mapMat);
+  world.add(mapMesh);
 
-  window.addEventListener('pointermove', (e) => {
-    pointerX = (e.clientX / window.innerWidth) * 2 - 1;
-    pointerY = (e.clientY / window.innerHeight) * 2 - 1;
+  // Glowing Golden Perimeter Border
+  const borderPts = ODISHA_BORDER.map(([lo, la]) => new THREE.Vector3(gx(lo), gy(la), MAP_TOP_Z + 0.02));
+  borderPts.push(borderPts[0].clone());
+
+  const borderGeo = new THREE.BufferGeometry().setFromPoints(borderPts);
+  const borderMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, linewidth: 2 });
+  world.add(new THREE.Line(borderGeo, borderMat));
+
+  // Outer Shimmer
+  const glowPts = borderPts.map(p => { const c = p.clone(); c.z += 0.006; return c; });
+  const glowGeo = new THREE.BufferGeometry().setFromPoints(glowPts);
+  const glowMat = new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending });
+  world.add(new THREE.Line(glowGeo, glowMat));
+
+  // Coastal Shimmer along Bay of Bengal
+  const coastPts = ODISHA_BORDER.slice(75, 95).map(([lo, la]) => new THREE.Vector3(gx(lo), gy(la), MAP_TOP_Z + 0.03));
+  const coastGeo = new THREE.BufferGeometry().setFromPoints(coastPts);
+  const coastMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
+  world.add(new THREE.Line(coastGeo, coastMat));
+
+  // Internal Zonal Division Lines
+  const INTERNAL_LINES = [
+    [[85.80, 21.40], [86.15, 21.05], [86.60, 20.85], [87.05, 20.80]],
+    [[85.20, 20.35], [85.70, 20.38], [86.25, 20.20], [86.65, 20.00]],
+    [[84.60, 21.65], [84.95, 21.15], [84.90, 20.60], [84.55, 20.30]],
+    [[84.75, 19.80], [85.15, 19.65], [85.35, 19.55]],
+    [[83.60, 20.40], [83.10, 20.10], [82.70, 19.80]],
+  ];
+
+  INTERNAL_LINES.forEach((line) => {
+    const pts = line.map(([lo, la]) => new THREE.Vector3(gx(lo), gy(la), MAP_TOP_Z + 0.015));
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.45 });
+    world.add(new THREE.Line(g, m));
+  });
+
+  // Zone Beacons & Labels
+  function makeBillboardLabel(zoneName, schoolCount, colorHex) {
+    const c = document.createElement('canvas');
+    c.width = 320;
+    c.height = 100;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = 'rgba(7, 21, 38, 0.92)';
+    ctx.strokeStyle = colorHex;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(8, 8, 304, 84, 12) : ctx.rect(8, 8, 304, 84);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = colorHex;
+    ctx.beginPath();
+    ctx.arc(36, 42, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 26px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(zoneName, 58, 40);
+
+    ctx.fillStyle = '#FBBF24';
+    ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText(schoolCount, 58, 70);
+
+    const tex = new THREE.CanvasTexture(c);
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+    const s = new THREE.Sprite(mat);
+    s.scale.set(1.25, 0.39, 1);
+    return s;
+  }
+
+  const beaconRings = [];
+  const beaconPointers = [];
+  const zonePositions = {};
+
+  ZONES.forEach((zb) => {
+    const pos = new THREE.Vector3(gx(zb.lon), gy(zb.lat), MAP_TOP_Z);
+    zonePositions[zb.id] = pos;
+
+    const pinGeo = new THREE.CylinderGeometry(0.025, 0.015, 0.55, 12);
+    pinGeo.rotateX(Math.PI / 2);
+    const pinMat = new THREE.MeshStandardMaterial({
+      color: zb.color,
+      emissive: zb.color,
+      emissiveIntensity: 0.6,
+      metalness: 0.8,
+      roughness: 0.2,
+    });
+    const pinMesh = new THREE.Mesh(pinGeo, pinMat);
+    pinMesh.position.set(pos.x, pos.y, pos.z + 0.28);
+    world.add(pinMesh);
+    beaconPointers.push(pinMesh);
+
+    const sphereGeo = new THREE.SphereGeometry(0.065, 16, 16);
+    const sphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    sphereMesh.position.set(pos.x, pos.y, pos.z + 0.56);
+    world.add(sphereMesh);
+
+    const ringGeo = new THREE.RingGeometry(0.04, 0.08, 24);
+    const ringMat = new THREE.MeshBasicMaterial({ color: zb.color, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.position.set(pos.x, pos.y, pos.z + 0.02);
+    world.add(ringMesh);
+    beaconRings.push({ mesh: ringMesh, maxScale: 3.5, speed: 0.025 });
+
+    const colorHexStr = '#' + zb.color.toString(16).padStart(6, '0');
+    const label = makeBillboardLabel(zb.name, zb.count, colorHexStr);
+    label.position.set(pos.x, pos.y + 0.38, pos.z + 0.72);
+    world.add(label);
+  });
+
+  // Interconnecting Live Beam Network
+  const bbsrPos = zonePositions['bhubaneswar'];
+  if (bbsrPos) {
+    ZONES.forEach((zb) => {
+      if (zb.id === 'bhubaneswar') return;
+      const targetPos = zonePositions[zb.id];
+      if (!targetPos) return;
+
+      const pts = [];
+      const steps = 24;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = THREE.MathUtils.lerp(bbsrPos.x, targetPos.x, t);
+        const y = THREE.MathUtils.lerp(bbsrPos.y, targetPos.y, t);
+        const arcZ = Math.sin(t * Math.PI) * 0.45;
+        pts.push(new THREE.Vector3(x, y, MAP_TOP_Z + arcZ + 0.04));
+      }
+
+      const curveGeo = new THREE.BufferGeometry().setFromPoints(pts);
+      const curveMat = new THREE.LineBasicMaterial({
+        color: 0xf59e0b,
+        transparent: true,
+        opacity: 0.4,
+        blending: THREE.AdditiveBlending,
+      });
+      world.add(new THREE.Line(curveGeo, curveMat));
+    });
+  }
+
+  // Interactive Mouse / Touch Dragging
+  let isDragging = false;
+  let prevMouseX = 0, prevMouseY = 0;
+
+  canvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - prevMouseX;
+    const dy = e.clientY - prevMouseY;
+    world.rotation.y += dx * 0.007;
+    world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + dy * 0.004, 0.25, 0.95);
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  // Touch Support
+  let touchX = 0, touchY = 0;
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+    }
   }, { passive: true });
 
-  document.querySelectorAll('[data-zone]').forEach((el) => {
-    const i = ZONES.findIndex((z) => z.id === el.dataset.zone);
-    const on = () => { active = i; el.classList.add('is-active'); };
-    const off = () => { active = -1; el.classList.remove('is-active'); };
-    el.addEventListener('mouseenter', on);
-    el.addEventListener('focus', on);
-    el.addEventListener('mouseleave', off);
-    el.addEventListener('blur', off);
-  });
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1) {
+      const dx = e.touches[0].clientX - touchX;
+      const dy = e.touches[0].clientY - touchY;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        world.rotation.y += dx * 0.008;
+        touchX = e.touches[0].clientX;
+        touchY = e.touches[0].clientY;
+      }
+    }
+  }, { passive: true });
 
-  /* ---- Resize ---- */
+  // Resize
   function resize() {
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) return;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.fov = w < 760 ? 62 : 46;
-    group.position.x = w < 900 ? 0 : 1.7;
-    group.position.y = w < 900 ? -0.6 : 0;
+    const parent = canvas.parentElement;
+    const w = (parent ? parent.clientWidth : window.innerWidth);
+    const h = (parent ? parent.clientHeight : 500) || 500;
+    camera.aspect = w / Math.max(h, 1);
     camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
   }
   window.addEventListener('resize', resize);
   resize();
 
-  /* ---- Assemble + animate ---- */
-  const t0 = performance.now();
-  const ASSEMBLE = reduced ? 1 : 2600;
-  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+  // Animation Loop
+  let clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime();
 
-  const tmpCol = new THREE.Color();
-  let running = true;
-  const io = new IntersectionObserver(([e]) => { running = e.isIntersecting; }, { threshold: 0 });
-  io.observe(canvas);
-
-  function frame(now) {
-    requestAnimationFrame(frame);
-    if (!running) return;
-
-    const elapsed = now - t0;
-    const p = easeOut(Math.min(elapsed / ASSEMBLE, 1));
-    const time = elapsed * 0.001;
-
-    const pos = geo.attributes.position.array;
-    const col = geo.attributes.color.array;
-
-    for (let i = 0; i < COUNT; i++) {
-      const i3 = i * 3;
-      const drift = reduced ? 0 : Math.sin(time * 0.65 + seeds[i]) * 0.026;
-      pos[i3]     = posArr[i3]     + (tgtArr[i3]     - posArr[i3])     * p;
-      pos[i3 + 1] = posArr[i3 + 1] + (tgtArr[i3 + 1] - posArr[i3 + 1]) * p + drift;
-      pos[i3 + 2] = posArr[i3 + 2] + (tgtArr[i3 + 2] - posArr[i3 + 2]) * p;
-
-      const want = active >= 0 && zoneIdx[i] === active ? 1 : 0;
-      tmpCol.copy(BASE).lerp(LIT, want * 0.85);
-      col[i3]     += (tmpCol.r - col[i3])     * 0.09;
-      col[i3 + 1] += (tmpCol.g - col[i3 + 1]) * 0.09;
-      col[i3 + 2] += (tmpCol.b - col[i3 + 2]) * 0.09;
+    if (!isDragging && !reduced) {
+      world.rotation.y += 0.0035;
     }
-    geo.attributes.position.needsUpdate = true;
-    geo.attributes.color.needsUpdate = true;
 
-    nodes.forEach((n, i) => {
-      const want = active === i ? 1 : 0;
-      n.glow += (want - n.glow) * 0.1;
-      const pulse = reduced ? 0 : Math.sin(time * 1.5 + n.phase) * 0.5 + 0.5;
-      const s = 1 + n.glow * 0.85 + pulse * 0.09;
-      n.g.scale.setScalar(s * p);
-      n.ring.material.opacity = (n.pending ? 0.3 : 0.5) + n.glow * 0.5;
-      n.halo.material.opacity = n.glow * 0.28;
-      n.halo.scale.setScalar(1 + n.glow * 0.45);
-      n.g.lookAt(camera.position);
+    world.position.y = Math.sin(elapsed * 1.2) * 0.04;
+
+    beaconRings.forEach((br) => {
+      br.mesh.scale.x += br.speed;
+      br.mesh.scale.y += br.speed;
+      br.mesh.material.opacity = Math.max(0, 1 - br.mesh.scale.x / br.maxScale);
+      if (br.mesh.scale.x >= br.maxScale) {
+        br.mesh.scale.set(1, 1, 1);
+        br.mesh.material.opacity = 0.8;
+      }
     });
 
-    const tilt = reduced ? 0 : 1;
-    group.rotation.y += (pointerX * 0.17 * tilt - group.rotation.y) * 0.045;
-    group.rotation.x += (pointerY * 0.09 * tilt - group.rotation.x) * 0.045;
+    beaconPointers.forEach((pin, idx) => {
+      pin.scale.z = 1 + Math.sin(elapsed * 2.5 + idx) * 0.08;
+    });
 
     renderer.render(scene, camera);
   }
-  requestAnimationFrame(frame);
+  animate();
 })();

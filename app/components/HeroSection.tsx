@@ -14,15 +14,54 @@ export default function HeroSection() {
   const router = useRouter();
 
   const zones = [
-    { id: 'balasore',    name: 'Balasore Zone',    schools: '30 Schools', badge: 'North Coastal',    districts: 'Balasore, Bhadrak, Jajpur',             href: '/schools?zone=balasore',    status: 'Verified Registry Active' },
-    { id: 'cuttack',     name: 'Cuttack Zone',     schools: '18 Schools', badge: 'Central Judicial',  districts: 'Cuttack, Kendrapara, Jagatsinghpur',    href: '/schools?zone=cuttack',     status: 'High Court Jurisdiction' },
-    { id: 'bhubaneswar', name: 'Bhubaneswar HQ',   schools: 'State HQ',   badge: 'Secretariat',      districts: 'Khordha, Puri, Nayagarh',               href: '/schools?zone=bhubaneswar', status: 'Central Command & Liaison' },
-    { id: 'zone-four',   name: 'Baripada Zone',    schools: 'North Dist.', badge: 'Mayurbhanj',      districts: 'Mayurbhanj, Keonjhar',                   href: '/zones',                   status: 'Northern Tribal Belt' },
-    { id: 'sambalpur',   name: 'Sambalpur Zone',   schools: '8 Schools',  badge: 'Western Range',    districts: 'Sambalpur, Bargarh, Jharsuguda, Sundargarh', href: '/schools?zone=sambalpur', status: 'Western Educational Division' },
-    { id: 'berhampur',   name: 'Berhampur Zone',   schools: 'South Dist.', badge: 'Southern Range',  districts: 'Ganjam, Gajapati, Koraput, Rayagada',   href: '/schools?zone=berhampur',   status: 'Southern Coastal Division' },
+    {
+      id: 'balasore',
+      name: 'Baleswar Zone',
+      schools: '40 Schools',
+      badge: 'North Coastal & Tribal',
+      districts: 'Mayurbhanj, Keonjhar, Balasore, Bhadrak',
+      href: '/schools?zone=balasore',
+      status: 'Active Registered Zone (40 Institutions)',
+    },
+    {
+      id: 'central',
+      name: 'Central Zone',
+      schools: '24 Schools',
+      badge: 'Judicial & Mahanadi Belt',
+      districts: 'Cuttack, Kendrapara, Jajpur, Dhenkanal, Angul',
+      href: '/schools?zone=central',
+      status: 'High Court Jurisdiction (24 Institutions)',
+    },
+    {
+      id: 'bhubaneswar',
+      name: 'Bhubaneswar Zone',
+      schools: '15 Schools',
+      badge: 'State Capital HQ',
+      districts: 'Khordha, Nayagarh, Puri',
+      href: '/schools?zone=bhubaneswar',
+      status: 'Central Command & Secretariat (15 Institutions)',
+    },
+    {
+      id: 'sambalpur',
+      name: 'Sambalpur Zone',
+      schools: '9 Schools',
+      badge: 'Western Range',
+      districts: 'Sambalpur, Sundargarh, Bargarh, Jharsuguda',
+      href: '/schools?zone=sambalpur',
+      status: 'Western Educational Division (9 Institutions)',
+    },
+    {
+      id: 'ganjam',
+      name: 'Ganjam Zone',
+      schools: '2 Schools',
+      badge: 'Southern Range',
+      districts: 'Ganjam, Gajapati, Southern Coastal Belt',
+      href: '/schools?zone=ganjam',
+      status: 'Southern Regional Registry (2 Institutions)',
+    },
   ];
 
-  const activeZone = zones.find(z => z.id === selectedZone) || zones[0];
+  const activeZone = zones.find((z) => z.id === selectedZone) || zones[0];
 
   const handleZoneHover = (zoneId: string) => {
     setSelectedZone(zoneId);
@@ -53,9 +92,9 @@ export default function HeroSection() {
           </div>
 
           <p className="hero__sub">
-            The premier state statutory association representing 56+ recognized D.El.Ed &amp;
-            B.Ed teacher education institutions across all 30 districts of Odisha. Protecting
-            institutional autonomy, securing landmark High Court judgments, and advocating for
+            The premier state statutory association representing 90 recognized secondary
+            training schools and teacher education institutions across all 30 districts of Odisha.
+            Protecting institutional autonomy, securing landmark High Court judgments, and advocating for
             secondary teacher education.
           </p>
 
@@ -64,8 +103,8 @@ export default function HeroSection() {
             <div className="hero__trust-item">
               <span className="hero__trust-icon">⚖️</span>
               <div>
-                <b>High Court Decree</b>
-                <small>W.P.(C) 4410/2021 Protected</small>
+                <b>High Court Landmark Decree</b>
+                <small>W.P.(C) 5640/2009 Protected</small>
               </div>
             </div>
             <div className="hero__trust-item">
@@ -78,8 +117,8 @@ export default function HeroSection() {
             <div className="hero__trust-item">
               <span className="hero__trust-icon">🏫</span>
               <div>
-                <b>56+ Colleges</b>
-                <small>30 Districts of Odisha</small>
+                <b>90 Member Colleges</b>
+                <small>5 Zones &middot; 30 Districts of Odisha</small>
               </div>
             </div>
           </div>
@@ -92,7 +131,7 @@ export default function HeroSection() {
               <span>⚖️ High Court Orders &amp; Judgments</span>
             </Link>
             <Link className="btn btn--ghost hero__btn-ghost" href="/schools">
-              <span>🏫 Search Member Schools</span>
+              <span>🏫 Search 90 Member Schools</span>
             </Link>
           </div>
         </div>
@@ -111,12 +150,12 @@ export default function HeroSection() {
                   className="hero-3d-showcase__mini-seal"
                 />
                 <span className="hero-3d-showcase__live-dot"></span>
-                <span>LIVE ZONAL NETWORK &middot; 3D SATELLITE VIEW</span>
+                <span>STATE NETWORK &middot; 3D TOPOGRAPHIC MODEL</span>
               </div>
-              <span className="hero-3d-showcase__badge">INTERACTIVE</span>
+              <span className="hero-3d-showcase__badge">INTERACTIVE 3D</span>
             </div>
 
-            {/* 3D Map Canvas */}
+            {/* 3D Map Canvas Viewport */}
             <div className="hero-3d-showcase__viewport">
               <OdishaHeroMap />
             </div>
@@ -124,12 +163,12 @@ export default function HeroSection() {
             {/* Interactive Zone Navigation */}
             <div className="hero-3d-showcase__zones">
               <div className="hero-3d-showcase__zones-header">
-                <h4>Administrative Jurisdictions (6 Zones)</h4>
-                <p>Select a zone to inspect &amp; highlight on map:</p>
+                <h4>5 Administrative Zones &middot; 90 Institutions</h4>
+                <p>Click or hover any zone to inspect &amp; focus 3D map:</p>
               </div>
 
               <div className="showcase-zones-grid">
-                {zones.map(z => (
+                {zones.map((z) => (
                   <button
                     key={z.id}
                     type="button"

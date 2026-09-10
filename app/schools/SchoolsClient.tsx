@@ -10,11 +10,14 @@ export default function SchoolsClient() {
   const router = useRouter();
 
   const [query, setQuery] = useState('');
-  const activeZoneParam = searchParams.get('zone') || 'all';
-  const [selectedZone, setSelectedZone] = useState(activeZoneParam);
+  const rawParam = searchParams.get('zone') || 'all';
+  // Normalize alias zones if any
+  const normalizedZone = rawParam === 'cuttack' ? 'central' : rawParam === 'berhampur' ? 'ganjam' : rawParam;
+  const [selectedZone, setSelectedZone] = useState(normalizedZone);
 
   useEffect(() => {
-    setSelectedZone(searchParams.get('zone') || 'all');
+    const p = searchParams.get('zone') || 'all';
+    setSelectedZone(p === 'cuttack' ? 'central' : p === 'berhampur' ? 'ganjam' : p);
   }, [searchParams]);
 
   const zoneName = (id: string) => {
@@ -23,12 +26,12 @@ export default function SchoolsClient() {
   };
 
   const chips = [
-    { id: 'all', label: 'All' },
-    { id: 'balasore', label: 'Balasore' },
-    { id: 'cuttack', label: 'Cuttack' },
-    { id: 'bhubaneswar', label: 'Bhubaneswar' },
-    { id: 'sambalpur', label: 'Sambalpur' },
-    { id: 'berhampur', label: 'Berhampur' },
+    { id: 'all', label: `All (${SCHOOLS.length})` },
+    { id: 'balasore', label: 'Baleswar (40)' },
+    { id: 'central', label: 'Central (24)' },
+    { id: 'bhubaneswar', label: 'Bhubaneswar (15)' },
+    { id: 'sambalpur', label: 'Sambalpur (9)' },
+    { id: 'ganjam', label: 'Ganjam (2)' },
   ];
 
   const filteredSchools = useMemo(() => {
@@ -62,7 +65,7 @@ export default function SchoolsClient() {
         <input
           type="search"
           id="school-search"
-          placeholder="Search a school, district or zone"
+          placeholder="Search 90 schools by name, district or zone..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -82,14 +85,15 @@ export default function SchoolsClient() {
 
       <p className="school-count" id="school-count">
         {filteredSchools.length
-          ? `Showing ${filteredSchools.length} of ${SCHOOLS.length} schools`
+          ? `Showing ${filteredSchools.length} of ${SCHOOLS.length} verified member schools`
           : ''}
       </p>
 
       <table className="school-table">
         <thead>
           <tr>
-            <th>School</th>
+            <th style={{ width: '60px' }}>#</th>
+            <th>School Name</th>
             <th>Zone</th>
             <th>District</th>
           </tr>
@@ -98,28 +102,36 @@ export default function SchoolsClient() {
           {filteredSchools.length > 0 ? (
             filteredSchools.map((s, idx) => (
               <tr key={idx}>
-                <td>{s.name}</td>
-                <td data-l="Zone">{zoneName(s.zone)}</td>
-                <td data-l="District">{s.district || '—'}</td>
+                <td style={{ color: '#64748B', fontWeight: 600 }}>{s.slNo || idx + 1}</td>
+                <td data-l="School" style={{ fontWeight: 600, color: '#0B2545' }}>{s.name}</td>
+                <td data-l="Zone">
+                  <Link
+                    href={`/schools?zone=${s.zone}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleChipClick(s.zone);
+                    }}
+                    style={{ textDecoration: 'none', color: '#D97706', fontWeight: 600 }}
+                  >
+                    {zoneName(s.zone)}
+                  </Link>
+                </td>
+                <td data-l="District">{s.district || 'Odisha'}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={3} className="empty">
-                No school matches that search. Try a zone name, a district, or part of the school name.
+              <td colSpan={4} className="school-empty">
+                No institutions match &ldquo;{query}&rdquo; in this zone. Check your spelling or select &ldquo;All&rdquo;.
               </td>
             </tr>
           )}
         </tbody>
       </table>
 
-      <div className="note reveal" style={{ marginTop: '2.5rem' }}>
-        This directory is drawn from the association&apos;s zonal records. Contact details for
-        each school are being added. If an entry is wrong or your school is missing,{' '}
-        <Link href="/contact" style={{ color: 'var(--brass-hi)' }}>
-          tell us
-        </Link>{' '}
-        and we will correct it.
+      <div className="note" style={{ marginTop: '2.5rem' }}>
+        Official member school register as compiled and verified by the All Orissa Private Secondary Training Schools Management Association.
+        If your school details need updating, please contact the central secretariat.
       </div>
     </>
   );

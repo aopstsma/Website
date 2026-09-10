@@ -54,7 +54,8 @@
 /* ---- Zone counts, used on several pages ---- */
 function countByZone(id) {
   if (typeof SCHOOLS === 'undefined') return 0;
-  return SCHOOLS.filter((s) => s.zone === id).length;
+  const targetId = id === 'cuttack' ? 'central' : id === 'berhampur' ? 'ganjam' : id;
+  return SCHOOLS.filter((s) => s.zone === targetId).length;
 }
 
 /* ---- Render zone cards ---- */
@@ -64,9 +65,8 @@ function countByZone(id) {
 
   host.innerHTML = ZONES.map((z) => {
     const n = countByZone(z.id);
-    const label = n ? `${n} member ${n === 1 ? 'school' : 'schools'} listed`
-                    : 'List being compiled';
-    return `<a class="zone-card" href="schools.html?zone=${z.id}" ${z.pending ? 'data-pending="true"' : ''}>
+    const label = `${n} verified ${n === 1 ? 'school' : 'schools'} listed`;
+    return `<a class="zone-card" href="schools.html?zone=${z.id}">
       <h3>${z.name}</h3>
       <p class="zone-card__dist">${z.districts}</p>
       <span class="zone-card__n">${label}</span>
@@ -86,13 +86,18 @@ function countByZone(id) {
     const has = Boolean(d.file);
     const tag = has ? 'a' : 'div';
     const href = has ? ` href="assets/docs/${d.file}" download` : '';
-    const action = has ? 'Download PDF' : 'Copy on request';
+    const action = has ? 'Download Verified PDF' : 'Copy on request';
     return `<${tag} class="doc"${href}>
       <span class="doc__ref">${d.ref}${d.year ? '<br>' + d.year : ''}</span>
-      <span>
-        <span class="doc__title">${d.title}</span>
+      <span style="flex:1">
+        <span class="doc__title">
+          ${d.badge ? `<span class="doc__badge doc__badge--court">${d.badge}</span> ` : ''}
+          ${d.title}
+        </span>
         <span class="doc__meta">${d.note}</span>
+        ${d.image ? `<span style="display:inline-flex;align-items:center;gap:0.35rem;margin-top:0.35rem;font-size:0.75rem;color:#B45309;font-weight:600">📜 Official Scanned Front Page Available</span>` : ''}
       </span>
+      ${d.image ? `<div style="width:42px;height:56px;position:relative;border:1px solid #CBD5E1;border-radius:3px;overflow:hidden;flex-shrink:0;margin-right:0.65rem;box-shadow:0 2px 5px rgba(0,0,0,0.12)"><img src="${d.image}" alt="Scan preview" style="width:100%;height:100%;object-fit:cover"></div>` : ''}
       <span class="doc__get">${action}</span>
     </${tag}>`;
   }).join('');
@@ -108,7 +113,8 @@ function countByZone(id) {
   const counter = document.getElementById('school-count');
 
   const params = new URLSearchParams(location.search);
-  let zone = params.get('zone') || 'all';
+  let rawZone = params.get('zone') || 'all';
+  let zone = rawZone === 'cuttack' ? 'central' : rawZone === 'berhampur' ? 'ganjam' : rawZone;
   let query = '';
 
   const zoneName = (id) => (ZONES.find((z) => z.id === id) || {}).name || id;
@@ -125,16 +131,16 @@ function countByZone(id) {
     });
 
     counter.textContent = list.length
-      ? `Showing ${list.length} of ${SCHOOLS.length} schools`
+      ? `Showing ${list.length} of ${SCHOOLS.length} verified member schools`
       : '';
 
     body.innerHTML = list.length
-      ? list.map((s) => `<tr>
+      ? list.map((s, idx) => `<tr>
           <td>${s.name}</td>
           <td data-l="Zone">${zoneName(s.zone)}</td>
-          <td data-l="District">${s.district || '—'}</td>
+          <td data-l="District">${s.district || 'Odisha'}</td>
         </tr>`).join('')
-      : `<tr><td colspan="3" class="empty">No school matches that search. Try a zone name, a district, or part of the school name.</td></tr>`;
+      : `<tr><td colspan="3" class="empty">No schools match &ldquo;${query}&rdquo; in this zone. Select &ldquo;All&rdquo; or check spelling.</td></tr>`;
 
     chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.filter === zone)));
   }
