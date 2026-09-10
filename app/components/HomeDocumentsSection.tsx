@@ -127,7 +127,7 @@ export default function HomeDocumentsSection() {
           <Link className="btn btn--primary" href="/achievements">
             View All Court Judgments &amp; Archives &rarr;
           </Link>
-          <span style={{ fontSize: 'var(--t-sm)', color: '#CBD5E1' }}>
+          <span style={{ fontSize: 'var(--t-sm)', color: '#475569', fontWeight: 500 }}>
             Maintained under custody of AOPSTSMA Legal Affairs Secretariat
           </span>
         </div>

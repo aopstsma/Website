@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
+import Image from 'next/image';
+
 export default function SiteHeader() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -38,17 +40,22 @@ export default function SiteHeader() {
       <div className="top-bar">
         <div className="wrap top-bar__inner">
           <div className="top-bar__left">
-            <span className="top-bar__badge">GOVT REGD</span>
-            <span>Societies Registration Act XXI of 1860 &middot; Regd. No. 1422/80</span>
+            <span className="top-bar__badge">APEX STATUTORY BODY</span>
+            <span className="top-bar__reg">Societies Regn. Act XXI of 1860 &middot; Regd. No. 1422/80</span>
+            <span className="top-bar__divider">&bull;</span>
+            <span className="top-bar__motto">ସ୍ୱୀକୃତି &bull; ସ୍ୱାୟତ୍ତତା &bull; ନ୍ୟାୟ (Estd. 1980)</span>
           </div>
           <div className="top-bar__right">
+            <div className="top-bar__ticker">
+              <span className="top-bar__ticker-dot"></span>
+              <span className="top-bar__ticker-text">
+                High Court of Orissa Landmark Precedent Protected &middot; 56+ D.El.Ed &amp; B.Ed Colleges
+              </span>
+            </div>
             <a className="top-bar__link" href="tel:+916370987576">
               <span>📞 Office: +91 63709 87576</span>
             </a>
-            <span style={{ opacity: 0.3 }}>|</span>
-            <span className="top-bar__link">
-              <span>📍 Bhubaneswar, Odisha</span>
-            </span>
+            <span className="top-bar__location">📍 Bhubaneswar, Odisha</span>
           </div>
         </div>
       </div>
@@ -57,11 +64,23 @@ export default function SiteHeader() {
       <header className="site-header">
         <div className="wrap site-header__bar">
           <Link className="brand" href="/">
-            <span className="brand__seal">1980</span>
-            <span className="brand__name">
-              <b>AOPSTSMA</b>
-              <span>ALL ORISSA &middot; ESTD. 1980</span>
-            </span>
+            <div className="brand__seal-wrap">
+              <Image
+                src="/assets/img/aopstsma-seal.jpg"
+                alt="AOPSTSMA Official Emblem"
+                width={50}
+                height={50}
+                priority
+                className="brand__seal-img"
+              />
+            </div>
+            <div className="brand__name">
+              <div className="brand__title-row">
+                <b>AOPSTSMA</b>
+                <span className="brand__badge">ESTD. 1980</span>
+              </div>
+              <span className="brand__sub">All Orissa Private Secondary Training Schools Management Association</span>
+            </div>
           </Link>
 
           <button
@@ -91,9 +110,11 @@ export default function SiteHeader() {
             ))}
           </nav>
 
-          <Link className="header-action-btn" href="/services">
-            <span>💳 Pay Portal Fee</span>
-          </Link>
+          <div className="header-actions">
+            <Link className="header-action-btn" href="/services">
+              <span>💳 Pay Portal Fee</span>
+            </Link>
+          </div>
         </div>
       </header>
     </>
