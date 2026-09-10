@@ -58,26 +58,33 @@ export default function HomeAchievementsSection() {
           {milestones.map((m, idx) => (
             <div
               key={idx}
+              className="achievement-card"
               style={{
-                backgroundColor: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderTop: '4px solid #D97706',
-                borderRadius: '6px',
-                padding: '1.75rem 1.5rem',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #CBD5E1',
+                borderTop: '4px solid #F59E0B',
+                borderRadius: '8px',
+                padding: '2rem 1.6rem',
                 display: 'flex',
                 flexDirection: 'column',
-                boxShadow: '0 2px 8px rgba(11, 37, 69, 0.04)',
+                boxShadow: '0 8px 24px -4px rgba(11, 37, 69, 0.08)',
                 position: 'relative',
+                transition: 'all 0.25s ease',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
-                <span style={{ fontSize: '1.75rem' }}>{m.icon}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <span style={{ fontSize: '2rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}>{m.icon}</span>
                 <span
                   style={{
                     fontFamily: 'var(--display)',
-                    fontSize: '1.4rem',
+                    fontSize: '1.25rem',
                     fontWeight: 700,
-                    color: '#0B2545',
+                    color: '#FDE68A',
+                    backgroundColor: '#07172C',
+                    padding: '0.25rem 0.75rem',
+                    borderRadius: '20px',
+                    border: '1px solid rgba(245, 158, 11, 0.35)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                   }}
                 >
                   {m.year}
@@ -86,8 +93,8 @@ export default function HomeAchievementsSection() {
 
               <span
                 style={{
-                  fontSize: '0.68rem',
-                  fontWeight: 700,
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
                   color: '#B45309',
@@ -97,11 +104,11 @@ export default function HomeAchievementsSection() {
                 {m.tag}
               </span>
 
-              <h3 style={{ fontSize: '1.1rem', color: '#0F172A', fontWeight: 600, marginBottom: '0.65rem' }}>
+              <h3 style={{ fontSize: '1.18rem', color: '#06162D', fontWeight: 700, marginBottom: '0.65rem', lineHeight: '1.3' }}>
                 {m.title}
               </h3>
 
-              <p style={{ fontSize: '0.86rem', color: '#64748B', lineHeight: '1.6', margin: 0 }}>
+              <p style={{ fontSize: '0.9rem', color: '#334155', lineHeight: '1.65', margin: 0 }}>
                 {m.desc}
               </p>
             </div>

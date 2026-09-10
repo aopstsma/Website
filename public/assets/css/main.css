@@ -710,3 +710,77 @@ p { margin: 0 0 1.1em; max-width: 68ch; }
   }
   .cursor-glow.is-on { opacity: 1; }
 }
+
+/* ============================================================
+   WhatsApp Official Floating Support Widget
+   ============================================================ */
+.whatsapp-widget-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.whatsapp-float-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #FFFFFF !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
+}
+
+.whatsapp-float-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 30px rgba(37, 211, 102, 0.65), 0 0 20px rgba(37, 211, 102, 0.4);
+}
+
+.whatsapp-pulse-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid #25D366;
+  animation: waPulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes waPulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  70% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.whatsapp-tooltip {
+  background: #071526;
+  color: #FFFFFF !important;
+  padding: 0.55rem 1rem;
+  border-radius: 24px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(37, 211, 102, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(10px);
+}
+
+.whatsapp-widget-container:hover .whatsapp-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}

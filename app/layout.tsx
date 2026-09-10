@@ -4,11 +4,12 @@ import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
 import ScrollReveal from './components/ScrollReveal';
 import MotionEffects from './components/MotionEffects';
+import WhatsAppButton from './components/WhatsAppButton';
 
 export const metadata: Metadata = {
   title: 'All Orissa Private Secondary Training Schools Management Association',
   description:
-    'The association of private secondary training schools across Odisha. Six zones, member schools, legal records and services. Established 1980.',
+    'The association of private secondary training schools across Odisha. Five zones, 90 member schools, legal records and services. Established 1980.',
 };
 
 export default function RootLayout({
@@ -31,6 +32,7 @@ export default function RootLayout({
         <MotionEffects />
         <SiteHeader />
         <main>{children}</main>
+        <WhatsAppButton />
         <SiteFooter />
       </body>
     </html>
