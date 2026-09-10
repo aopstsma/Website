@@ -4,21 +4,21 @@
    ============================================================ */
 
 :root {
-  /* Palette — Odisha temple night: indigo stone + burnished brass */
-  --night:      #0A1620;
-  --deep:       #102433;
-  --slate:      #1D3A4C;
-  --slate-2:    #2C5064;
-  --brass:      #D4A537;
-  --brass-lo:   #A87F22;
-  --brass-hi:   #F0D48A;
-  --mist:       #E6EDF0;
-  --mist-2:     #D2DEE4;
-  --ink:        #0A1620;
-  --body-dark:  #A9BFCC;
-  --body-light: #3E5666;
-  --line-dark:  rgba(212,165,55,.20);
-  --line-light: rgba(16,36,51,.14);
+  /* Palette — Premium High-Contrast Night Mode */
+  --night:      #020617; /* Very dark slate, almost black */
+  --deep:       #0F172A; /* Slate 900 */
+  --slate:      #1E293B; /* Slate 800 */
+  --slate-2:    #334155; /* Slate 700 */
+  --brass:      #FBBF24; /* Amber 400 - Vibrant Gold */
+  --brass-lo:   #D97706; /* Amber 600 - Deep Gold */
+  --brass-hi:   #FDE68A; /* Amber 200 - Bright Gold */
+  --mist:       #FFFFFF; /* Pure White for high contrast headings */
+  --mist-2:     #F8FAFC; /* Slate 50 */
+  --ink:        #020617; /* Slate 950 */
+  --body-dark:  #E2E8F0; /* Slate 200 - High contrast body text */
+  --body-light: #475569; /* Slate 600 */
+  --line-dark:  rgba(251, 191, 36, 0.25);
+  --line-light: rgba(241, 245, 249, 0.1);
 
   /* Type */
   --display: "Newsreader", "Georgia", serif;

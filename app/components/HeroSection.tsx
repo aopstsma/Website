@@ -78,7 +78,7 @@ export default function HeroSection() {
           <div className="hero__est">
             <span className="hero__est-badge">ESTD. 1980</span>
             <span className="hero__est-text">
-              🏛️ APEX INSTITUTIONAL ASSOCIATION &middot; 45 YEARS OF ADVOCACY
+              🏛️ 45 YEARS OF ADVOCACY
             </span>
           </div>
 
