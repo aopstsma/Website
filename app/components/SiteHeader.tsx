@@ -8,15 +8,21 @@ import Image from 'next/image';
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  // Close nav on route change or resize
+  // Close nav on route change
   useEffect(() => {
-    setIsOpen(false);
+    setIsMobileOpen(false);
+    setIsLoginOpen(false);
   }, [pathname]);
 
-  const toggleMenu = () => {
-    setIsOpen((prev) => !prev);
+  const toggleMobileMenu = () => {
+    setIsMobileOpen((prev) => !prev);
+  };
+
+  const toggleLoginMenu = () => {
+    setIsLoginOpen((prev) => !prev);
   };
 
   const navLinks = [
@@ -80,32 +86,32 @@ export default function SiteHeader() {
 
           <button
             className="nav-toggle"
-            aria-expanded={isOpen}
+            aria-expanded={isMobileOpen}
             aria-controls="primary-nav"
-            onClick={toggleMenu}
+            onClick={toggleMobileMenu}
           >
-            {isOpen ? 'Close' : 'Menu'}
+            {isMobileOpen ? 'Close' : 'Menu'}
           </button>
 
           <nav
             className="nav"
             id="primary-nav"
             aria-label="Primary"
-            data-open={isOpen ? 'true' : 'false'}
+            data-open={isMobileOpen ? 'true' : 'false'}
           >
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 aria-current={isActive(link.href) ? 'page' : undefined}
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsMobileOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="header-actions" style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+          <div className="header-actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <Link className="header-action-btn" href="/pay">
               <span>💳 Pay Fees</span>
             </Link>
@@ -114,24 +120,27 @@ export default function SiteHeader() {
             <div style={{ position: 'relative' }}>
               <button
                 type="button"
-                className="btn btn--primary"
-                onClick={() => setIsOpen((prev) => !prev)}
+                className="header-action-btn header-action-btn--login"
+                onClick={toggleLoginMenu}
                 style={{
-                  padding: '0.45rem 0.9rem',
+                  background: 'linear-gradient(135deg, #0B2545 0%, #133C6D 100%)',
+                  color: '#FFF',
+                  border: '1px solid rgba(217,119,6,0.5)',
+                  cursor: 'pointer',
+                  padding: '0.55rem 0.95rem',
                   fontSize: '0.85rem',
                   fontWeight: 700,
+                  borderRadius: '4px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
-                  cursor: 'pointer',
-                  borderRadius: '6px',
+                  gap: '0.4rem',
                 }}
               >
                 <span>🔑 Login</span>
-                <small style={{ fontSize: '0.7rem' }}>▼</small>
+                <small style={{ fontSize: '0.65rem', color: '#FDE68A' }}>▼</small>
               </button>
 
-              {isOpen && (
+              {isLoginOpen && (
                 <div
                   style={{
                     position: 'absolute',
@@ -148,7 +157,7 @@ export default function SiteHeader() {
                 >
                   <Link
                     href="/school-login"
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => setIsLoginOpen(false)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -159,7 +168,6 @@ export default function SiteHeader() {
                       color: '#0F172A',
                       fontSize: '0.85rem',
                       fontWeight: 700,
-                      transition: 'background 0.2s ease',
                     }}
                   >
                     <span>🏫</span>
@@ -175,7 +183,7 @@ export default function SiteHeader() {
 
                   <Link
                     href="/admin-login"
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => setIsLoginOpen(false)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
