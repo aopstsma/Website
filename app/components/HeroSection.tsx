@@ -52,9 +52,9 @@ export default function HeroSection() {
     },
     {
       id: 'ganjam',
-      name: 'Ganjam Zone',
+      name: 'Berhampur Zone',
       schools: '2 Schools',
-      badge: 'Southern Range',
+      badge: 'Southern Coastal Range',
       districts: 'Ganjam, Gajapati, Southern Coastal Belt',
       href: '/schools?zone=ganjam',
       status: 'Southern Regional Registry (2 Institutions)',

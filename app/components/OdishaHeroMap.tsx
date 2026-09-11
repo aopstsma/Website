@@ -43,7 +43,7 @@ const ZONE_BEACONS = [
   { id: 'central',     name: 'Central Zone',  count: '24 Schools', lon: 85.92, lat: 20.52, color: 0x38BDF8 },
   { id: 'bhubaneswar', name: 'BBSR State HQ', count: '15 Schools', lon: 85.83, lat: 20.26, color: 0x10B981 },
   { id: 'sambalpur',   name: 'Sambalpur Zone',count: '9 Schools',  lon: 83.98, lat: 21.48, color: 0xEC4899 },
-  { id: 'ganjam',      name: 'Ganjam Zone',   count: '2 Schools',  lon: 84.85, lat: 19.35, color: 0xA78BFA },
+  { id: 'ganjam',      name: 'Berhampur Zone',count: '2 Schools',  lon: 84.85, lat: 19.35, color: 0xA78BFA },
 ];
 
 export default function OdishaHeroMap() {

@@ -2112,3 +2112,355 @@ p { margin: 0 0 1.1em; max-width: 68ch; }
   color: #64748B !important;
   font-weight: 500;
 }
+
+/* ============================================================
+   Student Verification & Fee Payment System Design Tokens
+   ============================================================ */
+.pay-container {
+  width: 100%;
+  margin-block: 1rem 3rem;
+}
+.pay-header {
+  margin-bottom: 2.25rem;
+}
+.pay-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #B45309;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+.pay-header h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  color: #0F172A;
+  font-weight: 700;
+}
+.pay-header p {
+  color: #475569;
+  font-size: 1rem;
+  margin-top: 0.4rem;
+  max-width: 60ch;
+}
+
+.pay-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.pay-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-top: 4px solid #0B2545;
+  border-radius: 10px;
+  padding: 2rem 1.85rem;
+  box-shadow: 0 6px 20px rgba(11, 37, 69, 0.06);
+}
+.pay-card h3 {
+  font-size: 1.25rem;
+  color: #0F172A;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.pay-sub {
+  font-size: 0.88rem;
+  color: #64748B;
+  margin-bottom: 1.5rem;
+}
+
+.pay-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1E293B;
+}
+.form-group input, .form-group select {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  background: #FFFFFF;
+  color: #0F172A;
+  transition: all 0.18s;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: #0B2545;
+  box-shadow: 0 0 0 3px rgba(11, 37, 69, 0.12);
+}
+
+.verify-btn {
+  background: linear-gradient(135deg, #0B2545 0%, #07172C 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(11, 37, 69, 0.25);
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+.verify-btn:hover {
+  background: #0F172A;
+  transform: translateY(-1px);
+}
+
+.pay-error {
+  padding: 0.85rem 1rem;
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  border-left: 4px solid #EF4444;
+  color: #991B1B;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.summary-card {
+  border-top-color: #D97706;
+}
+
+.verified-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.status-badge.success {
+  background: #D1FAE5;
+  border: 1px solid #6EE7B7;
+  border-left: 4px solid #10B981;
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  color: #065F46;
+}
+.status-badge.success span {
+  display: block;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.status-badge.success small {
+  font-size: 0.8rem;
+}
+
+.verified-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #F8FAFC;
+  padding: 1.2rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #E2E8F0;
+}
+.detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.detail-row span {
+  color: #64748B;
+  font-weight: 500;
+}
+.detail-row b {
+  color: #0F172A;
+  text-align: right;
+}
+.detail-row code {
+  background: #E2E8F0;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #0F172A;
+}
+.detail-row.total-row {
+  margin-top: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 2px solid #D97706;
+}
+.detail-row.total-row span {
+  font-weight: 700;
+  color: #0F172A;
+  font-size: 1rem;
+}
+.detail-row .price {
+  font-size: 1.5rem;
+  color: #D97706;
+  font-weight: 800;
+}
+
+.pay-now-btn {
+  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.35);
+  transition: all 0.2s;
+}
+.pay-now-btn:hover {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(217, 119, 6, 0.45);
+}
+.pay-note {
+  font-size: 0.78rem;
+  color: #64748B;
+  text-align: center;
+  margin: 0;
+}
+
+.empty-verify {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: 2px dashed #CBD5E1;
+}
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+}
+.empty-verify h4 {
+  font-size: 1.1rem;
+  color: #1E293B;
+  margin-bottom: 0.4rem;
+}
+.empty-verify p {
+  font-size: 0.85rem;
+  color: #64748B;
+  margin: 0;
+}
+
+/* Printable Receipt Card */
+.receipt-card {
+  background: #FFFFFF;
+  border: 2px solid #0B2545;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 12px 36px rgba(11, 37, 69, 0.12);
+  max-width: 680px;
+  margin: 0 auto;
+}
+.receipt-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 2px solid #E2E8F0;
+  margin-bottom: 1.5rem;
+}
+.receipt-header h3 {
+  font-size: 1.3rem;
+  color: #0F172A;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+.receipt-header p {
+  font-size: 0.82rem;
+  color: #64748B;
+  margin: 0;
+}
+.receipt-status {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+.success-tag {
+  display: inline-block;
+  background: #D1FAE5;
+  color: #065F46;
+  font-weight: 800;
+  font-size: 1.1rem;
+  padding: 0.4rem 1.25rem;
+  border-radius: 20px;
+  border: 1px solid #6EE7B7;
+}
+.receipt-status small {
+  display: block;
+  font-size: 0.8rem;
+  color: #64748B;
+  margin-top: 0.35rem;
+}
+
+.receipt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  background: #F8FAFC;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  margin-bottom: 2rem;
+}
+.r-item span {
+  display: block;
+  font-size: 0.78rem;
+  color: #64748B;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.r-item b {
+  display: block;
+  font-size: 0.95rem;
+  color: #0F172A;
+  margin-top: 0.2rem;
+}
+.r-amount {
+  font-size: 1.3rem !important;
+  color: #D97706 !important;
+  font-weight: 800;
+}
+
+.receipt-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.print-btn {
+  flex: 1;
+  background: #0B2545;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.85rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.reset-btn {
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+  padding: 0.85rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+

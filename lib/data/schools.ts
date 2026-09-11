@@ -72,7 +72,7 @@ export const ZONES: Zone[] = [
   },
   {
     id: 'ganjam',
-    name: 'Ganjam Zone',
+    name: 'Berhampur Zone',
     districts: 'Ganjam, Gajapati, Southern Range',
     schoolCount: 2,
     badge: 'Southern Coastal Division',
@@ -98,7 +98,7 @@ export const SCHOOLS: School[] = [
   { slNo: 14, name: 'Sree Maa Secondary Training School', zone: 'bhubaneswar', district: 'Khordha' },
   { slNo: 15, name: 'Sahaja Pur Secondary Training School', zone: 'bhubaneswar', district: 'Khordha' },
 
-  // ==================== GANJAM ZONE (2 Schools) ====================
+  // ==================== BERHAMPUR ZONE (2 Schools) ====================
   { slNo: 1, name: 'Sri Aurobinda Secondary Training School', zone: 'ganjam', district: 'Ganjam' },
   { slNo: 2, name: 'Maa Bhagabati Secondary Training School', zone: 'ganjam', district: 'Ganjam' },
 

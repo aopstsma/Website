@@ -31,7 +31,7 @@ export default function SchoolsClient() {
     { id: 'central', label: 'Central (24)' },
     { id: 'bhubaneswar', label: 'Bhubaneswar (15)' },
     { id: 'sambalpur', label: 'Sambalpur (9)' },
-    { id: 'ganjam', label: 'Ganjam (2)' },
+    { id: 'ganjam', label: 'Berhampur (2)' },
   ];
 
   const filteredSchools = useMemo(() => {

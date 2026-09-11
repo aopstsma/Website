@@ -38,7 +38,7 @@ const ZONES = [
   },
   {
     id: 'ganjam',
-    name: 'Ganjam Zone',
+    name: 'Berhampur Zone',
     districts: 'Ganjam, Gajapati, Southern Range',
     schoolCount: 2,
     badge: 'Southern Coastal Division',
