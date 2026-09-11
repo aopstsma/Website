@@ -105,10 +105,100 @@ export default function SiteHeader() {
             ))}
           </nav>
 
-          <div className="header-actions">
-            <Link className="header-action-btn" href="/services">
-              <span>💳 Pay Portal Fee</span>
+          <div className="header-actions" style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+            <Link className="header-action-btn" href="/pay">
+              <span>💳 Pay Fees</span>
             </Link>
+
+            {/* DUAL LOGIN DROPDOWN MENU */}
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => setIsOpen((prev) => !prev)}
+                style={{
+                  padding: '0.45rem 0.9rem',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  cursor: 'pointer',
+                  borderRadius: '6px',
+                }}
+              >
+                <span>🔑 Login</span>
+                <small style={{ fontSize: '0.7rem' }}>▼</small>
+              </button>
+
+              {isOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)',
+                    right: 0,
+                    width: '230px',
+                    background: '#FFFFFF',
+                    borderRadius: '10px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
+                    border: '1px solid #E2E8F0',
+                    padding: '0.5rem',
+                    zIndex: 100,
+                  }}
+                >
+                  <Link
+                    href="/school-login"
+                    onClick={() => setIsOpen(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: '6px',
+                      textDecoration: 'none',
+                      color: '#0F172A',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      transition: 'background 0.2s ease',
+                    }}
+                  >
+                    <span>🏫</span>
+                    <div>
+                      <div style={{ color: '#0B2545' }}>Member School Login</div>
+                      <small style={{ color: '#64748B', fontWeight: 500, fontSize: '0.72rem', display: 'block' }}>
+                        For 90 Recognized Institutions
+                      </small>
+                    </div>
+                  </Link>
+
+                  <div style={{ borderTop: '1px solid #F1F5F9', margin: '0.25rem 0' }} />
+
+                  <Link
+                    href="/admin-login"
+                    onClick={() => setIsOpen(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: '6px',
+                      textDecoration: 'none',
+                      color: '#0F172A',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    <span>🏛️</span>
+                    <div>
+                      <div style={{ color: '#D97706' }}>State Admin Login</div>
+                      <small style={{ color: '#64748B', fontWeight: 500, fontSize: '0.72rem', display: 'block' }}>
+                        Central Secretariat Admin
+                      </small>
+                    </div>
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>

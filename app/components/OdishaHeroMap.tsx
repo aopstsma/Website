@@ -408,7 +408,7 @@ export default function OdishaHeroMap() {
       const dx = e.clientX - prevMouseX;
       const dy = e.clientY - prevMouseY;
       world.rotation.y += dx * 0.007;
-      world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + dy * 0.004, 0.25, 0.95);
+      world.rotation.x += dy * 0.004; // Full 360 degree rotation without clamp limits
       prevMouseX = e.clientX;
       prevMouseY = e.clientY;
     };
