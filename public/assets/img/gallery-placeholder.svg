@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#051329"/>
+      <stop offset="50%" stop-color="#0B2545"/>
+      <stop offset="100%" stop-color="#06152B"/>
+    </linearGradient>
+    <linearGradient id="gGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="50%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#gBg)"/>
+
+  <!-- Grid Patterns -->
+  <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
+    <line x1="0" y1="90" x2="800" y2="90"/>
+    <line x1="0" y1="180" x2="800" y2="180"/>
+    <line x1="0" y1="270" x2="800" y2="270"/>
+    <line x1="0" y1="360" x2="800" y2="360"/>
+    <line x1="160" y1="0" x2="160" y2="450"/>
+    <line x1="320" y1="0" x2="320" y2="450"/>
+    <line x1="480" y1="0" x2="480" y2="450"/>
+    <line x1="640" y1="0" x2="640" y2="450"/>
+  </g>
+
+  <!-- Institutional Assembly Building Silhouette Clip-Art -->
+  <path d="M 250 320 L 250 200 L 400 130 L 550 200 L 550 320 Z" fill="none" stroke="url(#gGold)" stroke-width="3" opacity="0.8"/>
+  <rect x="290" y="220" width="30" height="100" fill="none" stroke="url(#gGold)" stroke-width="2"/>
+  <rect x="340" y="220" width="30" height="100" fill="none" stroke="url(#gGold)" stroke-width="2"/>
+  <rect x="430" y="220" width="30" height="100" fill="none" stroke="url(#gGold)" stroke-width="2"/>
+  <rect x="480" y="220" width="30" height="100" fill="none" stroke="url(#gGold)" stroke-width="2"/>
+
+  <polygon points="400,90 230,195 570,195" fill="url(#gGold)" opacity="0.25"/>
+
+  <!-- Center Laurel Emblem -->
+  <circle cx="400" cy="220" r="45" fill="#0B2545" stroke="url(#gGold)" stroke-width="3"/>
+  <text x="400" y="226" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#FDE68A" text-anchor="middle">🏛️</text>
+
+  <!-- Title Banner -->
+  <rect x="180" y="360" width="440" height="42" rx="6" fill="#06162D" stroke="url(#gGold)" stroke-width="1.5"/>
+  <text x="400" y="386" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FDE68A" text-anchor="middle" letter-spacing="1.5">OFFICIAL ASSOCIATION ARCHIVES</text>
+</svg>

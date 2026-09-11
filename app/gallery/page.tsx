@@ -23,7 +23,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
     categoryLabel: 'State General Body',
     date: '15 January 2026',
     location: 'Ambedkar International Hall, Bhubaneswar',
-    image: '/assets/img/gallery-1.jpg',
+    image: '/assets/img/gallery-placeholder.svg',
     description:
       'State executive committee assembly attended by representatives of all 90 member private training institutions across Odisha.',
   },
@@ -34,7 +34,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
     categoryLabel: 'Judicial Milestone',
     date: '22 November 2025',
     location: 'High Court Jurisdiction Complex, Cuttack',
-    image: '/assets/img/gallery-1.jpg',
+    image: '/assets/img/gallery-placeholder.svg',
     description:
       'Legal assembly marking the protection of recognized status for 90 secondary training institutions under Orissa High Court order.',
   },
@@ -45,7 +45,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
     categoryLabel: 'Zonal Secretariat',
     date: '08 October 2025',
     location: 'State Secretariat HQ, Bhubaneswar',
-    image: '/assets/img/gallery-1.jpg',
+    image: '/assets/img/gallery-placeholder.svg',
     description:
       'Coordination assembly of 39 recognized member schools from Khordha, Cuttack, Kendrapara, and Jajpur districts.',
   },
@@ -56,7 +56,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
     categoryLabel: 'Foundation Day',
     date: '12 August 2025',
     location: 'Town Hall Auditorium, Cuttack',
-    image: '/assets/img/gallery-1.jpg',
+    image: '/assets/img/gallery-placeholder.svg',
     description:
       'Honoring 45 years of institutional governance, statutory compliance, and secondary teacher education excellence since 1980.',
   },
@@ -67,7 +67,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
     categoryLabel: 'Zonal Secretariat',
     date: '04 May 2025',
     location: 'Baleswar & Sambalpur Regional Office',
-    image: '/assets/img/gallery-1.jpg',
+    image: '/assets/img/gallery-placeholder.svg',
     description:
       'Regional summit uniting 49 member institutions from Mayurbhanj, Keonjhar, Balasore, Bhadrak, and Sambalpur.',
   },

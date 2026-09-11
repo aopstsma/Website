@@ -48,9 +48,9 @@ export default function AboutPage() {
             <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)' }}>
               <div style={{ position: 'relative', width: '100%', height: '260px' }}>
                 <img
-                  src="/assets/img/president.jpg"
+                  src="/assets/img/president-avatar.svg"
                   alt="Nirmal Kant Mohanty - President"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#0B2545' }}
                 />
               </div>
               <div style={{ padding: '1.25rem' }}>
@@ -63,9 +63,9 @@ export default function AboutPage() {
             <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)' }}>
               <div style={{ position: 'relative', width: '100%', height: '260px' }}>
                 <img
-                  src="/assets/img/secretary.jpg"
+                  src="/assets/img/secretary-avatar.svg"
                   alt="Aba Pradhan - General Secretary"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#07172C' }}
                 />
               </div>
               <div style={{ padding: '1.25rem' }}>

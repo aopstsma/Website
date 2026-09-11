@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06162D"/>
+      <stop offset="100%" stop-color="#0B2545"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="50%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" fill="url(#bgGrad)"/>
+  
+  <!-- Decorative Ring -->
+  <circle cx="200" cy="200" r="180" stroke="url(#goldGrad)" stroke-width="4" stroke-dasharray="10 6" fill="none" opacity="0.4"/>
+  <circle cx="200" cy="200" r="165" stroke="url(#goldGrad)" stroke-width="2" fill="none"/>
+
+  <!-- Avatar Silhouette Outer Glow -->
+  <circle cx="200" cy="140" r="65" fill="#1E3A8A" opacity="0.3"/>
+
+  <!-- User Head -->
+  <circle cx="200" cy="140" r="55" fill="url(#goldGrad)"/>
+
+  <!-- User Suit & Shoulders -->
+  <path d="M 90 350 C 90 240, 310 240, 310 350 Z" fill="url(#goldGrad)"/>
+
+  <!-- Tie Silhouette -->
+  <polygon points="200,230 212,270 200,340 188,270" fill="#06162D"/>
+
+  <!-- Collar -->
+  <polygon points="200,230 165,245 185,270" fill="#FFFFFF" opacity="0.9"/>
+  <polygon points="200,230 235,245 215,270" fill="#FFFFFF" opacity="0.9"/>
+
+  <!-- Badge Label -->
+  <rect x="110" y="320" width="180" height="34" rx="17" fill="#06162D" stroke="url(#goldGrad)" stroke-width="2"/>
+  <text x="200" y="342" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FDE68A" text-anchor="middle" letter-spacing="2">PRESIDENT</text>
+</svg>
