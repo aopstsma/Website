@@ -178,21 +178,39 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="bearers">
-            <div className="bearer">
-              <span>President</span>
-              <h3>Nirmal Kant Mohanty</h3>
-              <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.5rem' }}>
-                Executive Leadership &amp; Board Liaison
-              </p>
+          <div className="bearers" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
+            <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)' }}>
+              <div style={{ position: 'relative', width: '100%', height: '240px' }}>
+                <img
+                  src="/assets/img/president.jpg"
+                  alt="Nirmal Kant Mohanty - President"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+              <div style={{ padding: '1.25rem' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em' }}>President</span>
+                <h3 style={{ fontSize: '1.2rem', color: '#0F172A', marginTop: '0.25rem' }}>Nirmal Kant Mohanty</h3>
+                <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
+                  Executive Leadership &amp; Board Liaison
+                </p>
+              </div>
             </div>
 
-            <div className="bearer">
-              <span>General Secretary</span>
-              <h3>Aba Pradhan</h3>
-              <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.5rem' }}>
-                Secretariat Affairs &amp; Legal Cell
-              </p>
+            <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)' }}>
+              <div style={{ position: 'relative', width: '100%', height: '240px' }}>
+                <img
+                  src="/assets/img/secretary.jpg"
+                  alt="Aba Pradhan - General Secretary"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+              <div style={{ padding: '1.25rem' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em' }}>General Secretary</span>
+                <h3 style={{ fontSize: '1.2rem', color: '#0F172A', marginTop: '0.25rem' }}>Aba Pradhan</h3>
+                <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
+                  Secretariat Affairs &amp; Legal Cell
+                </p>
+              </div>
             </div>
 
             <div className="bearer">

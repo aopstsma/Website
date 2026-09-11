@@ -26,6 +26,7 @@ export default function SiteHeader() {
     { href: '/schools', label: 'Member Schools (90)' },
     { href: '/achievements', label: 'Court Orders & Records' },
     { href: '/services', label: 'Services' },
+    { href: '/gallery', label: 'Gallery' },
     { href: '/contact', label: 'Contact' },
   ];
 
