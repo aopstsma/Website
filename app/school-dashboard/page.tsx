@@ -15,7 +15,7 @@ export default function SchoolDashboardPage() {
   const [newStudentId, setNewStudentId] = useState('');
   const [newName, setNewName] = useState('');
   const [newMobile, setNewMobile] = useState('');
-  const [newFee, setNewFee] = useState('25000');
+  const [newFee, setNewFee] = useState('2500');
   const [addMessage, setAddMessage] = useState<string | null>(null);
 
   // Active Tab for Student Addition: 'excel' vs 'manual'
@@ -46,7 +46,7 @@ export default function SchoolDashboardPage() {
       schoolId: 'SCH-BBS-01',
       schoolName: 'Rajadhani School Of Education',
       district: 'Khordha',
-      feeAmount: Number(newFee) || 25000,
+      feeAmount: Number(newFee) || 2500,
       paymentStatus: 'Pending',
     };
 
@@ -80,7 +80,7 @@ export default function SchoolDashboardPage() {
           const sId = row[0].trim().replace(/"/g, '');
           const sName = row[1].trim().replace(/"/g, '');
           const sMobile = row[2].trim().replace(/"/g, '');
-          const sFee = row[3] ? Number(row[3].trim().replace(/"/g, '')) : 25000;
+          const sFee = row[3] ? Number(row[3].trim().replace(/"/g, '')) : 2500;
 
           if (sId && sName && sMobile) {
             parsedRecords.push({
@@ -92,7 +92,7 @@ export default function SchoolDashboardPage() {
               schoolId: 'SCH-BBS-01',
               schoolName: 'Rajadhani School Of Education',
               district: 'Khordha',
-              feeAmount: sFee || 25000,
+              feeAmount: sFee || 2500,
               paymentStatus: 'Pending',
             });
           }
@@ -115,8 +115,8 @@ export default function SchoolDashboardPage() {
   const downloadTemplate = () => {
     const csvContent =
       'Student ID,Student Name,Mobile Number,Fee Payable\n' +
-      'STU-2026-101,Aarav Sharma,9861099999,25000\n' +
-      'STU-2026-102,Priya Mohanty,9437011111,25000\n';
+      'STU-2026-101,Aarav Sharma,9861099999,2500\n' +
+      'STU-2026-102,Priya Mohanty,9437011111,2500\n';
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -230,7 +230,7 @@ export default function SchoolDashboardPage() {
                     textAlign: 'left',
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                   }}
                 >
                   <span>📥 Download Standard Excel/CSV Template (.csv)</span>
@@ -319,27 +319,35 @@ export default function SchoolDashboardPage() {
 
           {/* SCHOOL SUMMARY STATS */}
           <div className="pay-card summary-card">
-            <h3>📊 School Roster Summary</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginTop: '1.25rem' }}>
-              <div style={{ background: '#F8FAFC', padding: '1.25rem', borderRadius: '8px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
-                <span style={{ display: 'block', fontSize: '2.2rem', fontWeight: 800, color: '#0F172A', lineHeight: 1 }}>
+            <h3>📊 Roster & Membership Fees Summary</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginTop: '1rem' }}>
+              <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '8px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
+                <span style={{ display: 'block', fontSize: '1.8rem', fontWeight: 800, color: '#0F172A', lineHeight: 1 }}>
                   {students.length}
                 </span>
                 <small style={{ color: '#64748B', fontWeight: 600, textTransform: uppercaseText }}>Total Candidates</small>
               </div>
 
-              <div style={{ background: '#FEF3C7', padding: '1.25rem', borderRadius: '8px', border: '1px solid #FDE68A', textAlign: 'center' }}>
-                <span style={{ display: 'block', fontSize: '2.2rem', fontWeight: 800, color: '#D97706', lineHeight: 1 }}>
-                  ₹{(students.length * 25000).toLocaleString('en-IN')}
+              <div style={{ background: '#FEF3C7', padding: '1rem', borderRadius: '8px', border: '1px solid #FDE68A', textAlign: 'center' }}>
+                <span style={{ display: 'block', fontSize: '1.8rem', fontWeight: 800, color: '#D97706', lineHeight: 1 }}>
+                  ₹{(students.length * 2500).toLocaleString('en-IN')}
                 </span>
-                <small style={{ color: '#B45309', fontWeight: 600, textTransform: uppercaseText }}>Fee Target</small>
+                <small style={{ color: '#B45309', fontWeight: 600, textTransform: uppercaseText }}>Candidate Fee Target (₹2,500/ea)</small>
               </div>
             </div>
 
-            <div style={{ marginTop: '1.75rem', padding: '1rem', background: '#EFF6FF', borderLeft: '4px solid #3B82F6', borderRadius: '0 6px 6px 0', fontSize: '0.88rem', color: '#1E40AF' }}>
-              ℹ️ <strong>Format Standardized & Sync Active</strong>
+            <div style={{ marginTop: '1rem', padding: '0.9rem', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <b style={{ color: '#166534', fontSize: '0.88rem', display: 'block' }}>School Annual Membership Fee</b>
+                <span style={{ fontSize: '0.8rem', color: '#15803D' }}>Fixed Annual Association Fee for 2026</span>
+              </div>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#15803D' }}>₹25,000</span>
+            </div>
+
+            <div style={{ marginTop: '1.25rem', padding: '0.85rem', background: '#EFF6FF', borderLeft: '4px solid #3B82F6', borderRadius: '0 6px 6px 0', fontSize: '0.82rem', color: '#1E40AF' }}>
+              ℹ️ <strong>Roster Verification Active</strong>
               <br />
-              Students verify using <code>Student ID</code> + <code>Mobile Number</code>. Completed transactions automatically sync to Google Sheets.
+              Students pay ₹2,500 online using <code>Student ID</code> + <code>Mobile Number</code>. Completed transactions automatically sync to Google Sheets.
             </div>
           </div>
         </div>

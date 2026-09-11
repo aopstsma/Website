@@ -39,7 +39,7 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
     schoolId: 'SCH-BBS-01',
     schoolName: 'Rajadhani School Of Education',
     district: 'Khordha',
-    feeAmount: 25000,
+    feeAmount: 2500,
     paymentStatus: 'Pending',
   },
   {
@@ -51,7 +51,7 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
     schoolId: 'SCH-BBS-02',
     schoolName: 'Odisha Nobel C.T School',
     district: 'Khordha',
-    feeAmount: 25000,
+    feeAmount: 2500,
     paymentStatus: 'Pending',
   },
   {
@@ -63,7 +63,7 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
     schoolId: 'SCH-CEN-01',
     schoolName: 'Jagannath Secondary Training School',
     district: 'Cuttack',
-    feeAmount: 25000,
+    feeAmount: 2500,
     paymentStatus: 'Pending',
   },
   {
@@ -75,7 +75,7 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
     schoolId: 'SCH-BAL-01',
     schoolName: 'Bhadrak Secondary Training School',
     district: 'Bhadrak',
-    feeAmount: 25000,
+    feeAmount: 2500,
     paymentStatus: 'Pending',
   },
   {
@@ -87,7 +87,7 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
     schoolId: 'SCH-GAN-01',
     schoolName: 'Sri Aurobinda Secondary Training School',
     district: 'Ganjam',
-    feeAmount: 25000,
+    feeAmount: 2500,
     paymentStatus: 'Pending',
   },
 ];

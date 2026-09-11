@@ -33,7 +33,7 @@ export async function POST(request: Request) {
             mobileNumber,
             schoolName,
             zoneName,
-            amount: amount || 25000,
+            amount: amount || 2500,
             paymentMethod: paymentMethod || 'UPI / Online Gateway',
             status: 'SUCCESS',
           }),
