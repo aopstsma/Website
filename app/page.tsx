@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import HeroSection from './components/HeroSection';
+import NoticeBannerTicker from './components/NoticeBannerTicker';
 import HomeDocumentsSection from './components/HomeDocumentsSection';
 import HomeNewsLettersSection from './components/HomeNewsLettersSection';
 import HomeAchievementsSection from './components/HomeAchievementsSection';
@@ -16,6 +17,9 @@ export default function HomePage() {
     <>
       {/* ============ 1. HERO SECTION WITH AUTHENTIC 3D ODISHA RELIEF MAP ============ */}
       <HeroSection />
+
+      {/* ============ LIVE ANNOUNCEMENTS & NOTICES TICKER BANNER ============ */}
+      <NoticeBannerTicker />
 
       {/* ============ 2. QUICK PORTAL ACTIONS (4 SAAF-SAAF BOXES) ============ */}
       <div className="wrap" style={{ position: 'relative' }}>

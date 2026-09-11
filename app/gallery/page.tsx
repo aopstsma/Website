@@ -78,7 +78,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
     categoryLabel: 'Zonal Secretariat',
     date: '18 February 2025',
     location: 'Berhampur Regional Registry, Ganjam',
-    image: '/assets/img/gallery-1.jpg',
+    image: '/assets/img/gallery-placeholder.svg',
     description:
       'Regional convention of Southern Odisha member institutions discussing NCTE compliance and state government liaison.',
   },
