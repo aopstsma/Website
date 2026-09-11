@@ -5,12 +5,9 @@ import SiteFooter from './components/SiteFooter';
 import ScrollReveal from './components/ScrollReveal';
 import MotionEffects from './components/MotionEffects';
 import WhatsAppButton from './components/WhatsAppButton';
+import { defaultMetadata, organizationSchema } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'All Orissa Private Secondary Training Schools Management Association',
-  description:
-    'The association of private secondary training schools across Odisha. Five zones, 90 member schools, legal records and services. Established 1980.',
-};
+export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({
   children,
@@ -25,6 +22,11 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Barlow:wght@400;500;600&display=swap"
           rel="stylesheet"
+        />
+        {/* JSON-LD Structured Data for Google Rich Results & AEO (Answer Engine Optimization) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
       <body>
