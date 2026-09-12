@@ -131,9 +131,9 @@ export default function ContactClient() {
             <div className="contact-channel-item">
               <div className="contact-channel-icon">📍</div>
               <div className="contact-channel-text">
-                <small>STATE HEADQUARTERS</small>
-                <strong>Executive Secretariat</strong>
-                <span>Bhubaneswar, Odisha &mdash; 751001</span>
+                <small>STATE HEADQUARTERS &amp; REGISTERED OFFICE</small>
+                <strong>Central Executive Secretariat</strong>
+                <span>Plot No. 4971/8, V.S.S. Nagar, Bhubaneswar, Khordha, Odisha &mdash; 751010</span>
               </div>
             </div>
           </div>

@@ -180,15 +180,16 @@ export default function HomePage() {
 
           <div className="bearers" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
             <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)' }}>
-              <div style={{ position: 'relative', width: '100%', height: '240px' }}>
+              <div style={{ position: 'relative', width: '100%', height: '260px', overflow: 'hidden', background: '#0F291E' }}>
                 <img
-                  src="/assets/img/president-avatar.svg"
+                  src="/assets/img/president-nirmal-kanta-mohanty.jpg"
                   alt="Nirmal Kanta Mohanty - President"
-                  style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#0B2545' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }}
                 />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px', background: 'linear-gradient(to top, rgba(15,23,42,0.6), transparent)' }} />
               </div>
               <div style={{ padding: '1.25rem' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em' }}>President</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.06em' }}>President</span>
                 <h3 style={{ fontSize: '1.2rem', color: '#0F172A', marginTop: '0.25rem' }}>Nirmal Kanta Mohanty</h3>
                 <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
                   Executive Leadership &amp; Board Liaison
@@ -197,15 +198,16 @@ export default function HomePage() {
             </div>
 
             <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)' }}>
-              <div style={{ position: 'relative', width: '100%', height: '240px' }}>
+              <div style={{ position: 'relative', width: '100%', height: '260px', overflow: 'hidden', background: '#0A2540' }}>
                 <img
-                  src="/assets/img/secretary-avatar.svg"
+                  src="/assets/img/secretary-alia-pradhan.jpg"
                   alt="Alia Pradhan - Secretary"
-                  style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#07172C' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }}
                 />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px', background: 'linear-gradient(to top, rgba(15,23,42,0.6), transparent)' }} />
               </div>
               <div style={{ padding: '1.25rem' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Secretary</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Secretary</span>
                 <h3 style={{ fontSize: '1.2rem', color: '#0F172A', marginTop: '0.25rem' }}>Alia Pradhan</h3>
                 <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
                   Secretariat Affairs &amp; Legal Cell
@@ -214,15 +216,13 @@ export default function HomePage() {
             </div>
 
             <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ position: 'relative', width: '100%', height: '240px', background: 'radial-gradient(circle at center, #1E3A8A 0%, #0B2545 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', padding: '1rem' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '2px solid #F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', marginBottom: '0.75rem', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}>
-                  📞
-                </div>
+              <div style={{ position: 'relative', width: '100%', height: '160px', background: 'radial-gradient(circle at center, #1E3A8A 0%, #0B2545 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', padding: '1rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#FDE68A', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  STATE SECRETARIAT DESK
+                  CENTRAL REGISTERED OFFICE
                 </div>
-                <div style={{ fontSize: '0.85rem', color: '#CBD5E1', marginTop: '0.2rem' }}>
-                  Bhubaneswar, Odisha
+                <div style={{ fontSize: '0.82rem', color: '#E2E8F0', marginTop: '0.4rem', lineHeight: 1.4 }}>
+                  Plot No. 4971/8, V.S.S. Nagar<br />
+                  Bhubaneswar, Khordha, Odisha &ndash; 751010
                 </div>
               </div>
               <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>

@@ -89,10 +89,10 @@ export const organizationSchema = {
     'Apex statutory management association representing 90 recognized private secondary training schools across 5 regional zones and 30 districts of Odisha under Societies Regn. Act XXI of 1860.',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'Central Legal & Administrative Secretariat',
+    streetAddress: 'Plot No. 4971/8, V.S.S. Nagar',
     addressLocality: 'Bhubaneswar',
     addressRegion: 'Odisha',
-    postalCode: '751001',
+    postalCode: '751010',
     addressCountry: 'IN',
   },
   contactPoint: {

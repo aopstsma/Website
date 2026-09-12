@@ -48,8 +48,11 @@ export default function SiteFooter() {
               <li style={{ marginBottom: '0.5rem' }}>
                 <a href="mailto:info@aopstsma.in">✉️ info@aopstsma.in</a>
               </li>
-              <li style={{ marginBottom: '0.5rem', color: '#94A3B8' }}>
-                📍 Bhubaneswar, Odisha, India
+              <li style={{ marginBottom: '0.5rem', color: '#CBD5E1', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                📍 <strong>Registered Office:</strong><br />
+                Plot No. 4971/8, V.S.S. Nagar,<br />
+                Bhubaneswar, Khordha,<br />
+                Odisha &ndash; 751010, India
               </li>
             </ul>
           </div>
