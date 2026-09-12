@@ -44,37 +44,109 @@ export default function AboutPage() {
             <div className="head__rule"></div>
             <h2>Office bearers</h2>
           </div>
-          <div className="bearers reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2rem', marginTop: '1.5rem' }}>
-            <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)' }}>
-              <div style={{ position: 'relative', width: '100%', height: '280px', overflow: 'hidden', background: '#0F291E' }}>
-                <img
-                  src="/assets/img/president-nirmal-kanta-mohanty.jpg"
-                  alt="Nirmal Kanta Mohanty - President"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }}
-                />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px', background: 'linear-gradient(to top, rgba(15,23,42,0.6), transparent)' }} />
+          <div className="bearers reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', marginTop: '1.5rem' }}>
+            <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '2.25rem 1.5rem', boxShadow: '0 4px 20px rgba(11,37,69,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+              <div style={{
+                position: 'relative',
+                width: '150px',
+                height: '150px',
+                borderRadius: '50%',
+                padding: '4px',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%)',
+                boxShadow: '0 8px 24px rgba(5, 150, 105, 0.25)',
+                marginBottom: '1rem'
+              }}>
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: '3px solid #FFFFFF',
+                  background: '#0F291E'
+                }}>
+                  <img
+                    src="/assets/img/president-nirmal-kanta-mohanty.jpg"
+                    alt="Nirmal Kanta Mohanty - President"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
               </div>
-              <div style={{ padding: '1.25rem' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.06em' }}>President</span>
-                <h3 style={{ fontSize: '1.25rem', color: '#0F172A', marginTop: '0.25rem' }}>Nirmal Kanta Mohanty</h3>
-                <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0.4rem 0 0' }}>All Orissa Private Secondary Training Schools Management Association</p>
-              </div>
+              <span style={{
+                display: 'inline-block',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                color: '#047857',
+                background: '#ECFDF5',
+                border: '1px solid #A7F3D0',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                padding: '0.3rem 0.85rem',
+                borderRadius: '20px',
+                marginBottom: '0.5rem'
+              }}>
+                President
+              </span>
+              <h3 style={{ fontSize: '1.3rem', color: '#0F172A', marginTop: '0.25rem', fontWeight: 800 }}>
+                Nirmal Kanta Mohanty
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem', lineHeight: 1.5 }}>
+                Executive Leadership &amp; Board Liaison
+              </p>
+              <span style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: '0.5rem', borderTop: '1px solid #F1F5F9', paddingTop: '0.5rem', width: '100%' }}>
+                All Orissa Private Secondary Training Schools Management Association
+              </span>
             </div>
 
-            <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)' }}>
-              <div style={{ position: 'relative', width: '100%', height: '280px', overflow: 'hidden', background: '#0A2540' }}>
-                <img
-                  src="/assets/img/secretary-alia-pradhan.jpg"
-                  alt="Alia Pradhan - Secretary"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }}
-                />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px', background: 'linear-gradient(to top, rgba(15,23,42,0.6), transparent)' }} />
+            <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '2.25rem 1.5rem', boxShadow: '0 4px 20px rgba(11,37,69,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+              <div style={{
+                position: 'relative',
+                width: '150px',
+                height: '150px',
+                borderRadius: '50%',
+                padding: '4px',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 50%, #1E3A8A 100%)',
+                boxShadow: '0 8px 24px rgba(29, 78, 216, 0.25)',
+                marginBottom: '1rem'
+              }}>
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: '3px solid #FFFFFF',
+                  background: '#0A2540'
+                }}>
+                  <img
+                    src="/assets/img/secretary-alia-pradhan.jpg"
+                    alt="Alia Pradhan - Secretary"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
               </div>
-              <div style={{ padding: '1.25rem' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Secretary</span>
-                <h3 style={{ fontSize: '1.25rem', color: '#0F172A', marginTop: '0.25rem' }}>Alia Pradhan</h3>
-                <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0.4rem 0 0' }}>All Orissa Private Secondary Training Schools Management Association</p>
-              </div>
+              <span style={{
+                display: 'inline-block',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                color: '#1D4ED8',
+                background: '#EFF6FF',
+                border: '1px solid #BFDBFE',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                padding: '0.3rem 0.85rem',
+                borderRadius: '20px',
+                marginBottom: '0.5rem'
+              }}>
+                Secretary
+              </span>
+              <h3 style={{ fontSize: '1.3rem', color: '#0F172A', marginTop: '0.25rem', fontWeight: 800 }}>
+                Alia Pradhan
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem', lineHeight: 1.5 }}>
+                Secretariat Affairs &amp; Legal Cell
+              </p>
+              <span style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: '0.5rem', borderTop: '1px solid #F1F5F9', paddingTop: '0.5rem', width: '100%' }}>
+                All Orissa Private Secondary Training Schools Management Association
+              </span>
             </div>
           </div>
 
