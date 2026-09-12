@@ -46,7 +46,7 @@ export default function SiteFooter() {
                 <a href="tel:+916370987576">📞 +91 63709 87576</a>
               </li>
               <li style={{ marginBottom: '0.5rem' }}>
-                <a href="mailto:info.aopstsma@gmail.com">✉️ info.aopstsma@gmail.com</a>
+                <a href="mailto:info@aopstsma.in">✉️ info@aopstsma.in</a>
               </li>
               <li style={{ marginBottom: '0.5rem', color: '#94A3B8' }}>
                 📍 Bhubaneswar, Odisha, India

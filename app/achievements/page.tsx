@@ -98,7 +98,7 @@ export default function AchievementsPage() {
 
           <div className="note reveal" style={{ marginTop: '2.5rem' }}>
             Official certified court documents and orders are stored securely. For certified physical copies or departmental verification,
-            member institutions can contact the central legal cell at +91 63709 87576 or via info.aopstsma@gmail.com.
+            member institutions can contact the central legal cell at +91 63709 87576 or via info@aopstsma.in.
           </div>
         </div>
       </section>

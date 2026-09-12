@@ -420,27 +420,47 @@ export default function OdishaHeroMap() {
       targetCamDist = THREE.MathUtils.clamp(targetCamDist + e.deltaY * 0.005, 5.2, 12.0);
     };
 
-    // Touch support (dedicated drag handle or touch)
+    // Touch support (full 360 rotation & pinch zoom)
     let touchStartX = 0;
     let touchStartY = 0;
+    let initialPinchDist = 0;
+
     const onTouchStart = (e: TouchEvent) => {
+      isDragging = true;
       if (e.touches.length === 1) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        initialPinchDist = Math.hypot(dx, dy);
       }
     };
 
     const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
       if (e.touches.length === 1) {
+        if (e.cancelable) e.preventDefault();
         const dx = e.touches[0].clientX - touchStartX;
         const dy = e.touches[0].clientY - touchStartY;
-        // If horizontal motion is greater than vertical, spin the map
-        if (Math.abs(dx) > Math.abs(dy)) {
-          world.rotation.y += dx * 0.008;
-          touchStartX = e.touches[0].clientX;
-          touchStartY = e.touches[0].clientY;
-        }
+        world.rotation.y += dx * 0.012;
+        world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + dy * 0.008, -0.4, 1.4);
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      } else if (e.touches.length === 2 && initialPinchDist > 0) {
+        if (e.cancelable) e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        const factor = (initialPinchDist - dist) * 0.02;
+        targetCamDist = THREE.MathUtils.clamp(targetCamDist + factor, 5.0, 12.0);
+        initialPinchDist = dist;
       }
+    };
+
+    const onTouchEnd = () => {
+      isDragging = false;
+      initialPinchDist = 0;
     };
 
     const dom = renderer.domElement;
@@ -448,8 +468,30 @@ export default function OdishaHeroMap() {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     dom.addEventListener('wheel', onWheel, { passive: false });
-    dom.addEventListener('touchstart', onTouchStart, { passive: true });
-    dom.addEventListener('touchmove', onTouchMove, { passive: true });
+    dom.addEventListener('touchstart', onTouchStart, { passive: false });
+    dom.addEventListener('touchmove', onTouchMove, { passive: false });
+    dom.addEventListener('touchend', onTouchEnd);
+    dom.addEventListener('touchcancel', onTouchEnd);
+
+    // Listen to custom map rotation and zoom events
+    const handleMapRotate = (e: Event) => {
+      const dir = (e as CustomEvent).detail?.direction;
+      if (dir === 'left') world.rotation.y -= 0.45;
+      if (dir === 'right') world.rotation.y += 0.45;
+      if (dir === 'reset') {
+        world.rotation.set(0.52, 0, 0);
+        targetRotY = 0;
+        targetCamDist = 8.2;
+      }
+    };
+    window.addEventListener('aopstsma:map-rotate', handleMapRotate);
+
+    const handleMapZoom = (e: Event) => {
+      const zoom = (e as CustomEvent).detail?.zoom;
+      if (zoom === 'in') targetCamDist = THREE.MathUtils.clamp(targetCamDist - 1.2, 5.0, 12.0);
+      if (zoom === 'out') targetCamDist = THREE.MathUtils.clamp(targetCamDist + 1.2, 5.0, 12.0);
+    };
+    window.addEventListener('aopstsma:map-zoom', handleMapZoom);
 
     // Listen to custom zone hover event from HeroSection
     const handleZoneHighlight = (e: Event) => {
@@ -527,10 +569,14 @@ export default function OdishaHeroMap() {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
       window.removeEventListener('aopstsma:zone-hover', handleZoneHighlight);
+      window.removeEventListener('aopstsma:map-rotate', handleMapRotate);
+      window.removeEventListener('aopstsma:map-zoom', handleMapZoom);
       dom.removeEventListener('mousedown', onMouseDown);
       dom.removeEventListener('wheel', onWheel);
       dom.removeEventListener('touchstart', onTouchStart);
       dom.removeEventListener('touchmove', onTouchMove);
+      dom.removeEventListener('touchend', onTouchEnd);
+      dom.removeEventListener('touchcancel', onTouchEnd);
 
       disposables.forEach(d => d.dispose());
       renderer.dispose();
@@ -538,48 +584,154 @@ export default function OdishaHeroMap() {
     };
   }, []);
 
+  const triggerRotate = (direction: 'left' | 'right' | 'reset') => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('aopstsma:map-rotate', { detail: { direction } }));
+    }
+  };
+
+  const triggerZoom = (zoom: 'in' | 'out') => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('aopstsma:map-zoom', { detail: { zoom } }));
+    }
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* 3D WebGL Canvas */}
+      {/* 3D WebGL Canvas with touch-action: none for 360 degree touch rotation */}
       <div
         ref={containerRef}
         style={{
           width: '100%',
           height: '100%',
           cursor: 'grab',
-          touchAction: 'pan-y',
+          touchAction: 'none',
         }}
-        title="Click & Drag to rotate 3D Odisha Map"
+        title="Touch / Drag in any direction to rotate 3D Odisha Map 360°"
       />
 
-      {/* Floating 3D Map Command Controls */}
+      {/* Floating 3D Map Touch & Click Interactive Controls */}
       <div
         style={{
           position: 'absolute',
           bottom: '10px',
-          right: '12px',
+          right: '10px',
           display: 'flex',
-          gap: '6px',
+          gap: '5px',
           zIndex: 10,
+          flexWrap: 'wrap',
+          justifyContent: 'flex-end',
         }}
       >
         <button
           type="button"
-          onClick={() => setIsRotating(!isRotating)}
+          onClick={() => triggerRotate('left')}
           style={{
-            background: 'rgba(7, 21, 38, 0.85)',
+            background: 'rgba(7, 21, 38, 0.88)',
             border: '1px solid rgba(245, 158, 11, 0.4)',
-            borderRadius: '4px',
-            color: isRotating ? '#FBBF24' : '#CBD5E1',
-            padding: '4px 8px',
+            borderRadius: '5px',
+            color: '#FDE68A',
+            padding: '5px 9px',
             fontSize: '11px',
             fontWeight: 700,
             cursor: 'pointer',
-            backdropFilter: 'blur(4px)',
+            backdropFilter: 'blur(6px)',
+          }}
+          title="Rotate 3D Map Left"
+        >
+          ⟲ Left
+        </button>
+
+        <button
+          type="button"
+          onClick={() => triggerRotate('right')}
+          style={{
+            background: 'rgba(7, 21, 38, 0.88)',
+            border: '1px solid rgba(245, 158, 11, 0.4)',
+            borderRadius: '5px',
+            color: '#FDE68A',
+            padding: '5px 9px',
+            fontSize: '11px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            backdropFilter: 'blur(6px)',
+          }}
+          title="Rotate 3D Map Right"
+        >
+          Right ⟳
+        </button>
+
+        <button
+          type="button"
+          onClick={() => triggerZoom('in')}
+          style={{
+            background: 'rgba(7, 21, 38, 0.88)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '5px',
+            color: '#FFFFFF',
+            padding: '5px 8px',
+            fontSize: '11px',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+          title="Zoom In"
+        >
+          ＋
+        </button>
+
+        <button
+          type="button"
+          onClick={() => triggerZoom('out')}
+          style={{
+            background: 'rgba(7, 21, 38, 0.88)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '5px',
+            color: '#FFFFFF',
+            padding: '5px 8px',
+            fontSize: '11px',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+          title="Zoom Out"
+        >
+          －
+        </button>
+
+        <button
+          type="button"
+          onClick={() => triggerRotate('reset')}
+          style={{
+            background: 'rgba(7, 21, 38, 0.88)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '5px',
+            color: '#94A3B8',
+            padding: '5px 8px',
+            fontSize: '11px',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+          title="Reset Center View"
+        >
+          🎯
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsRotating(!isRotating)}
+          style={{
+            background: 'rgba(7, 21, 38, 0.88)',
+            border: '1px solid rgba(245, 158, 11, 0.4)',
+            borderRadius: '5px',
+            color: isRotating ? '#FBBF24' : '#CBD5E1',
+            padding: '5px 9px',
+            fontSize: '11px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            backdropFilter: 'blur(6px)',
           }}
           title={isRotating ? 'Pause 3D Orbit' : 'Resume 3D Orbit'}
         >
-          {isRotating ? '⏸ Orbit On' : '▶ Orbit Off'}
+          {isRotating ? '⏸ 360° Orbit' : '▶ Orbit'}
         </button>
       </div>
 
@@ -592,15 +744,15 @@ export default function OdishaHeroMap() {
           background: 'rgba(7, 21, 38, 0.8)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           borderRadius: '4px',
-          color: '#94A3B8',
+          color: '#FDE68A',
           padding: '3px 8px',
           fontSize: '10px',
-          fontWeight: 600,
+          fontWeight: 700,
           pointerEvents: 'none',
           letterSpacing: '0.04em',
         }}
       >
-        🔄 DRAG TO ROTATE 3D &middot; PINCH TO ZOOM
+        🔄 TOUCH &amp; DRAG 360° &middot; PINCH ZOOM
       </div>
     </div>
   );

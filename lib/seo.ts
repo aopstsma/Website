@@ -99,7 +99,7 @@ export const organizationSchema = {
     '@type': 'ContactPoint',
     telephone: '+91-6370987576',
     contactType: 'customer service',
-    email: 'info.aopstsma@gmail.com',
+    email: 'info@aopstsma.in',
     areaServed: 'Odisha, India',
     availableLanguage: ['English', 'Odia', 'Hindi'],
   },
