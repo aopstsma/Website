@@ -213,16 +213,50 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="bearer">
-              <span>Central Office Helpline</span>
-              <h3>
-                <a href="tel:+916370987576" style={{ textDecoration: 'none', color: 'var(--navy-900)' }}>
-                  +91 63709 87576
+            <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', padding: 0, boxShadow: '0 4px 16px rgba(11,37,69,0.06)', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ position: 'relative', width: '100%', height: '240px', background: 'radial-gradient(circle at center, #1E3A8A 0%, #0B2545 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', padding: '1rem' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '2px solid #F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', marginBottom: '0.75rem', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}>
+                  📞
+                </div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#FDE68A', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  STATE SECRETARIAT DESK
+                </div>
+                <div style={{ fontSize: '0.85rem', color: '#CBD5E1', marginTop: '0.2rem' }}>
+                  Bhubaneswar, Odisha
+                </div>
+              </div>
+              <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Central Helpline</span>
+                  <h3 style={{ fontSize: '1.2rem', marginTop: '0.25rem' }}>
+                    <a href="tel:+916370987576" style={{ textDecoration: 'none', color: '#0F172A', fontWeight: 800 }}>
+                      +91 63709 87576
+                    </a>
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem', lineHeight: 1.5 }}>
+                    Mon &ndash; Sat, 10:00 AM &ndash; 6:00 PM<br />
+                    Direct Member School Advisory Cell
+                  </p>
+                </div>
+                <a
+                  href="tel:+916370987576"
+                  style={{
+                    display: 'block',
+                    textAlign: 'center',
+                    marginTop: '1rem',
+                    background: '#0B2545',
+                    color: '#FFFFFF',
+                    padding: '0.55rem 1rem',
+                    borderRadius: '6px',
+                    textDecoration: 'none',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    border: '1px solid #D97706',
+                  }}
+                >
+                  📞 Call Central Office Now
                 </a>
-              </h3>
-              <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.5rem' }}>
-                Mon &ndash; Sat, 10:00 AM &ndash; 6:00 PM
-              </p>
+              </div>
             </div>
           </div>
         </div>
