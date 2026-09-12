@@ -5,7 +5,7 @@ import SiteFooter from './components/SiteFooter';
 import ScrollReveal from './components/ScrollReveal';
 import MotionEffects from './components/MotionEffects';
 import WhatsAppButton from './components/WhatsAppButton';
-import { defaultMetadata, organizationSchema } from '@/lib/seo';
+import { defaultMetadata, structuredDataGraph } from '@/lib/seo';
 
 export const metadata: Metadata = defaultMetadata;
 
@@ -26,7 +26,7 @@ export default function RootLayout({
         {/* JSON-LD Structured Data for Google Rich Results & AEO (Answer Engine Optimization) */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredDataGraph) }}
         />
       </head>
       <body>

@@ -75,9 +75,6 @@ export default function OdishaHeroMap() {
 
     // ==================== THREE.JS SCENE SETUP ====================
     const scene = new THREE.Scene();
-    // Rich deep sapphire/navy background
-    scene.background = new THREE.Color(0x071526);
-    scene.fog = new THREE.FogExp2(0x071526, 0.035);
 
     const aspect = container.clientWidth / Math.max(container.clientHeight, 1);
     const camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 100);
@@ -86,7 +83,7 @@ export default function OdishaHeroMap() {
 
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     } catch {
       return;
     }

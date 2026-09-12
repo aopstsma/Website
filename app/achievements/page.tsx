@@ -51,59 +51,46 @@ export default function AchievementsPage() {
                     }
                   }}
                 >
-                  <span className="doc__ref">
-                    {d.ref}
+                  <div className="doc__ref">
+                    <span>{d.ref}</span>
                     {d.year ? (
-                      <>
-                        <br />
-                        <span style={{ fontSize: '0.8rem', opacity: 0.85 }}>{d.year}</span>
-                      </>
+                      <span className="doc__year">{d.year}</span>
                     ) : null}
-                  </span>
+                  </div>
 
-                  <span style={{ flex: 1 }}>
-                    <span className="doc__title">
+                  <div className="doc__content" style={{ flex: 1, minWidth: 0 }}>
+                    <div className="doc__title">
                       {d.badge ? (
                         <span className={getBadgeClass(d.category)}>
                           {d.badge}
                         </span>
                       ) : null}
                       {d.title}
-                    </span>
-                    <span className="doc__meta">{d.note}</span>
-                    {d.image && (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.35rem', fontSize: '0.75rem', color: '#B45309', fontWeight: 600 }}>
-                        <span>📜</span> Certified Scanned Front Page Available &middot; Click to inspect
-                      </span>
-                    )}
-                  </span>
-
-                  {d.image && (
-                    <div
-                      style={{
-                        width: '44px',
-                        height: '58px',
-                        position: 'relative',
-                        border: '1px solid #CBD5E1',
-                        borderRadius: '3px',
-                        overflow: 'hidden',
-                        flexShrink: 0,
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.12)',
-                        marginRight: '0.65rem',
-                      }}
-                    >
-                      <Image
-                        src={d.image}
-                        alt={`Scanned preview of ${d.title}`}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                      />
                     </div>
-                  )}
+                    <div className="doc__meta">{d.note}</div>
+                    {d.image && (
+                      <div className="doc__cert-badge">
+                        <span>📜</span> Certified Scanned Front Page Available &middot; Click to inspect
+                      </div>
+                    )}
+                  </div>
 
-                  <span className="doc__get">
-                    {d.file ? '📥 Inspect & PDF' : '📋 Request Copy'} &rarr;
-                  </span>
+                  <div className="doc__actions">
+                    {d.image && (
+                      <div className="doc-scan-thumb">
+                        <Image
+                          src={d.image}
+                          alt={`Scanned preview of ${d.title}`}
+                          fill
+                          style={{ objectFit: 'cover' }}
+                        />
+                      </div>
+                    )}
+
+                    <span className="doc__get">
+                      {d.file ? '📥 Inspect & PDF' : '📋 Request Copy'} &rarr;
+                    </span>
+                  </div>
                 </div>
               );
             })}

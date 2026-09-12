@@ -186,7 +186,7 @@ export default function PayClient() {
             <p className="pay-sub">Choose your fee category and enter your registered credentials.</p>
 
             {/* 3 FEE TYPE SELECTOR TABS */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem', marginBottom: '1.25rem' }}>
+            <div className="fee-type-tabs">
               <button
                 type="button"
                 onClick={() => setFeeCategory('student')}

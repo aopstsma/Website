@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import Image from 'next/image';
+import NoticeBannerTicker from './NoticeBannerTicker';
 
 export default function SiteHeader() {
   const pathname = usePathname();
@@ -27,9 +28,9 @@ export default function SiteHeader() {
 
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/about', label: 'About Us' },
+    { href: '/about', label: 'About' },
     { href: '/zones', label: 'Zones' },
-    { href: '/schools', label: 'Member Schools' },
+    { href: '/schools', label: 'Schools' },
     { href: '/achievements', label: 'Court Orders' },
     { href: '/services', label: 'Services' },
     { href: '/gallery', label: 'Gallery' },
@@ -69,8 +70,8 @@ export default function SiteHeader() {
               <Image
                 src="/assets/img/aopstsma-seal.jpg"
                 alt="AOPSTSMA Official Emblem"
-                width={50}
-                height={50}
+                width={46}
+                height={46}
                 priority
                 className="brand__seal-img"
               />
@@ -80,7 +81,7 @@ export default function SiteHeader() {
                 <b>AOPSTSMA</b>
                 <span className="brand__badge">ESTD. 1980</span>
               </div>
-              <span className="brand__sub">All Orissa Private Secondary Training Schools Management Association</span>
+              <span className="brand__sub">Apex Statutory Management Body &middot; Regd. No. 1422/80</span>
             </div>
           </Link>
 
@@ -99,19 +100,56 @@ export default function SiteHeader() {
             aria-label="Primary"
             data-open={isMobileOpen ? 'true' : 'false'}
           >
-            {navLinks.map((link) => (
+            <div className="nav__links">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive(link.href) ? 'page' : undefined}
+                  onClick={() => setIsMobileOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* MOBILE-ONLY ACTION PANEL INSIDE DRAWER */}
+            <div className="mobile-nav-actions">
               <Link
-                key={link.href}
-                href={link.href}
-                aria-current={isActive(link.href) ? 'page' : undefined}
+                className="mobile-action-btn mobile-action-btn--pay"
+                href="/pay"
                 onClick={() => setIsMobileOpen(false)}
               >
-                {link.label}
+                <span>💳 Pay Institutional Fees Online</span>
               </Link>
-            ))}
+
+              <div className="mobile-login-row">
+                <Link
+                  className="mobile-action-btn mobile-action-btn--login"
+                  href="/school-login"
+                  onClick={() => setIsMobileOpen(false)}
+                >
+                  <span>🏫 School Login</span>
+                </Link>
+                <Link
+                  className="mobile-action-btn mobile-action-btn--admin"
+                  href="/admin-login"
+                  onClick={() => setIsMobileOpen(false)}
+                >
+                  <span>🏛️ Admin Portal</span>
+                </Link>
+              </div>
+
+              <div className="mobile-nav-help">
+                <a href="tel:+916370987576" style={{ color: '#0B2545', fontWeight: 600, textDecoration: 'none' }}>
+                  📞 Secretariat Helpline: +91 63709 87576
+                </a>
+              </div>
+            </div>
           </nav>
 
-          <div className="header-actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {/* DESKTOP-ONLY HEADER ACTIONS */}
+          <div className="header-actions">
             <Link className="header-action-btn" href="/pay">
               <span>💳 Pay Fees</span>
             </Link>
@@ -122,22 +160,10 @@ export default function SiteHeader() {
                 type="button"
                 className="header-action-btn header-action-btn--login"
                 onClick={toggleLoginMenu}
-                style={{
-                  background: 'linear-gradient(135deg, #0B2545 0%, #133C6D 100%)',
-                  color: '#FFF',
-                  border: '1px solid rgba(217,119,6,0.5)',
-                  cursor: 'pointer',
-                  padding: '0.55rem 0.95rem',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  borderRadius: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                }}
+                aria-expanded={isLoginOpen}
               >
                 <span>🔑 Login</span>
-                <small style={{ fontSize: '0.65rem', color: '#FDE68A' }}>▼</small>
+                <small style={{ fontSize: '0.65rem', color: '#FDE68A', marginLeft: '0.25rem' }}>▼</small>
               </button>
 
               {isLoginOpen && (
@@ -210,6 +236,9 @@ export default function SiteHeader() {
           </div>
         </div>
       </header>
+
+      {/* ============ SLIM CONTINUOUS LIVE NOTICE MARQUEE BANNER ============ */}
+      <NoticeBannerTicker />
     </>
   );
 }
