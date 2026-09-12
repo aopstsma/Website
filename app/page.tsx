@@ -183,13 +183,13 @@ export default function HomePage() {
               <div style={{ position: 'relative', width: '100%', height: '240px' }}>
                 <img
                   src="/assets/img/president-avatar.svg"
-                  alt="Nirmal Kant Mohanty - President"
+                  alt="Nirmal Kanta Mohanty - President"
                   style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#0B2545' }}
                 />
               </div>
               <div style={{ padding: '1.25rem' }}>
                 <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em' }}>President</span>
-                <h3 style={{ fontSize: '1.2rem', color: '#0F172A', marginTop: '0.25rem' }}>Nirmal Kant Mohanty</h3>
+                <h3 style={{ fontSize: '1.2rem', color: '#0F172A', marginTop: '0.25rem' }}>Nirmal Kanta Mohanty</h3>
                 <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
                   Executive Leadership &amp; Board Liaison
                 </p>
@@ -200,13 +200,13 @@ export default function HomePage() {
               <div style={{ position: 'relative', width: '100%', height: '240px' }}>
                 <img
                   src="/assets/img/secretary-avatar.svg"
-                  alt="Aba Pradhan - General Secretary"
+                  alt="Alia Pradhan - Secretary"
                   style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#07172C' }}
                 />
               </div>
               <div style={{ padding: '1.25rem' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em' }}>General Secretary</span>
-                <h3 style={{ fontSize: '1.2rem', color: '#0F172A', marginTop: '0.25rem' }}>Aba Pradhan</h3>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Secretary</span>
+                <h3 style={{ fontSize: '1.2rem', color: '#0F172A', marginTop: '0.25rem' }}>Alia Pradhan</h3>
                 <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
                   Secretariat Affairs &amp; Legal Cell
                 </p>
