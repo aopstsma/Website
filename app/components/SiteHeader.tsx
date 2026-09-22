@@ -32,6 +32,7 @@ export default function SiteHeader() {
     { href: '/zones', label: 'Zones' },
     { href: '/schools', label: 'Schools' },
     { href: '/achievements', label: 'Court Orders' },
+    { href: '/students', label: 'Student Portal' },
     { href: '/services', label: 'Services' },
     { href: '/gallery', label: 'Gallery' },
     { href: '/contact', label: 'Contact' },
@@ -129,14 +130,22 @@ export default function SiteHeader() {
                   href="/school-login"
                   onClick={() => setIsMobileOpen(false)}
                 >
-                  <span>🏫 School Login</span>
+                  <span>🏫 School (DR)</span>
+                </Link>
+                <Link
+                  className="mobile-action-btn"
+                  href="/students"
+                  onClick={() => setIsMobileOpen(false)}
+                  style={{ backgroundColor: '#1E3A8A', color: '#FFF' }}
+                >
+                  <span>🎓 Student Portal</span>
                 </Link>
                 <Link
                   className="mobile-action-btn mobile-action-btn--admin"
                   href="/admin-login"
                   onClick={() => setIsMobileOpen(false)}
                 >
-                  <span>🏛️ Admin Portal</span>
+                  <span>🏛️ Admin</span>
                 </Link>
               </div>
 
@@ -198,9 +207,35 @@ export default function SiteHeader() {
                   >
                     <span>🏫</span>
                     <div>
-                      <div style={{ color: '#0B2545' }}>Member School Login</div>
+                      <div style={{ color: '#0B2545' }}>Member School (DR)</div>
                       <small style={{ color: '#64748B', fontWeight: 500, fontSize: '0.72rem', display: 'block' }}>
-                        For 90 Recognized Institutions
+                        OTP &amp; 90 Institutions DR
+                      </small>
+                    </div>
+                  </Link>
+
+                  <div style={{ borderTop: '1px solid #F1F5F9', margin: '0.25rem 0' }} />
+
+                  <Link
+                    href="/students"
+                    onClick={() => setIsLoginOpen(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: '6px',
+                      textDecoration: 'none',
+                      color: '#0F172A',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    <span>🎓</span>
+                    <div>
+                      <div style={{ color: '#2563EB' }}>Student Portal</div>
+                      <small style={{ color: '#64748B', fontWeight: 500, fontSize: '0.72rem', display: 'block' }}>
+                        Admit Card &amp; Free Regn.
                       </small>
                     </div>
                   </Link>

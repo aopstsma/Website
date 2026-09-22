@@ -2,6 +2,10 @@ import type { Metadata } from 'next';
 
 export const BASE_URL = 'https://www.aopstsma.in';
 
+/* ============================================================
+   Default Metadata — Applied to every page via layout.tsx
+   ============================================================ */
+
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
@@ -24,6 +28,9 @@ export const defaultMetadata: Metadata = {
     'Sambalpur Zone Member Schools',
     'Berhampur Zone Member Schools',
     'Teacher Training College Fee Portal Odisha',
+    'CT Examination Odisha',
+    'BSE Odisha Training Schools',
+    'Private School Association Odisha',
   ],
   authors: [{ name: 'AOPSTSMA Central Secretariat' }],
   creator: 'AOPSTSMA Secretariat',
@@ -32,6 +39,9 @@ export const defaultMetadata: Metadata = {
     email: false,
     address: false,
     telephone: false,
+  },
+  alternates: {
+    canonical: BASE_URL,
   },
   openGraph: {
     type: 'website',
@@ -43,10 +53,10 @@ export const defaultMetadata: Metadata = {
       'Apex statutory management association representing 90 recognized private secondary teacher training schools in Odisha since 1980.',
     images: [
       {
-        url: `${BASE_URL}/assets/img/aopstsma-seal.jpg`,
+        url: `${BASE_URL}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: 'AOPSTSMA Official Emblem & Seal',
+        alt: 'AOPSTSMA — All Orissa Private Secondary Training Schools Management Association — Official Portal',
       },
     ],
   },
@@ -55,7 +65,7 @@ export const defaultMetadata: Metadata = {
     title: 'AOPSTSMA — Apex Teacher Education Body of Odisha',
     description:
       'Official portal for 90 recognized private secondary training schools across Odisha. High Court landmark orders and verification.',
-    images: [`${BASE_URL}/assets/img/aopstsma-seal.jpg`],
+    images: [`${BASE_URL}/og-image.jpg`],
   },
   robots: {
     index: true,
@@ -69,11 +79,41 @@ export const defaultMetadata: Metadata = {
     },
   },
   verification: {
-    google: 'google-site-verification-placeholder-aopstsma',
+    // Replace with real verification code from Google Search Console
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
+    // Bing Webmaster Tools verification
+    other: {
+      'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || '',
+    },
   },
 };
 
-// JSON-LD Structured Data for Google Rich Snippets & AI Engines (AEO)
+/* ============================================================
+   Per-Page Metadata Helper
+   Usage:  export const metadata = createPageMetadata('/about', { ... });
+   ============================================================ */
+
+export function createPageMetadata(
+  path: string,
+  overrides: Partial<Metadata>
+): Metadata {
+  const canonicalUrl = `${BASE_URL}${path}`;
+  return {
+    ...overrides,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      url: canonicalUrl,
+      ...(overrides.openGraph as Record<string, unknown> || {}),
+    },
+  };
+}
+
+/* ============================================================
+   JSON-LD Structured Data — Google Rich Snippets & AEO
+   ============================================================ */
+
 export const organizationSchema = {
   '@type': 'EducationalOrganization',
   '@id': `${BASE_URL}/#organization`,
@@ -81,7 +121,7 @@ export const organizationSchema = {
   alternateName: ['AOPSTSMA', 'Odisha Secondary Training Schools Association'],
   url: BASE_URL,
   logo: `${BASE_URL}/assets/img/aopstsma-seal.jpg`,
-  image: `${BASE_URL}/assets/img/aopstsma-seal.jpg`,
+  image: `${BASE_URL}/og-image.jpg`,
   foundingDate: '1980',
   identifier: 'Regd. No. 1422/80',
   registrationDate: '1980',
@@ -147,7 +187,7 @@ export const faqSchema = {
       name: 'How many member institutions and zones are under AOPSTSMA?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'AOPSTSMA governs 90 recognized member institutions structured across 5 regional administrative zones: Baleswar Zone (40 schools), Central Zone / Cuttack (24 schools), Bhubaneswar Zone (11 schools), Sambalpur Zone (9 schools), and Berhampur Zone (6 schools).',
+        text: 'AOPSTSMA governs 90 recognized member institutions structured across 5 regional administrative zones: Baleswar Zone (40 schools), Central Zone / Cuttack (24 schools), Bhubaneswar Zone (15 schools), Sambalpur Zone (9 schools), and Berhampur Zone (2 schools).',
       },
     },
     {
@@ -155,7 +195,7 @@ export const faqSchema = {
       name: 'What are the landmark High Court judgments regarding AOPSTSMA member schools?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Landmark rulings by the Hon’ble High Court of Orissa include Writ Petition (C) No. 5640 of 2009 and W.P.(C) No. 10372 of 2008 presided by The Hon’ble Justice M. M. Das, which secured candidate eligibility, validated examination appearance, protected teacher training course recognition, and safeguarded student fee deposits.',
+        text: 'Landmark rulings by the Hon\'ble High Court of Orissa include Writ Petition (C) No. 5640 of 2009 and W.P.(C) No. 10372 of 2008 presided by The Hon\'ble Justice M. M. Das, which secured candidate eligibility, validated examination appearance, protected teacher training course recognition, and safeguarded student fee deposits.',
       },
     },
     {
@@ -164,6 +204,14 @@ export const faqSchema = {
       acceptedAnswer: {
         '@type': 'Answer',
         text: 'Authorized member institutions can pay annual affiliation fees, legal welfare dues, and submit batch student enrollment sheets online via the official AOPSTSMA Payment Portal at www.aopstsma.in/pay using instant UPI (aopstsma@sbi), NEFT/RTGS bank transfer, or offline Secretariat deposit challans.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Where is the AOPSTSMA registered office located?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The registered office and central headquarters of AOPSTSMA is located at Plot No. 4971/8, V.S.S. Nagar, Bhubaneswar, Khordha, Odisha — 751010, India. Contact: +91 63709 87576, Email: info@aopstsma.in.',
       },
     },
   ],
@@ -178,4 +226,3 @@ export const structuredDataGraph = {
     faqSchema,
   ],
 };
-

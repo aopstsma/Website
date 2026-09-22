@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import ContactClient from './ContactClient';
+import { createPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata('/contact', {
   title: 'Contact Us — AOPSTSMA Central Secretariat',
   description:
-    'Official helpline and interactive inquiry portal for All Orissa Private Secondary Training Schools Management Association (Estd. 1980).',
-};
+    'Contact the AOPSTSMA Central Secretariat at Plot No. 4971/8, V.S.S. Nagar, Bhubaneswar, Odisha 751010. Helpline: +91 63709 87576. Email: info@aopstsma.in. Office hours: Mon–Sat, 10 AM – 6 PM.',
+});
 
 export default function ContactPage() {
   return (

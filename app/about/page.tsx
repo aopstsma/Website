@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import { createPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata('/about', {
   title: 'About — AOPSTSMA',
   description:
-    'The history, purpose and office bearers of the All Orissa Private Secondary Training Schools Management Association, established 1980.',
-};
+    'History, purpose and executive office bearers of the All Orissa Private Secondary Training Schools Management Association, established 1980 in Bhubaneswar, Odisha. Registered office at Plot No. 4971/8, V.S.S. Nagar.',
+});
 
 export default function AboutPage() {
   return (

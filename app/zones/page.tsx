@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ZONES, SCHOOLS } from '@/lib/data/schools';
+import { createPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Zones — AOPSTSMA',
+export const metadata: Metadata = createPageMetadata('/zones', {
+  title: '5 Administrative Zones of AOPSTSMA',
   description:
-    'The five administrative zones of the All Orissa Private Secondary Training Schools Management Association and the districts each covers.',
-};
+    'Five regional administrative zones of the All Orissa Private Secondary Training Schools Management Association — Baleswar, Central (Cuttack), Bhubaneswar, Sambalpur, and Berhampur — covering all 30 districts of Odisha.',
+});
 
 export default function ZonesPage() {
   const countByZone = (zoneId: string) => {

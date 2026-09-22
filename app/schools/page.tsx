@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import SchoolsClient from './SchoolsClient';
+import { createPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Member schools — AOPSTSMA',
+export const metadata: Metadata = createPageMetadata('/schools', {
+  title: 'Member Schools Directory — 90 Affiliated Institutions',
   description:
-    'Directory of private secondary training schools that are members of the association, searchable by name, zone and district.',
-};
+    'Complete directory of 90 private secondary training schools affiliated with AOPSTSMA across 5 zones and 30 districts of Odisha. Search by name, zone, or district.',
+});
 
 export default function SchoolsPage() {
   return (

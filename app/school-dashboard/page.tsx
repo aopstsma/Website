@@ -9,6 +9,13 @@ export default function SchoolDashboardPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [user, setUser] = useState<string | null>(null);
+  const [schoolInfo, setSchoolInfo] = useState({
+    name: 'Rajadhani School Of Education',
+    zone: 'bhubaneswar',
+    authority: 'Authorized Signatory',
+    mobile: '',
+    scan: '',
+  });
   const [students, setStudents] = useState<StudentRecord[]>(INITIAL_STUDENTS);
 
   // Single Student Form State
@@ -28,6 +35,13 @@ export default function SchoolDashboardPage() {
         router.push('/school-login');
       } else {
         setUser(u);
+        setSchoolInfo({
+          name: sessionStorage.getItem('school_name') || u,
+          zone: sessionStorage.getItem('school_zone') || 'bhubaneswar',
+          authority: sessionStorage.getItem('school_authority') || 'Authorized Secretary',
+          mobile: sessionStorage.getItem('school_mobile') || '',
+          scan: sessionStorage.getItem('school_scan') || 'Verified Affiliation Document',
+        });
       }
     }
   }, [router]);
@@ -41,11 +55,11 @@ export default function SchoolDashboardPage() {
       studentId: newStudentId.trim(),
       studentName: newName.trim(),
       mobileNumber: newMobile.trim(),
-      zoneId: 'bhubaneswar',
-      zoneName: 'Bhubaneswar Zone',
-      schoolId: 'SCH-BBS-01',
-      schoolName: 'Rajadhani School Of Education',
-      district: 'Khordha',
+      zoneId: schoolInfo.zone,
+      zoneName: `${schoolInfo.zone.charAt(0).toUpperCase() + schoolInfo.zone.slice(1)} Zone`,
+      schoolId: 'SCH-AUTH-01',
+      schoolName: schoolInfo.name,
+      district: 'Odisha',
       feeAmount: Number(newFee) || 2500,
       paymentStatus: 'Pending',
     };
@@ -143,12 +157,12 @@ export default function SchoolDashboardPage() {
         {/* DASHBOARD HEADER */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '2px solid #E2E8F0' }}>
           <div>
-            <span className="pay-badge">MEMBER SCHOOL MANAGEMENT DASHBOARD</span>
+            <span className="pay-badge">AUTHENTICATED MEMBER INSTITUTION DASHBOARD</span>
             <h1 style={{ fontSize: '2rem', color: '#0F172A', marginTop: '0.4rem' }}>
-              Rajadhani School Of Education
+              {schoolInfo.name}
             </h1>
             <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem' }}>
-              Bhubaneswar Zone &middot; Khordha District &middot; Regd. Member No. SCH-BBS-01
+              {schoolInfo.zone.charAt(0).toUpperCase() + schoolInfo.zone.slice(1)} Zone &middot; Authorized Signatory: <strong>{schoolInfo.authority}</strong> {schoolInfo.mobile ? `(${schoolInfo.mobile})` : ''}
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>

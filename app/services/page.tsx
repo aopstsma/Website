@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { createPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Services and fees — AOPSTSMA',
+export const metadata: Metadata = createPageMetadata('/services', {
+  title: 'Services & Fee Structure — AOPSTSMA',
   description:
-    'Membership renewal, DIR deposit, legal assistance and court expenses for member schools.',
-};
+    'Association membership renewal (₹2,500), DIR deposit (₹25,000), legal assistance, and court expense services for AOPSTSMA member training schools in Odisha.',
+});
 
 export default function ServicesPage() {
   return (
