@@ -385,28 +385,36 @@ export default function SchoolDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {students.map((s, idx) => (
-                <tr key={idx}>
-                  <td>{idx + 1}</td>
-                  <td><code>{s.studentId}</code></td>
-                  <td style={{ fontWeight: 700, color: '#0F172A' }}>{s.studentName}</td>
-                  <td>+91 {s.mobileNumber}</td>
-                  <td>{s.zoneName}</td>
-                  <td style={{ fontWeight: 700, color: '#B45309' }}>₹{s.feeAmount.toLocaleString('en-IN')}</td>
-                  <td>
-                    <span style={{
-                      padding: '0.2rem 0.6rem',
-                      borderRadius: '4px',
-                      fontSize: '0.78rem',
-                      fontWeight: 800,
-                      background: s.paymentStatus === 'Paid' ? '#D1FAE5' : '#FEF3C7',
-                      color: s.paymentStatus === 'Paid' ? '#065F46' : '#B45309',
-                    }}>
-                      {s.paymentStatus === 'Paid' ? 'PAID ✓' : 'PENDING PAYMENT'}
-                    </span>
+              {students.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '2.5rem', color: '#64748B' }}>
+                    No student records found in roster. Use the "Upload Excel / CSV" or "Add Single Student" form above to add candidates.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                students.map((s, idx) => (
+                  <tr key={idx}>
+                    <td>{idx + 1}</td>
+                    <td><code>{s.studentId}</code></td>
+                    <td style={{ fontWeight: 700, color: '#0F172A' }}>{s.studentName}</td>
+                    <td>+91 {s.mobileNumber}</td>
+                    <td>{s.zoneName}</td>
+                    <td style={{ fontWeight: 700, color: '#B45309' }}>₹{s.feeAmount.toLocaleString('en-IN')}</td>
+                    <td>
+                      <span style={{
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '4px',
+                        fontSize: '0.78rem',
+                        fontWeight: 800,
+                        background: s.paymentStatus === 'Paid' ? '#D1FAE5' : '#FEF3C7',
+                        color: s.paymentStatus === 'Paid' ? '#065F46' : '#B45309',
+                      }}>
+                        {s.paymentStatus === 'Paid' ? 'PAID ✓' : 'PENDING PAYMENT'}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

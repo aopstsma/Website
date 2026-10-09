@@ -89,10 +89,6 @@ export default function SchoolLoginPage() {
       if (data.success) {
         setOtpStep('verify');
         setSuccessMsg(data.message || 'OTP dispatched to registered mobile number.');
-        if (data.demoOtp) {
-          setDemoOtpHint(data.demoOtp);
-          setOtpCode(data.demoOtp); // auto-populate for rapid developer testing
-        }
       } else {
         setError(data.error || 'Failed to send OTP. Please try again.');
       }
@@ -179,7 +175,7 @@ export default function SchoolLoginPage() {
     } else {
       setTimeout(() => {
         setLoading(false);
-        setError('Invalid credentials. For quick demo, use: rajadhani.bbs / aopstsma1980');
+        setError('Invalid credentials. Please verify your username and password.');
       }, 600);
     }
   };
@@ -404,22 +400,6 @@ export default function SchoolLoginPage() {
                       <strong>Dispatched To:</strong> +91-{mobileNumber}
                     </div>
                   </div>
-
-                  {demoOtpHint && (
-                    <div
-                      style={{
-                        backgroundColor: '#FEF3C7',
-                        border: '1px solid #F59E0B',
-                        color: '#92400E',
-                        padding: '0.75rem',
-                        borderRadius: '6px',
-                        fontSize: '0.85rem',
-                        marginBottom: '1rem',
-                      }}
-                    >
-                      💡 <strong>Developer Test Code:</strong> <code>{demoOtpHint}</code> (pre-filled for instant testing)
-                    </div>
-                  )}
 
                   <div className="form-group">
                     <label htmlFor="otp">Enter 6-Digit Verification OTP *</label>

@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
       }
       router.push('/admin-dashboard');
     } else {
-      setError('Invalid Central Admin credentials. Try username: admin & password: admin123');
+      setError('Invalid Central Admin credentials. Please check your username and password.');
     }
   };
 
