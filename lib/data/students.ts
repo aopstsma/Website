@@ -28,69 +28,9 @@ export interface SchoolAccount {
   contactPhone?: string;
 }
 
-// Initial Verified Roster Data (Searchable by Student ID / Roll No + Mobile + Zone)
-export const INITIAL_STUDENTS: StudentRecord[] = [
-  {
-    studentId: 'STU-2026-001',
-    studentName: 'Suryakanta Mohanty',
-    mobileNumber: '9861012345',
-    zoneId: 'bhubaneswar',
-    zoneName: 'Bhubaneswar Zone',
-    schoolId: 'SCH-BBS-01',
-    schoolName: 'Rajadhani School Of Education',
-    district: 'Khordha',
-    feeAmount: 2500,
-    paymentStatus: 'Pending',
-  },
-  {
-    studentId: 'STU-2026-002',
-    studentName: 'Priyanka Das',
-    mobileNumber: '9437098765',
-    zoneId: 'bhubaneswar',
-    zoneName: 'Bhubaneswar Zone',
-    schoolId: 'SCH-BBS-02',
-    schoolName: 'Odisha Nobel C.T School',
-    district: 'Khordha',
-    feeAmount: 2500,
-    paymentStatus: 'Pending',
-  },
-  {
-    studentId: 'STU-2026-003',
-    studentName: 'Manas Kumar Sahoo',
-    mobileNumber: '7008123456',
-    zoneId: 'central',
-    zoneName: 'Central Zone',
-    schoolId: 'SCH-CEN-01',
-    schoolName: 'Jagannath Secondary Training School',
-    district: 'Cuttack',
-    feeAmount: 2500,
-    paymentStatus: 'Pending',
-  },
-  {
-    studentId: 'STU-2026-004',
-    studentName: 'Deepak Ranjan Nayak',
-    mobileNumber: '9124567890',
-    zoneId: 'balasore',
-    zoneName: 'Baleswar Zone',
-    schoolId: 'SCH-BAL-01',
-    schoolName: 'Bhadrak Secondary Training School',
-    district: 'Bhadrak',
-    feeAmount: 2500,
-    paymentStatus: 'Pending',
-  },
-  {
-    studentId: 'STU-2026-005',
-    studentName: 'Smruti Rekha Swain',
-    mobileNumber: '8249011223',
-    zoneId: 'ganjam',
-    zoneName: 'Berhampur Zone',
-    schoolId: 'SCH-GAN-01',
-    schoolName: 'Sri Aurobinda Secondary Training School',
-    district: 'Ganjam',
-    feeAmount: 2500,
-    paymentStatus: 'Pending',
-  },
-];
+// Verified Roster Data (Populated dynamically via school uploads or registrations)
+export const INITIAL_STUDENTS: StudentRecord[] = [];
+
 
 // Member School Accounts (For Login)
 export const SCHOOL_ACCOUNTS: SchoolAccount[] = [

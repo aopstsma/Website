@@ -16,7 +16,6 @@ export default function StudentPortalPage() {
   const [studentMobile, setStudentMobile] = useState('');
   const [otpStep, setOtpStep] = useState<'search' | 'otp' | 'card'>('search');
   const [otpInput, setOtpInput] = useState('');
-  const [demoCode, setDemoCode] = useState<string | null>(null);
   const [verifiedStudent, setVerifiedStudent] = useState<StudentRecord | null>(null);
 
   // Free Registration State
@@ -49,27 +48,22 @@ export default function StudentPortalPage() {
 
     setLoading(true);
 
-    // Look up in INITIAL_STUDENTS or allow generic match for valid input
+    // Look up verified student record
     const matched = INITIAL_STUDENTS.find(
       (s) =>
         s.studentId.toUpperCase() === cleanId ||
         s.mobileNumber.slice(-10) === cleanMobile
     );
 
-    const studentRecord: StudentRecord = matched || {
-      studentId: cleanId,
-      studentName: 'Candidate ' + cleanId,
-      mobileNumber: cleanMobile,
-      zoneId: 'bhubaneswar',
-      zoneName: 'Bhubaneswar Zone',
-      schoolId: 'SCH-BBS-01',
-      schoolName: 'Rajadhani School Of Education',
-      district: 'Khordha',
-      feeAmount: 2500,
-      paymentStatus: 'Paid',
-    };
+    if (!matched) {
+      setLoading(false);
+      setError(
+        'No verified student record found for this Student ID and Mobile Number. Please complete the Free Student Registration below or contact your institution.'
+      );
+      return;
+    }
 
-    setVerifiedStudent(studentRecord);
+    setVerifiedStudent(matched);
 
     try {
       const res = await fetch('/api/auth/send-otp', {
@@ -77,8 +71,8 @@ export default function StudentPortalPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mobile: cleanMobile,
-          schoolName: studentRecord.schoolName,
-          authorityName: studentRecord.studentName,
+          schoolName: matched.schoolName,
+          authorityName: matched.studentName,
           role: 'student',
         }),
       });
@@ -88,19 +82,12 @@ export default function StudentPortalPage() {
 
       if (data.success) {
         setOtpStep('otp');
-        if (data.demoOtp) {
-          setDemoCode(data.demoOtp);
-          setOtpInput(data.demoOtp); // pre-fill for immediate preview
-        }
       } else {
         setError(data.error || 'Failed to dispatch OTP.');
       }
     } catch {
       setLoading(false);
-      // Fallback demo for evaluation
-      setOtpStep('otp');
-      setDemoCode('123456');
-      setOtpInput('123456');
+      setError('Network error dispatching OTP. Please verify your connection.');
     }
   };
 
@@ -130,14 +117,14 @@ export default function StudentPortalPage() {
       const data = await res.json();
       setLoading(false);
 
-      if (data.success || otpInput.trim() === demoCode || otpInput.trim() === '123456') {
+      if (data.success) {
         setOtpStep('card');
       } else {
         setError(data.error || 'Invalid OTP code. Please retry.');
       }
     } catch {
       setLoading(false);
-      setOtpStep('card');
+      setError('Connection error verifying OTP. Please try again.');
     }
   };
 
@@ -322,9 +309,6 @@ export default function StudentPortalPage() {
                         onChange={(e) => setRollNumber(e.target.value)}
                         required
                       />
-                      <small style={{ color: '#64748B', display: 'block', marginTop: '0.25rem' }}>
-                        Quick demo: Try <code>STU-2026-001</code> (Suryakanta Mohanty) or <code>STU-2026-002</code> (Priyanka Das)
-                      </small>
                     </div>
 
                     <div className="form-group">
@@ -374,23 +358,6 @@ export default function StudentPortalPage() {
                       <strong>{verifiedStudent?.studentName}</strong>.
                     </p>
                   </div>
-
-                  {demoCode && (
-                    <div
-                      style={{
-                        backgroundColor: '#FEF3C7',
-                        border: '1px solid #F59E0B',
-                        color: '#92400E',
-                        padding: '0.75rem',
-                        borderRadius: '6px',
-                        fontSize: '0.85rem',
-                        marginBottom: '1.25rem',
-                        textAlign: 'center',
-                      }}
-                    >
-                      💡 <strong>Developer Test Code:</strong> <code>{demoCode}</code> (valid for 5 mins)
-                    </div>
-                  )}
 
                   <form onSubmit={handleVerifyAdmitOTP} className="pay-form">
                     <div className="form-group">
@@ -536,31 +503,31 @@ export default function StudentPortalPage() {
                           <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                             <td style={{ padding: '0.5rem 0', fontWeight: 700, color: '#475569', width: '38%' }}>Candidate Name:</td>
                             <td style={{ padding: '0.5rem 0', fontWeight: 800, color: '#0B2545', fontSize: '1rem' }}>
-                              {verifiedStudent?.studentName || 'Suryakanta Mohanty'}
+                              {verifiedStudent?.studentName || 'Candidate'}
                             </td>
                           </tr>
                           <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                             <td style={{ padding: '0.5rem 0', fontWeight: 700, color: '#475569' }}>Roll Number:</td>
                             <td style={{ padding: '0.5rem 0', fontWeight: 800, color: '#D97706', fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-                              BBS-CT-2026-8941
+                              {verifiedStudent?.studentId ? `BBS-CT-2026-${verifiedStudent.studentId.replace(/\D/g, '').slice(-4) || '1001'}` : '—'}
                             </td>
                           </tr>
                           <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                             <td style={{ padding: '0.5rem 0', fontWeight: 700, color: '#475569' }}>Registration / DR No:</td>
                             <td style={{ padding: '0.5rem 0', fontWeight: 600 }}>
-                              {verifiedStudent?.studentId || 'STU-2026-001'}
+                              {verifiedStudent?.studentId || '—'}
                             </td>
                           </tr>
                           <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                             <td style={{ padding: '0.5rem 0', fontWeight: 700, color: '#475569' }}>Affiliated Institution:</td>
                             <td style={{ padding: '0.5rem 0', fontWeight: 600 }}>
-                              {verifiedStudent?.schoolName || 'Rajadhani School Of Education'}
+                              {verifiedStudent?.schoolName || '—'}
                             </td>
                           </tr>
                           <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                             <td style={{ padding: '0.5rem 0', fontWeight: 700, color: '#475569' }}>Zone &amp; District:</td>
                             <td style={{ padding: '0.5rem 0' }}>
-                              {verifiedStudent?.zoneName || 'Bhubaneswar Zone'}, Khordha District
+                              {verifiedStudent?.zoneName || 'State Zone'}{verifiedStudent?.district ? `, ${verifiedStudent.district} District` : ''}
                             </td>
                           </tr>
                           <tr>
@@ -929,7 +896,6 @@ export default function StudentPortalPage() {
                       type="text"
                       id="chkId"
                       placeholder="e.g. STU-2026-001 or 9861012345"
-                      defaultValue="STU-2026-001"
                       style={{ flex: 1 }}
                     />
                     <Link
