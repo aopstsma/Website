@@ -3,9 +3,9 @@ import PayClient from './PayClient';
 import { createPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = createPageMetadata('/pay', {
-  title: 'Online Fee Payment Portal — AOPSTSMA',
+  title: 'Online Fee Payment & Legal Defense Portal — AOPSTSMA',
   description:
-    'Official online fee payment and student verification gateway for AOPSTSMA member schools. Pay student registration (₹2,500), affiliation inspection (₹15,000), and recognition renewal (₹10,000) fees securely.',
+    'Official online fee payment and verification gateway for AOPSTSMA. Pay student candidate examination & registration (₹2,500) and High Court / Supreme Court legal defense fund fees securely.',
 });
 
 export default function PayPage() {

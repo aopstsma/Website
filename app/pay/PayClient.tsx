@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ZONES, SCHOOLS } from '@/lib/data/schools';
 
 interface StudentData {
@@ -18,8 +19,16 @@ interface StudentData {
 }
 
 export default function PayClient() {
-  // Fee Category: 3 Fee Types
-  const [feeCategory, setFeeCategory] = useState<'student' | 'affiliation' | 'renewal'>('student');
+  // Fee Category: Student Exam Fee vs Legal Defense Fee
+  const [feeCategory, setFeeCategory] = useState<'student' | 'legal'>('student');
+
+  // Legal Fee Form State
+  const [legalName, setLegalName] = useState('');
+  const [legalPhone, setLegalPhone] = useState('');
+  const [legalAffiliation, setLegalAffiliation] = useState('All Orissa Member Institutional Patron');
+  const [legalPurpose, setLegalPurpose] = useState('Orissa High Court & Supreme Court Legal Defense Fund');
+  const [legalAmount, setLegalAmount] = useState<number>(2500);
+  const [legalCustomAmount, setLegalCustomAmount] = useState<string>('');
 
   // Step 1 & 2: Zone & School Selection
   const [zoneId, setZoneId] = useState('bhubaneswar');
@@ -79,28 +88,78 @@ export default function PayClient() {
   };
 
   const getFeeAmount = () => {
-    switch (feeCategory) {
-      case 'student':
-        return 2500;
-      case 'affiliation':
-        return 15000;
-      case 'renewal':
-        return 10000;
-      default:
-        return 2500;
+    if (feeCategory === 'legal') {
+      return legalCustomAmount && Number(legalCustomAmount) > 0
+        ? Number(legalCustomAmount)
+        : legalAmount;
     }
+    return 2500;
   };
 
   const getFeeTypeName = () => {
-    switch (feeCategory) {
-      case 'student':
-        return 'Student Candidate Examination & Registration Fee';
-      case 'affiliation':
-        return 'Institutional Affiliation Inspection Fee';
-      case 'renewal':
-        return 'Annual Recognition Renewal Deposit';
-      default:
-        return 'Association Fee';
+    if (feeCategory === 'legal') {
+      return `Legal Defense Fund (${legalPurpose})`;
+    }
+    return 'Student Candidate Examination & Registration Fee';
+  };
+
+  // Legal Fee Payment Handler
+  const handleLegalPay = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    const cleanMobile = legalPhone.replace(/\D/g, '').slice(-10);
+    if (!legalName.trim() || cleanMobile.length !== 10) {
+      setError('Please enter your Full Name and a valid 10-digit Mobile Number.');
+      return;
+    }
+    const finalAmount = legalCustomAmount && Number(legalCustomAmount) > 0
+      ? Number(legalCustomAmount)
+      : legalAmount;
+
+    setPaymentProcessing(true);
+    try {
+      const orderRes = await fetch('/api/order/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          purpose: 'legal_defense_fund',
+          feeCategory: 'legal_fee',
+          customAmount: finalAmount,
+          studentName: legalName.trim(),
+          payerPhone: cleanMobile,
+        }),
+      });
+      const orderData = await orderRes.json();
+      const txnId = `TXN-LEG-${Date.now().toString().slice(-8)}`;
+      const paidAt = new Date().toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+
+      setPaymentProcessing(false);
+      setPaidReceipt({
+        txnId,
+        paidAt,
+        student: {
+          studentId: 'LEGAL-CONTRIBUTOR',
+          studentName: legalName.trim(),
+          mobileNumber: cleanMobile,
+          zoneId: 'State-Wide',
+          zoneName: 'Odisha State Legal Defense Wing',
+          schoolId: 'AOPSTSMA-LEGAL',
+          schoolName: legalAffiliation || 'Association Legal Defense Wing',
+          district: 'Odisha',
+          feeAmount: finalAmount,
+          paymentStatus: 'Paid',
+        },
+        feeTypeName: `Legal Defense Fund — ${legalPurpose}`,
+      });
+      setPayStep('paid');
+    } catch (err) {
+      console.error(err);
+      setPaymentProcessing(false);
+      setError('Failed to initiate legal defense payment. Please try again.');
     }
   };
 
@@ -501,99 +560,260 @@ export default function PayClient() {
 
       {!paidReceipt ? (
         <div className="pay-card-grid">
-          {/* STEP 1, 2, 3: SELECTION & VERIFICATION FORM */}
+          {/* LEFT COLUMN: PAYMENT / VERIFICATION FORM */}
           <div className="pay-card">
-            <h3>Student Fee Verification</h3>
+            <h3>{feeCategory === 'student' ? 'Student Fee Verification' : 'Legal Defense & Court Fund'}</h3>
             <p className="pay-sub">
-              Select your Zone, your School, and enter your Full Name & Mobile Number as uploaded by the institution.
+              {feeCategory === 'student'
+                ? 'Select your Zone, your School, and enter your Full Name & Mobile Number as uploaded by the institution.'
+                : 'Direct voluntary legal defense contribution supporting High Court and Supreme Court advocacy.'}
             </p>
 
             {/* FEE TYPE TABS */}
-            <div className="fee-type-tabs">
+            <div className="fee-type-tabs" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.65rem' }}>
               <button
                 type="button"
-                onClick={() => setFeeCategory('student')}
+                onClick={() => { setFeeCategory('student'); setError(null); }}
                 style={{
-                  border: '1px solid #D97706',
-                  padding: '0.65rem 0.4rem',
-                  borderRadius: '6px',
-                  fontSize: '0.78rem',
+                  border: feeCategory === 'student' ? '2px solid #0B2545' : '1px solid #CBD5E1',
+                  padding: '0.75rem 0.5rem',
+                  borderRadius: '8px',
+                  fontSize: '0.85rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  background: feeCategory === 'student' ? '#0B2545' : '#F8FAFC',
+                  background: feeCategory === 'student' ? '#0B2545' : '#FFFFFF',
                   color: feeCategory === 'student' ? '#FFFFFF' : '#334155',
                   textAlign: 'center',
+                  boxShadow: feeCategory === 'student' ? '0 4px 12px rgba(11, 37, 69, 0.2)' : 'none',
+                  transition: 'all 0.2s ease',
                 }}
               >
                 🎓 Student Exam Fee
                 <span
                   style={{
                     display: 'block',
-                    fontSize: '0.72rem',
+                    fontSize: '0.75rem',
                     color: feeCategory === 'student' ? '#FDE68A' : '#B45309',
+                    marginTop: '0.15rem',
                   }}
                 >
-                  ₹2,500
+                  ₹2,500 (Verified)
                 </span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setFeeCategory('affiliation')}
+                onClick={() => { setFeeCategory('legal'); setError(null); }}
                 style={{
-                  border: '1px solid #CBD5E1',
-                  padding: '0.65rem 0.4rem',
-                  borderRadius: '6px',
-                  fontSize: '0.78rem',
+                  border: feeCategory === 'legal' ? '2px solid #D97706' : '1px solid #CBD5E1',
+                  padding: '0.75rem 0.5rem',
+                  borderRadius: '8px',
+                  fontSize: '0.85rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  background: feeCategory === 'affiliation' ? '#0B2545' : '#F8FAFC',
-                  color: feeCategory === 'affiliation' ? '#FFFFFF' : '#334155',
+                  background: feeCategory === 'legal' ? '#D97706' : '#FFFFFF',
+                  color: feeCategory === 'legal' ? '#FFFFFF' : '#334155',
                   textAlign: 'center',
+                  boxShadow: feeCategory === 'legal' ? '0 4px 12px rgba(217, 119, 6, 0.25)' : 'none',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                🏛️ Affiliation Fee
+                ⚖️ Legal Defense Fee
                 <span
                   style={{
                     display: 'block',
-                    fontSize: '0.72rem',
-                    color: feeCategory === 'affiliation' ? '#FDE68A' : '#64748B',
+                    fontSize: '0.75rem',
+                    color: feeCategory === 'legal' ? '#FEF3C7' : '#64748B',
+                    marginTop: '0.15rem',
                   }}
                 >
-                  ₹15,000
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setFeeCategory('renewal')}
-                style={{
-                  border: '1px solid #CBD5E1',
-                  padding: '0.65rem 0.4rem',
-                  borderRadius: '6px',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  background: feeCategory === 'renewal' ? '#0B2545' : '#F8FAFC',
-                  color: feeCategory === 'renewal' ? '#FFFFFF' : '#334155',
-                  textAlign: 'center',
-                }}
-              >
-                📑 Renewal Fee
-                <span
-                  style={{
-                    display: 'block',
-                    fontSize: '0.72rem',
-                    color: feeCategory === 'renewal' ? '#FDE68A' : '#64748B',
-                  }}
-                >
-                  ₹10,000
+                  Court Defense Fund
                 </span>
               </button>
             </div>
 
-            {/* VERIFICATION FORM */}
-            <form onSubmit={handleVerify} className="pay-form">
+            {/* INSTITUTIONAL AFFILIATION NOTICE FOR COLLEGES */}
+            <div style={{
+              margin: '0.85rem 0 1.25rem 0',
+              padding: '0.75rem 1rem',
+              background: '#F0F9FF',
+              border: '1px solid #BAE6FD',
+              borderRadius: '8px',
+              fontSize: '0.8rem',
+              color: '#0369A1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+            }}>
+              <span>
+                🏛️ <strong>Looking to pay College Affiliation Fee (₹15,000)?</strong>
+                <br />
+                Institutional affiliation is processed inside the School / College Portal.
+              </span>
+              <Link
+                href="/school-login"
+                style={{
+                  fontWeight: 700,
+                  color: '#0284C7',
+                  background: '#FFFFFF',
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '4px',
+                  border: '1px solid #BAE6FD',
+                  textDecoration: 'none',
+                  fontSize: '0.78rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                }}
+              >
+                Go to College Login &rarr;
+              </Link>
+            </div>
+
+            {/* ERROR / SUCCESS ALERTS */}
+            {error && (
+              <div style={{ padding: '0.75rem 1rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '6px', color: '#B91C1C', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                ⚠️ {error}
+              </div>
+            )}
+            {successMsg && (
+              <div style={{ padding: '0.75rem 1rem', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '6px', color: '#15803D', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                {successMsg}
+              </div>
+            )}
+
+            {/* FORM 1: LEGAL DEFENSE FORM */}
+            {feeCategory === 'legal' ? (
+              <form onSubmit={handleLegalPay} className="pay-form">
+                <div className="form-group">
+                  <label htmlFor="legalName">
+                    1. Contributor Full Name <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="legalName"
+                    placeholder="Enter full legal name (e.g. Adv. Rajesh Mohapatra)"
+                    value={legalName}
+                    onChange={(e) => setLegalName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="legalPhone">
+                    2. Contact Mobile Number <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    id="legalPhone"
+                    maxLength={10}
+                    placeholder="10-digit mobile number"
+                    value={legalPhone}
+                    onChange={(e) => setLegalPhone(e.target.value.replace(/\D/g, ''))}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="legalAffiliation">3. Associated Zone / Member Institution / Role</label>
+                  <input
+                    type="text"
+                    id="legalAffiliation"
+                    placeholder="e.g. Baleswar Zone / Rajadhani Training School / Legal Patron"
+                    value={legalAffiliation}
+                    onChange={(e) => setLegalAffiliation(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="legalPurpose">4. Legal Defense Matter / Purpose</label>
+                  <select
+                    id="legalPurpose"
+                    value={legalPurpose}
+                    onChange={(e) => setLegalPurpose(e.target.value)}
+                  >
+                    <option value="Orissa High Court & Supreme Court Legal Defense Fund">
+                      Orissa High Court &amp; Supreme Court Legal Defense Fund
+                    </option>
+                    <option value="Senior Counsel Representation in WP(C) 5640/2009">
+                      Senior Counsel Representation in WP(C) 5640/2009
+                    </option>
+                    <option value="Supreme Court SLP CC 12896/2014 Ongoing Protection Fund">
+                      Supreme Court SLP CC 12896/2014 Ongoing Protection Fund
+                    </option>
+                    <option value="State CT Education Policy & BSE Directorate Representation">
+                      State CT Education Policy &amp; BSE Directorate Representation
+                    </option>
+                    <option value="General Association Legal Action & Defense Contribution">
+                      General Association Legal Action &amp; Defense Contribution
+                    </option>
+                  </select>
+                </div>
+
+                {/* Amount Selection Chips */}
+                <div className="form-group">
+                  <label>5. Contribution Amount (₹)</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.45rem', marginTop: '0.35rem' }}>
+                    {[1000, 2500, 5000, 10000].map((amt) => (
+                      <button
+                        key={amt}
+                        type="button"
+                        onClick={() => { setLegalAmount(amt); setLegalCustomAmount(''); }}
+                        style={{
+                          padding: '0.6rem 0.25rem',
+                          borderRadius: '6px',
+                          border: legalAmount === amt && !legalCustomAmount ? '2px solid #D97706' : '1px solid #CBD5E1',
+                          background: legalAmount === amt && !legalCustomAmount ? '#FEF3C7' : '#FFFFFF',
+                          color: legalAmount === amt && !legalCustomAmount ? '#92400E' : '#334155',
+                          fontWeight: 700,
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ₹{amt.toLocaleString('en-IN')}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: '0.65rem' }}>
+                    <input
+                      type="number"
+                      placeholder="Or enter custom amount in ₹"
+                      value={legalCustomAmount}
+                      onChange={(e) => setLegalCustomAmount(e.target.value)}
+                      style={{ fontSize: '0.9rem' }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={paymentProcessing}
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem',
+                    background: 'linear-gradient(135deg, #0B2545 0%, #1E40AF 100%)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(11, 37, 69, 0.25)',
+                    marginTop: '0.5rem',
+                  }}
+                >
+                  {paymentProcessing
+                    ? 'Connecting to Gateway...'
+                    : `⚖️ Pay ₹${getFeeAmount().toLocaleString('en-IN')} Legal Contribution Now`}
+                </button>
+              </form>
+            ) : (
+              <>
+                {/* VERIFICATION FORM */}
+                <form onSubmit={handleVerify} className="pay-form">
               {/* 1. ZONE SELECTOR */}
               <div className="form-group">
                 <label htmlFor="zoneSelect">
@@ -812,118 +1032,164 @@ export default function PayClient() {
                 </form>
               </div>
             )}
+          </>
+        )}
+      </div>
+
+      {/* SUMMARY / PAYMENT UNLOCK CARD */}
+      <div className="pay-card summary-card">
+        <h3>{feeCategory === 'legal' ? '⚖️ Legal Defense Summary' : 'Fee Details & Checkout'}</h3>
+
+        {feeCategory === 'legal' ? (
+          <div style={{ padding: '0.5rem 0' }}>
+            <div style={{ padding: '1rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '1.75rem' }}>🛡️</span>
+                <div>
+                  <h4 style={{ margin: 0, color: '#0B2545', fontSize: '1.05rem', fontWeight: 800 }}>
+                    Judicial Defense Fund
+                  </h4>
+                  <small style={{ color: '#64748B' }}>State Association Legal Action Registry</small>
+                </div>
+              </div>
+
+              <p style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                Contributions directly fund Senior Advocate representation before the <b>Hon’ble High Court of Orissa</b> and the <b>Supreme Court of India</b> protecting CT trainee qualification recognition and member institution autonomy.
+              </p>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Selected Contribution:</span>
+                <b style={{ color: '#0B2545', fontSize: '1.1rem' }}>₹{getFeeAmount().toLocaleString('en-IN')}</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Contributor:</span>
+                <b style={{ color: '#0F172A' }}>{legalName || 'Patron / Representative'}</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Matter Reference:</span>
+                <span style={{ color: '#D97706', fontSize: '0.76rem', fontWeight: 700, textAlign: 'right', maxWidth: '60%' }}>
+                  {legalPurpose}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', borderTop: '1px solid #E2E8F0', paddingTop: '0.5rem' }}>
+                <span style={{ color: '#64748B' }}>Judicial Receipt:</span>
+                <b style={{ color: '#166534' }}>Instant Digital Slip with State Seal ✓</b>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1.25rem', padding: '0.75rem', background: '#FEF3C7', borderLeft: '4px solid #D97706', borderRadius: '0 6px 6px 0', fontSize: '0.78rem', color: '#92400E' }}>
+              📜 <strong>Certified Defense Record:</strong> Every legal contribution generates an official association legal receipt cited with Orissa HC WP(C) 5640/2009 proceedings.
+            </div>
           </div>
+        ) : payStep === 'ready_to_pay' && verifiedStudent ? (
+          <div className="verified-box">
+            <div className="status-badge success">
+              <span>✓ STUDENT VERIFIED &amp; OTP CONFIRMED</span>
+              <small>Matched in {verifiedStudent.schoolName}</small>
+            </div>
 
-          {/* SUMMARY / PAYMENT UNLOCK CARD */}
-          <div className="pay-card summary-card">
-            <h3>Fee Details & Checkout</h3>
-            {payStep === 'ready_to_pay' && verifiedStudent ? (
-              <div className="verified-box">
-                <div className="status-badge success">
-                  <span>✓ STUDENT VERIFIED & OTP CONFIRMED</span>
-                  <small>Matched in {verifiedStudent.schoolName}</small>
-                </div>
-
-                <div className="verified-details">
-                  <div className="detail-row">
-                    <span>Fee Category:</span>
-                    <b style={{ color: '#D97706' }}>{getFeeTypeName()}</b>
-                  </div>
-                  <div className="detail-row">
-                    <span>Candidate Name:</span>
-                    <b style={{ fontSize: '1.05rem', color: '#0B2545' }}>{verifiedStudent.studentName}</b>
-                  </div>
-                  <div className="detail-row">
-                    <span>Institution / School:</span>
-                    <b>{verifiedStudent.schoolName}</b>
-                  </div>
-                  <div className="detail-row">
-                    <span>Jurisdiction Zone:</span>
-                    <span>{verifiedStudent.zoneName}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span>Registered Contact:</span>
-                    <span>+91 {verifiedStudent.mobileNumber}</span>
-                  </div>
-                  <div className="detail-row total-row">
-                    <span>Total Fee Payable:</span>
-                    <b className="price">₹{verifiedStudent.feeAmount.toLocaleString('en-IN')}</b>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  className="pay-now-btn"
-                  onClick={handlePayNow}
-                  disabled={paymentProcessing}
-                >
-                  {paymentProcessing
-                    ? 'Processing Transaction...'
-                    : `💳 Pay ₹${verifiedStudent.feeAmount.toLocaleString('en-IN')} Now (UPI / QR / NetBanking)`}
-                </button>
-                <p className="pay-note">⚡ Real-time automatic digital receipt & central association registry sync.</p>
-
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#64748B',
-                    fontSize: '0.82rem',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                    marginTop: '0.5rem',
-                  }}
-                >
-                  Edit details or select different student
-                </button>
+            <div className="verified-details">
+              <div className="detail-row">
+                <span>Fee Category:</span>
+                <b style={{ color: '#D97706' }}>{getFeeTypeName()}</b>
               </div>
-            ) : payStep === 'otp' && verifiedStudent ? (
-              <div
-                style={{
-                  padding: '2rem 1.5rem',
-                  textAlign: 'center',
-                  background: '#F8FAFC',
-                  borderRadius: '8px',
-                  border: '1px dashed #CBD5E1',
-                }}
-              >
-                <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📱</div>
-                <h4 style={{ color: '#0B2545', fontSize: '1.1rem', marginBottom: '0.4rem' }}>
-                  Awaiting OTP Confirmation
-                </h4>
-                <p style={{ color: '#64748B', fontSize: '0.88rem', margin: '0 0 1rem' }}>
-                  We found <b>{verifiedStudent.studentName}</b> in <b>{verifiedStudent.schoolName}</b>. Enter the 6-digit
-                  OTP on the left to unlock fee payment.
-                </p>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    background: '#FEF3C7',
-                    padding: '0.4rem 0.8rem',
-                    borderRadius: '20px',
-                    fontSize: '0.82rem',
-                    color: '#92400E',
-                    fontWeight: 600,
-                  }}
-                >
-                  Payable Fee: ₹{getFeeAmount().toLocaleString('en-IN')}
-                </div>
+              <div className="detail-row">
+                <span>Candidate Name:</span>
+                <b style={{ fontSize: '1.05rem', color: '#0B2545' }}>{verifiedStudent.studentName}</b>
               </div>
-            ) : (
-              <div className="empty-verify">
-                <div className="empty-icon">📋</div>
-                <h4>Awaiting Verification</h4>
-                <p>
-                  1. Select your Zone<br />
-                  2. Select your School<br />
-                  3. Enter Student Name & Mobile Number<br />
-                  4. Verify against uploaded roster & confirm OTP to pay fee.
-                </p>
+              <div className="detail-row">
+                <span>Institution / School:</span>
+                <b>{verifiedStudent.schoolName}</b>
               </div>
-            )}
+              <div className="detail-row">
+                <span>Jurisdiction Zone:</span>
+                <span>{verifiedStudent.zoneName}</span>
+              </div>
+              <div className="detail-row">
+                <span>Registered Contact:</span>
+                <span>+91 {verifiedStudent.mobileNumber}</span>
+              </div>
+              <div className="detail-row total-row">
+                <span>Total Fee Payable:</span>
+                <b className="price">₹{verifiedStudent.feeAmount.toLocaleString('en-IN')}</b>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="pay-now-btn"
+              onClick={handlePayNow}
+              disabled={paymentProcessing}
+            >
+              {paymentProcessing
+                ? 'Processing Transaction...'
+                : `💳 Pay ₹${verifiedStudent.feeAmount.toLocaleString('en-IN')} Now (UPI / QR / NetBanking)`}
+            </button>
+            <p className="pay-note">⚡ Real-time automatic digital receipt &amp; central association registry sync.</p>
+
+            <button
+              type="button"
+              onClick={handleReset}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#64748B',
+                fontSize: '0.82rem',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+                marginTop: '0.5rem',
+              }}
+            >
+              Edit details or select different student
+            </button>
           </div>
+        ) : payStep === 'otp' && verifiedStudent ? (
+          <div
+            style={{
+              padding: '2rem 1.5rem',
+              textAlign: 'center',
+              background: '#F8FAFC',
+              borderRadius: '8px',
+              border: '1px dashed #CBD5E1',
+            }}
+          >
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📱</div>
+            <h4 style={{ color: '#0B2545', fontSize: '1.1rem', marginBottom: '0.4rem' }}>
+              Awaiting OTP Confirmation
+            </h4>
+            <p style={{ color: '#64748B', fontSize: '0.88rem', margin: '0 0 1rem' }}>
+              We found <b>{verifiedStudent.studentName}</b> in <b>{verifiedStudent.schoolName}</b>. Enter the 6-digit
+              OTP on the left to unlock fee payment.
+            </p>
+            <div
+              style={{
+                display: 'inline-block',
+                background: '#FEF3C7',
+                padding: '0.4rem 0.8rem',
+                borderRadius: '20px',
+                fontSize: '0.82rem',
+                color: '#92400E',
+                fontWeight: 600,
+              }}
+            >
+              Payable Fee: ₹{getFeeAmount().toLocaleString('en-IN')}
+            </div>
+          </div>
+        ) : (
+          <div className="empty-verify">
+            <div className="empty-icon">📋</div>
+            <h4>Awaiting Verification</h4>
+            <p>
+              1. Select your Zone<br />
+              2. Select your School<br />
+              3. Enter Student Name &amp; Mobile Number<br />
+              4. Verify against uploaded roster &amp; confirm OTP to pay fee.
+            </p>
+          </div>
+        )}
+      </div>
         </div>
       ) : (
         /* SUCCESSFUL PAYMENT RECEIPT DISPLAY */

@@ -124,14 +124,14 @@ export default function HeroSection() {
           </div>
 
           <div className="hero__actions">
-            <Link className="btn btn--primary hero__btn-primary" href="/services">
-              <span>💳 Pay Annual Portal Fee</span>
+            <Link className="btn btn--primary hero__btn-primary" href="/pay">
+              <span>💳 Pay Student &amp; Legal Fees</span>
             </Link>
             <Link className="btn btn--secondary hero__btn-secondary" href="/achievements">
               <span>⚖️ High Court Orders &amp; Judgments</span>
             </Link>
-            <Link className="btn btn--ghost hero__btn-ghost" href="/schools">
-              <span>🏫 Search 90 Member Schools</span>
+            <Link className="btn btn--ghost hero__btn-ghost" href="/school-login">
+              <span>🏛️ College Portal Login &rarr;</span>
             </Link>
           </div>
         </div>

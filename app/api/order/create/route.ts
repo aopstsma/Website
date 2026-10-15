@@ -4,10 +4,10 @@ import { createAdminClient } from '@/lib/supabase/server';
 
 // Official standard fees in paise (SPEC.md Section 4 & 6)
 const FEE_RATES_PAISE: Record<string, number> = {
-  student: 250000,      // ₹2,500
-  renewal: 250000,      // ₹2,500 (School renewal)
+  student: 250000,      // ₹2,500 (Student Registration & Exam Fee)
+  affiliation: 1500000, // ₹15,000 (College Affiliation & Inspection Fee)
+  legal_fee: 250000,    // ₹2,500 (Default Legal Defense Contribution)
   dir_deposit: 2500000, // ₹25,000 (DIR deposit)
-  affiliation: 1500000, // ₹15,000
 };
 
 export async function POST(request: Request) {
@@ -20,10 +20,13 @@ export async function POST(request: Request) {
       studentName,
       payerPhone,
       feeCategory = 'student',
+      customAmount,
     } = body;
 
-    // Determine amount on server side strictly (SPEC.md Section 5.1)
-    let amountInPaise = FEE_RATES_PAISE[feeCategory] || 250000;
+    // Determine amount: custom amount for legal defense if provided, or mapped fee
+    let amountInPaise = customAmount && Number(customAmount) > 0
+      ? Math.round(Number(customAmount) * 100)
+      : (FEE_RATES_PAISE[feeCategory] || 250000);
     const receiptNo = `REC-${Date.now().toString().slice(-8)}`;
 
     // Try to record in Supabase if configured

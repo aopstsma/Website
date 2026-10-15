@@ -28,6 +28,16 @@ export default function SchoolDashboardPage() {
   // Active Tab for Student Addition: 'excel' vs 'manual'
   const [entryMode, setEntryMode] = useState<'excel' | 'manual'>('excel');
 
+  // Affiliation Fee State
+  const [affiliationPaid, setAffiliationPaid] = useState<boolean>(false);
+  const [affiliationReceipt, setAffiliationReceipt] = useState<{
+    receiptNo: string;
+    paidAt: string;
+    amount: number;
+  } | null>(null);
+  const [payingAffiliation, setPayingAffiliation] = useState(false);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const u = sessionStorage.getItem('school_user');
@@ -42,9 +52,57 @@ export default function SchoolDashboardPage() {
           mobile: sessionStorage.getItem('school_mobile') || '',
           scan: sessionStorage.getItem('school_scan') || 'Verified Affiliation Document',
         });
+
+        const savedAff = sessionStorage.getItem('school_affiliation_paid');
+        if (savedAff) {
+          try {
+            const parsed = JSON.parse(savedAff);
+            setAffiliationPaid(true);
+            setAffiliationReceipt(parsed);
+          } catch {
+            // ignore
+          }
+        }
       }
     }
   }, [router]);
+
+  const handlePayAffiliation = async () => {
+    setPayingAffiliation(true);
+    try {
+      const res = await fetch('/api/order/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          purpose: 'college_affiliation_fee',
+          feeCategory: 'affiliation',
+          schoolCode: schoolInfo.name,
+          payerPhone: schoolInfo.mobile,
+        }),
+      });
+      const data = await res.json();
+      const receipt = {
+        receiptNo: data.receiptNo || `AFF-${Date.now().toString().slice(-6)}`,
+        paidAt: new Date().toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        amount: 15000,
+      };
+      sessionStorage.setItem('school_affiliation_paid', JSON.stringify(receipt));
+      setAffiliationPaid(true);
+      setAffiliationReceipt(receipt);
+      setShowCertificateModal(true);
+    } catch (err) {
+      console.error(err);
+      alert('Payment initialization failed. Please try again.');
+    } finally {
+      setPayingAffiliation(false);
+    }
+  };
 
   // Single Manual Student Add
   const handleAddStudent = (e: React.FormEvent) => {
@@ -362,18 +420,94 @@ export default function SchoolDashboardPage() {
               </div>
             </div>
 
-            <div style={{ marginTop: '1rem', padding: '0.9rem', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <b style={{ color: '#166534', fontSize: '0.88rem', display: 'block' }}>School Annual Membership Fee</b>
-                <span style={{ fontSize: '0.8rem', color: '#15803D' }}>Fixed Annual Association Fee for 2026</span>
+            {/* INSTITUTIONAL AFFILIATION FEE BOX (Payable by School / College) */}
+            <div style={{
+              marginTop: '1rem',
+              padding: '1.15rem',
+              background: affiliationPaid ? '#F0FDF4' : '#FFFBEB',
+              border: `2px solid ${affiliationPaid ? '#10B981' : '#F59E0B'}`,
+              borderRadius: '10px',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.25rem' }}>
+                    <span style={{ fontSize: '1.25rem' }}>🏛️</span>
+                    <b style={{ color: '#0F172A', fontSize: '0.98rem' }}>Institutional Affiliation Fee (2026-27)</b>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      padding: '0.15rem 0.55rem',
+                      borderRadius: '4px',
+                      background: affiliationPaid ? '#D1FAE5' : '#FEF3C7',
+                      color: affiliationPaid ? '#065F46' : '#92400E',
+                    }}>
+                      {affiliationPaid ? 'PAID & CERTIFIED ✓' : 'FEE DUE'}
+                    </span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
+                    Official Annual Affiliation &amp; Institutional Inspection Fee under AOPSTSMA State Authority
+                  </p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0B2545', display: 'block' }}>₹15,000</span>
+                  <small style={{ color: '#64748B', fontSize: '0.72rem' }}>Mandatory College Fee</small>
+                </div>
               </div>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#15803D' }}>₹25,000</span>
+
+              <div style={{ marginTop: '0.9rem', display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                {affiliationPaid ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowCertificateModal(true)}
+                      style={{
+                        padding: '0.55rem 1.15rem',
+                        background: '#047857',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontWeight: 700,
+                        fontSize: '0.82rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        boxShadow: '0 2px 8px rgba(4, 120, 87, 0.25)',
+                      }}
+                    >
+                      📜 View &amp; Print Affiliation Certificate
+                    </button>
+                    <span style={{ fontSize: '0.78rem', color: '#047857', fontWeight: 600 }}>
+                      Receipt: {affiliationReceipt?.receiptNo} ({affiliationReceipt?.paidAt})
+                    </span>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handlePayAffiliation}
+                    disabled={payingAffiliation}
+                    style={{
+                      padding: '0.65rem 1.25rem',
+                      background: 'linear-gradient(135deg, #0B2545 0%, #1E40AF 100%)',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(11, 37, 69, 0.25)',
+                    }}
+                  >
+                    {payingAffiliation ? 'Initializing Gateway...' : '💳 Pay ₹15,000 Affiliation Fee via Gateway'}
+                  </button>
+                )}
+              </div>
             </div>
 
             <div style={{ marginTop: '1.25rem', padding: '0.85rem', background: '#EFF6FF', borderLeft: '4px solid #3B82F6', borderRadius: '0 6px 6px 0', fontSize: '0.82rem', color: '#1E40AF' }}>
               ℹ️ <strong>Roster Verification Active</strong>
               <br />
-              Students pay ₹2,500 online using <code>Student ID</code> + <code>Mobile Number</code>. Completed transactions automatically sync to Google Sheets.
+              Students pay ₹2,500 online using <code>Student Name</code> + <code>Mobile Number</code>. Completed transactions automatically sync to Google Sheets.
             </div>
           </div>
         </div>
@@ -430,6 +564,147 @@ export default function SchoolDashboardPage() {
             </tbody>
           </table>
         </div>
+
+        {/* AFFILIATION CERTIFICATE MODAL */}
+        {showCertificateModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(6, 19, 36, 0.85)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+            }}
+            onClick={() => setShowCertificateModal(false)}
+          >
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '12px',
+                maxWidth: '700px',
+                width: '100%',
+                maxHeight: '92vh',
+                overflowY: 'auto',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
+                border: '4px double #D97706',
+                padding: '2.5rem',
+                position: 'relative',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Certificate Header */}
+              <div style={{ textAlign: 'center', borderBottom: '2px solid #E2E8F0', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
+                <span style={{ fontSize: '2rem' }}>🏛️</span>
+                <h2 style={{ fontSize: '1.25rem', color: '#0B2545', margin: '0.35rem 0 0.15rem 0', fontWeight: 900, letterSpacing: '0.5px' }}>
+                  ALL ORISSA PRIVATE SECONDARY TRAINING SCHOOLS MANAGEMENT ASSOCIATION
+                </h2>
+                <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600 }}>
+                  Societies Registration Act XXI of 1860 &middot; Regd. No. 1422/80 &middot; Estd. 1980
+                </div>
+                <div style={{
+                  display: 'inline-block',
+                  marginTop: '0.75rem',
+                  padding: '0.35rem 1rem',
+                  background: 'linear-gradient(135deg, #0B2545 0%, #1E40AF 100%)',
+                  color: '#FDE68A',
+                  fontSize: '0.85rem',
+                  fontWeight: 800,
+                  borderRadius: '50px',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                }}>
+                  Certificate of Institutional Affiliation (2026-2027)
+                </div>
+              </div>
+
+              {/* Certificate Body */}
+              <div style={{ lineHeight: 1.8, color: '#334155', fontSize: '0.95rem', textAlign: 'center', marginBottom: '2rem' }}>
+                This is to certify that
+                <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0B2545', margin: '0.6rem 0' }}>
+                  {schoolInfo.name}
+                </div>
+                situated in <b style={{ color: '#0F172A' }}>{schoolInfo.zone.toUpperCase()} ZONE</b>, Odisha, has duly cleared all institutional inspection criteria and remitted the statutory Affiliation &amp; Inspection Fee of <b style={{ color: '#166534' }}>₹15,000.00</b> for the academic session 2026-2027.
+              </div>
+
+              {/* Verification Details Table */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.65rem' }}>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>RECEIPT NUMBER</span>
+                    <strong style={{ color: '#0F172A' }}>{affiliationReceipt?.receiptNo}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>DATE OF ISSUE</span>
+                    <strong style={{ color: '#0F172A' }}>{affiliationReceipt?.paidAt}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>AFFILIATION STATUS</span>
+                    <strong style={{ color: '#15803D' }}>ACTIVE &amp; RECOGNIZED ✓</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>LEGAL PROTECTION</span>
+                    <strong style={{ color: '#0B2545' }}>Orissa HC WP(C) 5640/2009</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Signatures */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '1.5rem', borderTop: '1px dashed #CBD5E1' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ color: '#D97706', fontSize: '1.6rem', marginBottom: '0.2rem' }}>🛡️</div>
+                  <small style={{ fontSize: '0.75rem', color: '#64748B', display: 'block' }}>Official Seal of AOPSTSMA</small>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'serif', fontStyle: 'italic', fontSize: '1.1rem', color: '#0B2545', fontWeight: 700 }}>
+                    Raj Kishore Jena
+                  </div>
+                  <div style={{ width: '130px', height: '1px', background: '#94A3B8', margin: '0.2rem auto' }} />
+                  <small style={{ fontSize: '0.75rem', color: '#64748B', display: 'block', fontWeight: 600 }}>
+                    General Secretary, AOPSTSMA
+                  </small>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  style={{
+                    padding: '0.65rem 1.5rem',
+                    background: '#0B2545',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  🖨️ Print Certificate
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCertificateModal(false)}
+                  style={{
+                    padding: '0.65rem 1.5rem',
+                    background: '#E2E8F0',
+                    color: '#334155',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

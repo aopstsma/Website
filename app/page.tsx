@@ -17,11 +17,71 @@ export default function HomePage() {
       {/* ============ 1. HERO SECTION WITH AUTHENTIC 3D ODISHA RELIEF MAP ============ */}
       <HeroSection />
 
-      {/* ============ 2. QUICK PORTAL ACTIONS (4 SAAF-SAAF BOXES) ============ */}
+      {/* ============ STATUTORY RECOGNITION & JUDICIAL PRESTIGE BANNER ============ */}
+      <div style={{
+        background: 'linear-gradient(90deg, #06162D 0%, #0B2545 50%, #06162D 100%)',
+        borderTop: '2px solid #D97706',
+        borderBottom: '2px solid #D97706',
+        padding: '0.95rem 0',
+        color: '#FFFFFF',
+        fontSize: '0.82rem',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.18)',
+        position: 'relative',
+        zIndex: 5,
+      }}>
+        <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🏛️</span>
+            <div>
+              <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>Societies Regd. No. 1422/80</b>
+              <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>Govt. of Odisha Societies Act XXI of 1860 &middot; Estd. 1980</small>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>⚖️</span>
+            <div>
+              <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>High Court of Orissa Judgments</b>
+              <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>W.P.(C) 5640/2009 &amp; 10372/2008 &middot; Justice M. M. Das</small>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🇮🇳</span>
+            <div>
+              <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>Supreme Court of India Safeguards</b>
+              <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>SLP (Civil) CC No. 12896/2014 &amp; 24707/2014</small>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🛡️</span>
+            <div>
+              <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>90 Member Training Schools</b>
+              <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>5 Regional State Zones &middot; 30 Districts of Odisha</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ============ 2. QUICK PORTAL ACTIONS (4 PRESTIGIOUS GATEWAYS) ============ */}
       <div className="wrap" style={{ position: 'relative' }}>
         <div className="quick-portal-grid">
           <Link className="quick-card" href="/schools">
             <div className="quick-card__icon">🏫</div>
+            <span style={{
+              alignSelf: 'flex-start',
+              background: '#EFF6FF',
+              color: '#1E40AF',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              padding: '0.2rem 0.55rem',
+              borderRadius: '4px',
+              letterSpacing: '0.5px',
+              marginBottom: '0.45rem',
+            }}>
+              90 VERIFIED INSTITUTIONS
+            </span>
             <h3>School Directory</h3>
             <p>
               Search 90 member training schools across all 30 districts of Odisha with registration numbers and zone details.
@@ -31,24 +91,63 @@ export default function HomePage() {
 
           <Link className="quick-card" href="/achievements">
             <div className="quick-card__icon">⚖️</div>
+            <span style={{
+              alignSelf: 'flex-start',
+              background: '#FEF3C7',
+              color: '#92400E',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              padding: '0.2rem 0.55rem',
+              borderRadius: '4px',
+              letterSpacing: '0.5px',
+              marginBottom: '0.45rem',
+            }}>
+              8 CERTIFIED SCANS &amp; ORDERS
+            </span>
             <h3>High Court Orders</h3>
             <p>
-              Inspect certified front pages, stay orders, and writ petition decrees protecting member training institutions.
+              Inspect certified frontpage scans, Division Bench appeals, and Supreme Court rulings with direct PDF downloads.
             </p>
-            <span className="quick-card__action">View Legal Orders &rarr;</span>
+            <span className="quick-card__action">Inspect Legal Orders &rarr;</span>
           </Link>
 
-          <Link className="quick-card" href="/services">
+          <Link className="quick-card" href="/pay">
             <div className="quick-card__icon">💳</div>
-            <h3>Fee &amp; Renewal Portal</h3>
+            <span style={{
+              alignSelf: 'flex-start',
+              background: '#ECFDF5',
+              color: '#065F46',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              padding: '0.2rem 0.55rem',
+              borderRadius: '4px',
+              letterSpacing: '0.5px',
+              marginBottom: '0.45rem',
+            }}>
+              STUDENT &amp; LEGAL GATEWAY
+            </span>
+            <h3>Fee &amp; Legal Portal</h3>
             <p>
-              Submit annual association dues, affiliation fees, and obtain instant digital payment receipts online.
+              Pay student registration fees (₹2,500) and legal defense contributions with instant certified digital receipts.
             </p>
             <span className="quick-card__action">Pay Portal Fee &rarr;</span>
           </Link>
 
           <Link className="quick-card" href="/achievements">
             <div className="quick-card__icon">📢</div>
+            <span style={{
+              alignSelf: 'flex-start',
+              background: '#F1F5F9',
+              color: '#334155',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              padding: '0.2rem 0.55rem',
+              borderRadius: '4px',
+              letterSpacing: '0.5px',
+              marginBottom: '0.45rem',
+            }}>
+              OFFICIAL S&amp;ME NOTICES
+            </span>
             <h3>Govt. Circulars &amp; News</h3>
             <p>
               Official circulars from the School &amp; Mass Education (S&amp;ME) Department and BSE Odisha exam updates.
