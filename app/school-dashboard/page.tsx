@@ -65,7 +65,13 @@ export default function SchoolDashboardPage() {
     };
 
     setStudents([newRecord, ...students]);
-    setAddMessage(`✓ Successfully added ${newName} (${newStudentId}) to verified roster!`);
+    setAddMessage(`✓ Successfully added ${newName} to verified roster!`);
+
+    fetch('/api/students/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ students: [newRecord] }),
+    }).catch(console.error);
 
     setNewStudentId('');
     setNewName('');
@@ -116,6 +122,12 @@ export default function SchoolDashboardPage() {
       if (parsedRecords.length > 0) {
         setStudents((prev) => [...parsedRecords, ...prev]);
         setAddMessage(`✓ Successfully imported ${parsedRecords.length} student records from Excel CSV file!`);
+
+        fetch('/api/students/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ students: parsedRecords }),
+        }).catch(console.error);
       } else {
         alert('Could not parse student records. Please ensure your file follows the standard template format.');
       }

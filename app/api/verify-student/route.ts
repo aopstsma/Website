@@ -1,51 +1,102 @@
 import { NextResponse } from 'next/server';
-import { INITIAL_STUDENTS } from '@/lib/data/students';
+import { getAllStudents, StudentRecord } from '@/lib/data/students';
+import { createAndStoreOTP, sendSMSOTP } from '@/lib/otp';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { studentId, mobileNumber, zoneId } = body;
+    const { studentName, mobileNumber, zoneId, schoolName, studentId } = body;
 
-    if (!studentId || !mobileNumber) {
+    // Student Name & Mobile Number are required
+    const cleanName = String(studentName || '').trim().toLowerCase();
+    const cleanMobile = String(mobileNumber || '').trim().replace(/\D/g, '').slice(-10);
+
+    if (!cleanName || cleanMobile.length !== 10) {
       return NextResponse.json(
-        { success: false, message: 'Please enter Student ID and Mobile Number.' },
+        {
+          success: false,
+          verified: false,
+          message: 'Please provide both Student Full Name and a valid 10-digit registered Mobile Number.',
+        },
         { status: 400 }
       );
     }
 
-    const cleanId = String(studentId).trim().toLowerCase();
-    const cleanMobile = String(mobileNumber).trim().replace(/\D/g, '');
+    const normSchool = String(schoolName || '').trim().toLowerCase();
+    const normZone = String(zoneId || '').trim().toLowerCase();
+    const cleanId = String(studentId || '').trim().toLowerCase();
 
-    // Match student record against database
-    const matchedStudent = INITIAL_STUDENTS.find((s) => {
-      const matchId = s.studentId.toLowerCase() === cleanId || s.studentId.toLowerCase().endsWith(cleanId);
-      const matchPhone = s.mobileNumber.endsWith(cleanMobile) || cleanMobile.endsWith(s.mobileNumber);
-      const matchZone = !zoneId || zoneId === 'all' || s.zoneId === zoneId;
-      return matchId && matchPhone && matchZone;
+    const allStudents = getAllStudents();
+
+    // Match against uploaded roster and database
+    let matchedStudent: StudentRecord | undefined = allStudents.find((s) => {
+      const sMobile = s.mobileNumber.replace(/\D/g, '').slice(-10);
+      const phoneMatches = sMobile === cleanMobile;
+
+      const sNameNorm = s.studentName.trim().toLowerCase();
+      // Exact or partial name match (e.g. "Rajesh Das" in "Rajesh Kumar Das")
+      const nameMatches =
+        sNameNorm === cleanName ||
+        sNameNorm.includes(cleanName) ||
+        cleanName.includes(sNameNorm) ||
+        (cleanId && (s.studentId.toLowerCase() === cleanId || s.studentId.toLowerCase().endsWith(cleanId)));
+
+      // School match
+      const sSchoolNorm = s.schoolName.trim().toLowerCase();
+      const schoolMatches = !normSchool || sSchoolNorm.includes(normSchool) || normSchool.includes(sSchoolNorm);
+
+      // Zone match
+      const zoneMatches = !normZone || normZone === 'all' || s.zoneId.toLowerCase() === normZone;
+
+      return phoneMatches && nameMatches && schoolMatches && zoneMatches;
     });
 
-    if (matchedStudent) {
-      return NextResponse.json({
-        success: true,
-        verified: true,
-        student: matchedStudent,
-        message: 'Student record verified successfully!',
+    // If exact school match didn't find, try matching by phone and name within zone
+    if (!matchedStudent) {
+      matchedStudent = allStudents.find((s) => {
+        const sMobile = s.mobileNumber.replace(/\D/g, '').slice(-10);
+        const phoneMatches = sMobile === cleanMobile;
+        const sNameNorm = s.studentName.trim().toLowerCase();
+        const nameMatches = sNameNorm === cleanName || sNameNorm.includes(cleanName) || cleanName.includes(sNameNorm);
+        return phoneMatches && nameMatches;
       });
     }
 
-    return NextResponse.json(
-      {
-        success: false,
-        verified: false,
-        message:
-          'No verified student record found for this Student ID and Mobile Number in the selected zone. Please check your details or contact your institution.',
-      },
-      { status: 444 }
-    );
+    if (!matchedStudent) {
+      return NextResponse.json(
+        {
+          success: false,
+          verified: false,
+          message: `Record not found! Student "${studentName}" with mobile +91-${cleanMobile} is not listed in ${schoolName ? schoolName : 'this school'}'s uploaded roster. Please verify details or ask your school to upload your record.`,
+        },
+        { status: 404 }
+      );
+    }
+
+    // Generate & Dispatch OTP directly on verification
+    const { otp, expiresAt } = createAndStoreOTP(cleanMobile, 300, {
+      role: 'student',
+      studentName: matchedStudent.studentName,
+      schoolName: matchedStudent.schoolName,
+      zone: matchedStudent.zoneId,
+      mobile: cleanMobile,
+    });
+
+    const smsResult = await sendSMSOTP(cleanMobile, otp);
+
+    return NextResponse.json({
+      success: true,
+      verified: true,
+      otpSent: true,
+      student: matchedStudent,
+      expiresAt,
+      demoOtp: smsResult.mode === 'dev' ? smsResult.demoCode : undefined,
+      message: `Verified successfully! A 6-digit OTP has been sent to +91 ******${cleanMobile.slice(-4)}.`,
+    });
   } catch (error) {
     console.error('Error verifying student details:', error);
     return NextResponse.json(
-      { success: false, message: 'Server error during verification.' },
+      { success: false, verified: false, message: 'Server error during student verification.' },
       { status: 500 }
     );
   }

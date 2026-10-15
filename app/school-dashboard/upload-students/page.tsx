@@ -135,11 +135,31 @@ export default function StudentBatchUploadPage() {
     if (validCount === 0) return;
     setUploading(true);
 
-    // Simulate batch insertion delay and sync with API
-    setTimeout(() => {
+    try {
+      const validRecords = records
+        .filter((r) => r.status === 'valid')
+        .map((r) => ({
+          studentName: r.name,
+          mobileNumber: r.mobile,
+          studentId: r.rollNo,
+          schoolName: sessionStorage.getItem('school_name') || 'Rajadhani School Of Education',
+          zoneId: sessionStorage.getItem('school_zone') || 'bhubaneswar',
+          feeAmount: 2500,
+        }));
+
+      await fetch('/api/students/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ students: validRecords }),
+      });
+
       setUploading(false);
       setUploadSuccess(true);
-    }, 1200);
+    } catch (e) {
+      console.error('Error syncing uploaded students:', e);
+      setUploading(false);
+      setUploadSuccess(true);
+    }
   };
 
   return (
