@@ -22,7 +22,7 @@ export default function HomePage() {
         background: 'linear-gradient(90deg, #06162D 0%, #0B2545 50%, #06162D 100%)',
         borderTop: '2px solid #D97706',
         borderBottom: '2px solid #D97706',
-        padding: '0.95rem 0',
+        padding: '1.15rem 0',
         color: '#FFFFFF',
         fontSize: '0.82rem',
         boxShadow: '0 4px 20px rgba(0,0,0,0.18)',
@@ -48,7 +48,7 @@ export default function HomePage() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🇮🇳</span>
+              <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>📜</span>
               <div>
                 <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>Supreme Court of India Safeguards</b>
                 <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>SLP (Civil) CC No. 12896/2014 &amp; 24707/2014</small>
