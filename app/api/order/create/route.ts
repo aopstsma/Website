@@ -4,10 +4,14 @@ import { createAdminClient } from '@/lib/supabase/server';
 
 // Official standard fees in paise (SPEC.md Section 4 & 6)
 const FEE_RATES_PAISE: Record<string, number> = {
-  student: 250000,      // ₹2,500 (Student Registration & Exam Fee)
-  affiliation: 1500000, // ₹15,000 (College Affiliation & Inspection Fee)
-  legal_fee: 250000,    // ₹2,500 (Default Legal Defense Contribution)
-  dir_deposit: 2500000, // ₹25,000 (DIR deposit)
+  student: 250000,         // ₹2,500 (Student Examination & Registration Fee)
+  dr_deposit: 2500000,     // ₹25,000 (DR Deposit by School / Member College)
+  legal_assist: 500000,    // ₹5,000 (Legal Assistance Contribution - preset/custom)
+  court_expenses: 1000000, // ₹10,000 (Court Litigation Expenses - preset/custom)
+  // Backward compatibility
+  dir_deposit: 2500000,
+  affiliation: 2500000,
+  legal_fee: 500000,
 };
 
 export async function POST(request: Request) {
@@ -23,7 +27,7 @@ export async function POST(request: Request) {
       customAmount,
     } = body;
 
-    // Determine amount: custom amount for legal defense if provided, or mapped fee
+    // Determine amount: custom amount if provided, or mapped fee
     let amountInPaise = customAmount && Number(customAmount) > 0
       ? Math.round(Number(customAmount) * 100)
       : (FEE_RATES_PAISE[feeCategory] || 250000);
@@ -33,7 +37,7 @@ export async function POST(request: Request) {
     let dbPaymentId: string | null = null;
     try {
       const supabase = createAdminClient();
-      const fundType = ['legal_assistance', 'court_expenses', 'dir_deposit'].includes(purpose)
+      const fundType = ['legal_assist', 'court_expenses', 'legal_assistance', 'dir_deposit', 'dr_deposit'].includes(purpose)
         ? 'case_fund'
         : 'association_income';
 

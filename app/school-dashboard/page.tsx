@@ -28,15 +28,35 @@ export default function SchoolDashboardPage() {
   // Active Tab for Student Addition: 'excel' vs 'manual'
   const [entryMode, setEntryMode] = useState<'excel' | 'manual'>('excel');
 
-  // Affiliation Fee State
-  const [affiliationPaid, setAffiliationPaid] = useState<boolean>(false);
-  const [affiliationReceipt, setAffiliationReceipt] = useState<{
+  // 1. DR Deposit State (₹25,000 - Directorate Registration)
+  const [drDepositPaid, setDrDepositPaid] = useState<boolean>(false);
+  const [drDepositReceipt, setDrDepositReceipt] = useState<{
     receiptNo: string;
     paidAt: string;
     amount: number;
   } | null>(null);
-  const [payingAffiliation, setPayingAffiliation] = useState(false);
-  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [payingDrDeposit, setPayingDrDeposit] = useState(false);
+  const [showDrCertificateModal, setShowDrCertificateModal] = useState(false);
+
+  // 2. Legal Assist State (Preset / Custom)
+  const [legalAssistAmount, setLegalAssistAmount] = useState<number>(5000);
+  const [legalAssistCustom, setLegalAssistCustom] = useState<string>('');
+  const [payingLegalAssist, setPayingLegalAssist] = useState(false);
+  const [legalAssistReceipt, setLegalAssistReceipt] = useState<{
+    receiptNo: string;
+    paidAt: string;
+    amount: number;
+  } | null>(null);
+
+  // 3. Court Expenses State (Preset / Custom)
+  const [courtExpensesAmount, setCourtExpensesAmount] = useState<number>(10000);
+  const [courtExpensesCustom, setCourtExpensesCustom] = useState<string>('');
+  const [payingCourtExpenses, setPayingCourtExpenses] = useState(false);
+  const [courtExpensesReceipt, setCourtExpensesReceipt] = useState<{
+    receiptNo: string;
+    paidAt: string;
+    amount: number;
+  } | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -53,12 +73,31 @@ export default function SchoolDashboardPage() {
           scan: sessionStorage.getItem('school_scan') || 'Verified Affiliation Document',
         });
 
-        const savedAff = sessionStorage.getItem('school_affiliation_paid');
-        if (savedAff) {
+        // Load saved DR Deposit
+        const savedDr = sessionStorage.getItem('school_dr_deposit_paid') || sessionStorage.getItem('school_affiliation_paid');
+        if (savedDr) {
           try {
-            const parsed = JSON.parse(savedAff);
-            setAffiliationPaid(true);
-            setAffiliationReceipt(parsed);
+            const parsed = JSON.parse(savedDr);
+            setDrDepositPaid(true);
+            setDrDepositReceipt(parsed);
+          } catch {
+            // ignore
+          }
+        }
+        // Load saved Legal Assist
+        const savedLegal = sessionStorage.getItem('school_legal_assist_paid');
+        if (savedLegal) {
+          try {
+            setLegalAssistReceipt(JSON.parse(savedLegal));
+          } catch {
+            // ignore
+          }
+        }
+        // Load saved Court Expenses
+        const savedCourt = sessionStorage.getItem('school_court_expenses_paid');
+        if (savedCourt) {
+          try {
+            setCourtExpensesReceipt(JSON.parse(savedCourt));
           } catch {
             // ignore
           }
@@ -67,22 +106,24 @@ export default function SchoolDashboardPage() {
     }
   }, [router]);
 
-  const handlePayAffiliation = async () => {
-    setPayingAffiliation(true);
+  // Handler 1: Pay DR Deposit (₹25,000)
+  const handlePayDrDeposit = async () => {
+    setPayingDrDeposit(true);
     try {
       const res = await fetch('/api/order/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          purpose: 'college_affiliation_fee',
-          feeCategory: 'affiliation',
+          purpose: 'dr_deposit',
+          feeCategory: 'dr_deposit',
           schoolCode: schoolInfo.name,
           payerPhone: schoolInfo.mobile,
+          studentName: schoolInfo.authority,
         }),
       });
       const data = await res.json();
       const receipt = {
-        receiptNo: data.receiptNo || `AFF-${Date.now().toString().slice(-6)}`,
+        receiptNo: data.receiptNo || `DR-${Date.now().toString().slice(-6)}`,
         paidAt: new Date().toLocaleDateString('en-IN', {
           day: '2-digit',
           month: 'short',
@@ -90,17 +131,101 @@ export default function SchoolDashboardPage() {
           hour: '2-digit',
           minute: '2-digit',
         }),
-        amount: 15000,
+        amount: 25000,
       };
-      sessionStorage.setItem('school_affiliation_paid', JSON.stringify(receipt));
-      setAffiliationPaid(true);
-      setAffiliationReceipt(receipt);
-      setShowCertificateModal(true);
+      sessionStorage.setItem('school_dr_deposit_paid', JSON.stringify(receipt));
+      setDrDepositPaid(true);
+      setDrDepositReceipt(receipt);
+      setShowDrCertificateModal(true);
     } catch (err) {
       console.error(err);
-      alert('Payment initialization failed. Please try again.');
+      alert('DR Deposit gateway initialization failed. Please try again.');
     } finally {
-      setPayingAffiliation(false);
+      setPayingDrDeposit(false);
+    }
+  };
+
+  // Handler 2: Pay Legal Assist
+  const handlePayLegalAssist = async () => {
+    const finalAmt = legalAssistCustom && Number(legalAssistCustom) > 0
+      ? Number(legalAssistCustom)
+      : legalAssistAmount;
+    setPayingLegalAssist(true);
+    try {
+      const res = await fetch('/api/order/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          purpose: 'legal_assist',
+          feeCategory: 'legal_assist',
+          customAmount: finalAmt,
+          schoolCode: schoolInfo.name,
+          payerPhone: schoolInfo.mobile,
+          studentName: `${schoolInfo.name} (Legal Assist)`,
+        }),
+      });
+      const data = await res.json();
+      const receipt = {
+        receiptNo: data.receiptNo || `AST-${Date.now().toString().slice(-6)}`,
+        paidAt: new Date().toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        amount: finalAmt,
+      };
+      sessionStorage.setItem('school_legal_assist_paid', JSON.stringify(receipt));
+      setLegalAssistReceipt(receipt);
+      alert(`✓ Legal Assist Contribution of ₹${finalAmt.toLocaleString('en-IN')} successfully processed! Receipt: ${receipt.receiptNo}`);
+    } catch (err) {
+      console.error(err);
+      alert('Legal assist payment failed. Please try again.');
+    } finally {
+      setPayingLegalAssist(false);
+    }
+  };
+
+  // Handler 3: Pay Court Expenses
+  const handlePayCourtExpenses = async () => {
+    const finalAmt = courtExpensesCustom && Number(courtExpensesCustom) > 0
+      ? Number(courtExpensesCustom)
+      : courtExpensesAmount;
+    setPayingCourtExpenses(true);
+    try {
+      const res = await fetch('/api/order/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          purpose: 'court_expenses',
+          feeCategory: 'court_expenses',
+          customAmount: finalAmt,
+          schoolCode: schoolInfo.name,
+          payerPhone: schoolInfo.mobile,
+          studentName: `${schoolInfo.name} (Court Expenses)`,
+        }),
+      });
+      const data = await res.json();
+      const receipt = {
+        receiptNo: data.receiptNo || `CRT-${Date.now().toString().slice(-6)}`,
+        paidAt: new Date().toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        amount: finalAmt,
+      };
+      sessionStorage.setItem('school_court_expenses_paid', JSON.stringify(receipt));
+      setCourtExpensesReceipt(receipt);
+      alert(`✓ Court Expenses Contribution of ₹${finalAmt.toLocaleString('en-IN')} successfully processed! Receipt: ${receipt.receiptNo}`);
+    } catch (err) {
+      console.error(err);
+      alert('Court expenses payment failed. Please try again.');
+    } finally {
+      setPayingCourtExpenses(false);
     }
   };
 
@@ -401,65 +526,50 @@ export default function SchoolDashboardPage() {
             )}
           </div>
 
-          {/* SCHOOL SUMMARY STATS */}
+          {/* SCHOOL SUMMARY STATS & INSTITUTIONAL PAYMENTS HUB */}
           <div className="pay-card summary-card">
-            <h3>📊 Roster & Membership Fees Summary</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginTop: '1rem' }}>
-              <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '8px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
-                <span style={{ display: 'block', fontSize: '1.8rem', fontWeight: 800, color: '#0F172A', lineHeight: 1 }}>
-                  {students.length}
-                </span>
-                <small style={{ color: '#64748B', fontWeight: 600, textTransform: uppercaseText }}>Total Candidates</small>
-              </div>
+            <h3>🏛️ Institutional Payments &amp; Deposits Center</h3>
 
-              <div style={{ background: '#FEF3C7', padding: '1rem', borderRadius: '8px', border: '1px solid #FDE68A', textAlign: 'center' }}>
-                <span style={{ display: 'block', fontSize: '1.8rem', fontWeight: 800, color: '#D97706', lineHeight: 1 }}>
-                  ₹{(students.length * 2500).toLocaleString('en-IN')}
-                </span>
-                <small style={{ color: '#B45309', fontWeight: 600, textTransform: uppercaseText }}>Candidate Fee Target (₹2,500/ea)</small>
-              </div>
-            </div>
-
-            {/* INSTITUTIONAL AFFILIATION FEE BOX (Payable by School / College) */}
+            {/* 1. DR DEPOSIT BY SCHOOL (₹25,000) */}
             <div style={{
               marginTop: '1rem',
               padding: '1.15rem',
-              background: affiliationPaid ? '#F0FDF4' : '#FFFBEB',
-              border: `2px solid ${affiliationPaid ? '#10B981' : '#F59E0B'}`,
+              background: drDepositPaid ? '#F0FDF4' : '#FFFBEB',
+              border: `2px solid ${drDepositPaid ? '#10B981' : '#D97706'}`,
               borderRadius: '10px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.25rem' }}>
-                    <span style={{ fontSize: '1.25rem' }}>🏛️</span>
-                    <b style={{ color: '#0F172A', fontSize: '0.98rem' }}>Institutional Affiliation Fee (2026-27)</b>
+                    <span style={{ fontSize: '1.25rem' }}>🏫</span>
+                    <b style={{ color: '#0F172A', fontSize: '0.98rem' }}>DR Deposit by School (Session 2026-27)</b>
                     <span style={{
                       fontSize: '0.72rem',
                       fontWeight: 800,
                       padding: '0.15rem 0.55rem',
                       borderRadius: '4px',
-                      background: affiliationPaid ? '#D1FAE5' : '#FEF3C7',
-                      color: affiliationPaid ? '#065F46' : '#92400E',
+                      background: drDepositPaid ? '#D1FAE5' : '#FEF3C7',
+                      color: drDepositPaid ? '#065F46' : '#92400E',
                     }}>
-                      {affiliationPaid ? 'PAID & CERTIFIED ✓' : 'FEE DUE'}
+                      {drDepositPaid ? 'PAID & CERTIFIED ✓' : 'DEPOSIT DUE'}
                     </span>
                   </div>
                   <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
-                    Official Annual Affiliation &amp; Institutional Inspection Fee under AOPSTSMA State Authority
+                    Mandatory Directorate Registration (DR Deposit) under Societies Registration Act XXI of 1860
                   </p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0B2545', display: 'block' }}>₹15,000</span>
-                  <small style={{ color: '#64748B', fontSize: '0.72rem' }}>Mandatory College Fee</small>
+                  <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0B2545', display: 'block' }}>₹25,000</span>
+                  <small style={{ color: '#64748B', fontSize: '0.72rem' }}>Statutory Institution Fee</small>
                 </div>
               </div>
 
               <div style={{ marginTop: '0.9rem', display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                {affiliationPaid ? (
+                {drDepositPaid ? (
                   <>
                     <button
                       type="button"
-                      onClick={() => setShowCertificateModal(true)}
+                      onClick={() => setShowDrCertificateModal(true)}
                       style={{
                         padding: '0.55rem 1.15rem',
                         background: '#047857',
@@ -475,20 +585,20 @@ export default function SchoolDashboardPage() {
                         boxShadow: '0 2px 8px rgba(4, 120, 87, 0.25)',
                       }}
                     >
-                      📜 View &amp; Print Affiliation Certificate
+                      📜 View &amp; Print DR Deposit Certificate
                     </button>
                     <span style={{ fontSize: '0.78rem', color: '#047857', fontWeight: 600 }}>
-                      Receipt: {affiliationReceipt?.receiptNo} ({affiliationReceipt?.paidAt})
+                      Receipt: {drDepositReceipt?.receiptNo} ({drDepositReceipt?.paidAt})
                     </span>
                   </>
                 ) : (
                   <button
                     type="button"
-                    onClick={handlePayAffiliation}
-                    disabled={payingAffiliation}
+                    onClick={handlePayDrDeposit}
+                    disabled={payingDrDeposit}
                     style={{
                       padding: '0.65rem 1.25rem',
-                      background: 'linear-gradient(135deg, #0B2545 0%, #1E40AF 100%)',
+                      background: 'linear-gradient(135deg, #0B2545 0%, #15803D 100%)',
                       color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '6px',
@@ -498,16 +608,196 @@ export default function SchoolDashboardPage() {
                       boxShadow: '0 4px 12px rgba(11, 37, 69, 0.25)',
                     }}
                   >
-                    {payingAffiliation ? 'Initializing Gateway...' : '💳 Pay ₹15,000 Affiliation Fee via Gateway'}
+                    {payingDrDeposit ? 'Connecting Gateway...' : '💳 Pay ₹25,000 DR Deposit via Gateway'}
                   </button>
                 )}
               </div>
             </div>
 
-            <div style={{ marginTop: '1.25rem', padding: '0.85rem', background: '#EFF6FF', borderLeft: '4px solid #3B82F6', borderRadius: '0 6px 6px 0', fontSize: '0.82rem', color: '#1E40AF' }}>
-              ℹ️ <strong>Roster Verification Active</strong>
-              <br />
-              Students pay ₹2,500 online using <code>Student Name</code> + <code>Mobile Number</code>. Completed transactions automatically sync to Google Sheets.
+            {/* 2. LEGAL ASSIST CONTRIBUTION */}
+            <div style={{
+              marginTop: '1rem',
+              padding: '1.15rem',
+              background: '#FFFBEB',
+              border: '1px solid #FDE68A',
+              borderRadius: '10px',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.25rem' }}>
+                    <span style={{ fontSize: '1.25rem' }}>⚖️</span>
+                    <b style={{ color: '#0F172A', fontSize: '0.98rem' }}>Institutional Legal Assist Fund</b>
+                    {legalAssistReceipt && (
+                      <span style={{ fontSize: '0.72rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '4px', background: '#D1FAE5', color: '#065F46' }}>
+                        CONTRIBUTED ✓
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
+                    Senior Advocate defense &amp; Directorate legal consultation fund
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                {[2500, 5000, 10000].map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => { setLegalAssistAmount(amt); setLegalAssistCustom(''); }}
+                    style={{
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '4px',
+                      border: legalAssistAmount === amt && !legalAssistCustom ? '2px solid #D97706' : '1px solid #CBD5E1',
+                      background: legalAssistAmount === amt && !legalAssistCustom ? '#FEF3C7' : '#FFFFFF',
+                      color: legalAssistAmount === amt && !legalAssistCustom ? '#92400E' : '#334155',
+                      fontWeight: 700,
+                      fontSize: '0.78rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ₹{amt.toLocaleString('en-IN')}
+                  </button>
+                ))}
+                <input
+                  type="number"
+                  placeholder="Custom ₹"
+                  value={legalAssistCustom}
+                  onChange={(e) => setLegalAssistCustom(e.target.value)}
+                  style={{ width: '90px', padding: '0.35rem 0.5rem', fontSize: '0.78rem', borderRadius: '4px', border: '1px solid #CBD5E1' }}
+                />
+                <button
+                  type="button"
+                  onClick={handlePayLegalAssist}
+                  disabled={payingLegalAssist}
+                  style={{
+                    padding: '0.45rem 0.95rem',
+                    background: '#D97706',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {payingLegalAssist ? 'Processing...' : '⚖️ Pay Legal Assist'}
+                </button>
+              </div>
+              {legalAssistReceipt && (
+                <div style={{ marginTop: '0.4rem', fontSize: '0.74rem', color: '#047857', fontWeight: 600 }}>
+                  Receipt #{legalAssistReceipt.receiptNo} (₹{legalAssistReceipt.amount.toLocaleString('en-IN')})
+                </div>
+              )}
+            </div>
+
+            {/* 3. COURT EXPENSES CONTRIBUTION */}
+            <div style={{
+              marginTop: '1rem',
+              padding: '1.15rem',
+              background: '#F5F3FF',
+              border: '1px solid #DDD6FE',
+              borderRadius: '10px',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.25rem' }}>
+                    <span style={{ fontSize: '1.25rem' }}>📜</span>
+                    <b style={{ color: '#0F172A', fontSize: '0.98rem' }}>Court Expenses &amp; Litigation Fund</b>
+                    {courtExpensesReceipt && (
+                      <span style={{ fontSize: '0.72rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '4px', background: '#D1FAE5', color: '#065F46' }}>
+                        CONTRIBUTED ✓
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
+                    High Court of Orissa WP(C) 5640/2009 &amp; Supreme Court SLP expenses
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                {[5000, 10000, 25000].map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => { setCourtExpensesAmount(amt); setCourtExpensesCustom(''); }}
+                    style={{
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '4px',
+                      border: courtExpensesAmount === amt && !courtExpensesCustom ? '2px solid #7C3AED' : '1px solid #CBD5E1',
+                      background: courtExpensesAmount === amt && !courtExpensesCustom ? '#EDE9FE' : '#FFFFFF',
+                      color: courtExpensesAmount === amt && !courtExpensesCustom ? '#6D28D9' : '#334155',
+                      fontWeight: 700,
+                      fontSize: '0.78rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ₹{amt.toLocaleString('en-IN')}
+                  </button>
+                ))}
+                <input
+                  type="number"
+                  placeholder="Custom ₹"
+                  value={courtExpensesCustom}
+                  onChange={(e) => setCourtExpensesCustom(e.target.value)}
+                  style={{ width: '90px', padding: '0.35rem 0.5rem', fontSize: '0.78rem', borderRadius: '4px', border: '1px solid #CBD5E1' }}
+                />
+                <button
+                  type="button"
+                  onClick={handlePayCourtExpenses}
+                  disabled={payingCourtExpenses}
+                  style={{
+                    padding: '0.45rem 0.95rem',
+                    background: '#7C3AED',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {payingCourtExpenses ? 'Processing...' : '📜 Pay Court Expenses'}
+                </button>
+              </div>
+              {courtExpensesReceipt && (
+                <div style={{ marginTop: '0.4rem', fontSize: '0.74rem', color: '#047857', fontWeight: 600 }}>
+                  Receipt #{courtExpensesReceipt.receiptNo} (₹{courtExpensesReceipt.amount.toLocaleString('en-IN')})
+                </div>
+              )}
+            </div>
+
+            {/* 4. STUDENT FEES ROSTER OVERVIEW */}
+            <div style={{ marginTop: '1rem', padding: '1rem', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <b style={{ color: '#1E40AF', fontSize: '0.9rem' }}>🎓 Student Candidate Fees (₹2,500/student)</b>
+                <Link
+                  href="/pay"
+                  target="_blank"
+                  style={{ fontSize: '0.78rem', color: '#1D4ED8', fontWeight: 700, textDecoration: 'none' }}
+                >
+                  Open Candidate Pay Gateway &rarr;
+                </Link>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', textAlign: 'center' }}>
+                <div style={{ background: '#FFFFFF', padding: '0.5rem', borderRadius: '6px' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'block' }}>{students.length}</span>
+                  <small style={{ fontSize: '0.7rem', color: '#64748B' }}>Total Enrolled</small>
+                </div>
+                <div style={{ background: '#FFFFFF', padding: '0.5rem', borderRadius: '6px' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#15803D', display: 'block' }}>
+                    {students.filter((s) => s.paymentStatus === 'Paid').length}
+                  </span>
+                  <small style={{ fontSize: '0.7rem', color: '#15803D' }}>Paid Candidates</small>
+                </div>
+                <div style={{ background: '#FFFFFF', padding: '0.5rem', borderRadius: '6px' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#B45309', display: 'block' }}>
+                    {students.filter((s) => s.paymentStatus !== 'Paid').length}
+                  </span>
+                  <small style={{ fontSize: '0.7rem', color: '#B45309' }}>Pending (₹2,500 ea)</small>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -565,8 +855,8 @@ export default function SchoolDashboardPage() {
           </table>
         </div>
 
-        {/* AFFILIATION CERTIFICATE MODAL */}
-        {showCertificateModal && (
+        {/* DR DEPOSIT CERTIFICATE MODAL */}
+        {showDrCertificateModal && (
           <div
             style={{
               position: 'fixed',
@@ -579,7 +869,7 @@ export default function SchoolDashboardPage() {
               justifyContent: 'center',
               padding: '1rem',
             }}
-            onClick={() => setShowCertificateModal(false)}
+            onClick={() => setShowDrCertificateModal(false)}
           >
             <div
               style={{
@@ -590,7 +880,7 @@ export default function SchoolDashboardPage() {
                 maxHeight: '92vh',
                 overflowY: 'auto',
                 boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
-                border: '4px double #D97706',
+                border: '4px double #15803D',
                 padding: '2.5rem',
                 position: 'relative',
               }}
@@ -609,7 +899,7 @@ export default function SchoolDashboardPage() {
                   display: 'inline-block',
                   marginTop: '0.75rem',
                   padding: '0.35rem 1rem',
-                  background: 'linear-gradient(135deg, #0B2545 0%, #1E40AF 100%)',
+                  background: 'linear-gradient(135deg, #0B2545 0%, #15803D 100%)',
                   color: '#FDE68A',
                   fontSize: '0.85rem',
                   fontWeight: 800,
@@ -617,7 +907,7 @@ export default function SchoolDashboardPage() {
                   letterSpacing: '1px',
                   textTransform: 'uppercase',
                 }}>
-                  Certificate of Institutional Affiliation (2026-2027)
+                  Certificate of Directorate Registration (DR Deposit)
                 </div>
               </div>
 
@@ -627,7 +917,7 @@ export default function SchoolDashboardPage() {
                 <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0B2545', margin: '0.6rem 0' }}>
                   {schoolInfo.name}
                 </div>
-                situated in <b style={{ color: '#0F172A' }}>{schoolInfo.zone.toUpperCase()} ZONE</b>, Odisha, has duly cleared all institutional inspection criteria and remitted the statutory Affiliation &amp; Inspection Fee of <b style={{ color: '#166534' }}>₹15,000.00</b> for the academic session 2026-2027.
+                situated in <b style={{ color: '#0F172A' }}>{schoolInfo.zone.toUpperCase()} ZONE</b>, Odisha, has duly cleared all institutional verification criteria and remitted the statutory Directorate Registration (DR Deposit) of <b style={{ color: '#166534' }}>₹25,000.00</b> for the academic session 2026-2027.
               </div>
 
               {/* Verification Details Table */}
@@ -635,15 +925,15 @@ export default function SchoolDashboardPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.65rem' }}>
                   <div>
                     <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>RECEIPT NUMBER</span>
-                    <strong style={{ color: '#0F172A' }}>{affiliationReceipt?.receiptNo}</strong>
+                    <strong style={{ color: '#0F172A' }}>{drDepositReceipt?.receiptNo}</strong>
                   </div>
                   <div>
                     <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>DATE OF ISSUE</span>
-                    <strong style={{ color: '#0F172A' }}>{affiliationReceipt?.paidAt}</strong>
+                    <strong style={{ color: '#0F172A' }}>{drDepositReceipt?.paidAt}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>AFFILIATION STATUS</span>
-                    <strong style={{ color: '#15803D' }}>ACTIVE &amp; RECOGNIZED ✓</strong>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>DR DEPOSIT STATUS</span>
+                    <strong style={{ color: '#15803D' }}>ACTIVE &amp; RECOGNIZED DR DEPOSIT ✓</strong>
                   </div>
                   <div>
                     <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>LEGAL PROTECTION</span>
@@ -684,11 +974,11 @@ export default function SchoolDashboardPage() {
                     cursor: 'pointer',
                   }}
                 >
-                  🖨️ Print Certificate
+                  🖨️ Print DR Certificate
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowCertificateModal(false)}
+                  onClick={() => setShowDrCertificateModal(false)}
                   style={{
                     padding: '0.65rem 1.5rem',
                     background: '#E2E8F0',

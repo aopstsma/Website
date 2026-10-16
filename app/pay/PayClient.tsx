@@ -18,32 +18,47 @@ interface StudentData {
   paymentStatus: 'Pending' | 'Paid';
 }
 
+export type FeeCategory = 'student' | 'dr_deposit' | 'legal_assist' | 'court_expenses';
+
 export default function PayClient() {
-  // Fee Category: Student Exam Fee vs Legal Defense Fee
-  const [feeCategory, setFeeCategory] = useState<'student' | 'legal'>('student');
+  // Fee Category: 4 Official Payment Channels
+  const [feeCategory, setFeeCategory] = useState<FeeCategory>('student');
 
-  // Legal Fee Form State
-  const [legalName, setLegalName] = useState('');
-  const [legalPhone, setLegalPhone] = useState('');
-  const [legalAffiliation, setLegalAffiliation] = useState('All Orissa Member Institutional Patron');
-  const [legalPurpose, setLegalPurpose] = useState('Orissa High Court & Supreme Court Legal Defense Fund');
-  const [legalAmount, setLegalAmount] = useState<number>(2500);
-  const [legalCustomAmount, setLegalCustomAmount] = useState<string>('');
-
-  // Step 1 & 2: Zone & School Selection
+  // Fee 1 (Student): Step 1 & 2 Zone & School Selection
   const [zoneId, setZoneId] = useState('bhubaneswar');
   const [selectedSchool, setSelectedSchool] = useState(
     SCHOOLS.filter((s) => s.zone === 'bhubaneswar')[0]?.name || ''
   );
-
-  // Step 3: Student Details (Student Name & Mobile Number - No Roll Number)
+  // Student Details
   const [studentName, setStudentName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-
-  // Flow State: 'verify' | 'otp' | 'ready_to_pay' | 'paid'
   const [payStep, setPayStep] = useState<'verify' | 'otp' | 'ready_to_pay' | 'paid'>('verify');
   const [otpInput, setOtpInput] = useState('');
   const [demoOtp, setDemoOtp] = useState<string | null>(null);
+
+  // Fee 2 (DR Deposit by School): Fixed ₹25,000
+  const [drZoneId, setDrZoneId] = useState('bhubaneswar');
+  const [drSchoolName, setDrSchoolName] = useState(
+    SCHOOLS.filter((s) => s.zone === 'bhubaneswar')[0]?.name || ''
+  );
+  const [drRepresentative, setDrRepresentative] = useState('');
+  const [drPhone, setDrPhone] = useState('');
+
+  // Fee 3 (Legal Assist): Preset/Custom
+  const [legalName, setLegalName] = useState('');
+  const [legalPhone, setLegalPhone] = useState('');
+  const [legalAffiliation, setLegalAffiliation] = useState('All Orissa Member Institutional Patron');
+  const [legalPurpose, setLegalPurpose] = useState('Senior Advocate Legal Defense & State Counsel Assistance');
+  const [legalAmount, setLegalAmount] = useState<number>(5000);
+  const [legalCustomAmount, setLegalCustomAmount] = useState<string>('');
+
+  // Fee 4 (Court Expenses): Preset/Custom
+  const [courtName, setCourtName] = useState('');
+  const [courtPhone, setCourtPhone] = useState('');
+  const [courtAffiliation, setCourtAffiliation] = useState('All Orissa Member Institution / Patron');
+  const [courtMatter, setCourtMatter] = useState('Orissa High Court WP(C) 5640/2009 & Supreme Court SLP CC 12896/2014');
+  const [courtAmount, setCourtAmount] = useState<number>(10000);
+  const [courtCustomAmount, setCourtCustomAmount] = useState<string>('');
 
   const [loading, setLoading] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
@@ -61,6 +76,7 @@ export default function PayClient() {
 
   // Filter schools dynamically based on selected Zone
   const availableSchools = SCHOOLS.filter((s) => s.zone === zoneId);
+  const drAvailableSchools = SCHOOLS.filter((s) => s.zone === drZoneId);
 
   const handleZoneChange = (newZone: string) => {
     setZoneId(newZone);
@@ -68,7 +84,6 @@ export default function PayClient() {
     if (firstSchool) {
       setSelectedSchool(firstSchool.name);
     }
-    // Reset any previous verification state
     if (payStep !== 'paid') {
       setPayStep('verify');
       setVerifiedStudent(null);
@@ -88,23 +103,94 @@ export default function PayClient() {
   };
 
   const getFeeAmount = () => {
-    if (feeCategory === 'legal') {
+    if (feeCategory === 'dr_deposit') {
+      return 25000;
+    }
+    if (feeCategory === 'legal_assist') {
       return legalCustomAmount && Number(legalCustomAmount) > 0
         ? Number(legalCustomAmount)
         : legalAmount;
+    }
+    if (feeCategory === 'court_expenses') {
+      return courtCustomAmount && Number(courtCustomAmount) > 0
+        ? Number(courtCustomAmount)
+        : courtAmount;
     }
     return 2500;
   };
 
   const getFeeTypeName = () => {
-    if (feeCategory === 'legal') {
-      return `Legal Defense Fund (${legalPurpose})`;
+    if (feeCategory === 'dr_deposit') {
+      return 'Directorate Registration (DR Deposit) by School';
+    }
+    if (feeCategory === 'legal_assist') {
+      return `Legal Assistance Fund (${legalPurpose})`;
+    }
+    if (feeCategory === 'court_expenses') {
+      return `Court Litigation Expenses (${courtMatter})`;
     }
     return 'Student Candidate Examination & Registration Fee';
   };
 
-  // Legal Fee Payment Handler
-  const handleLegalPay = async (e: React.FormEvent) => {
+  // Handler: DR Deposit Payment (₹25,000)
+  const handleDrDepositPay = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    const cleanMobile = drPhone.replace(/\D/g, '').slice(-10);
+    if (!drRepresentative.trim() || cleanMobile.length !== 10) {
+      setError('Please enter the Principal / Authorized Signatory Name and valid 10-digit Mobile Number.');
+      return;
+    }
+
+    setPaymentProcessing(true);
+    try {
+      const orderRes = await fetch('/api/order/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          purpose: 'dr_deposit',
+          feeCategory: 'dr_deposit',
+          schoolCode: drSchoolName,
+          payerPhone: cleanMobile,
+          studentName: drRepresentative.trim(),
+        }),
+      });
+      const orderData = await orderRes.json();
+      const txnId = `TXN-DR-${Date.now().toString().slice(-8)}`;
+      const paidAt = new Date().toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+
+      setPaymentProcessing(false);
+      setPaidReceipt({
+        txnId,
+        paidAt,
+        student: {
+          studentId: 'DR-DEP-' + Date.now().toString().slice(-6),
+          studentName: drRepresentative.trim() + ' (Authorized Signatory)',
+          mobileNumber: cleanMobile,
+          zoneId: drZoneId,
+          zoneName: ZONES.find((z) => z.id === drZoneId)?.name || 'Bhubaneswar Zone',
+          schoolId: 'AOPSTSMA-DR',
+          schoolName: drSchoolName,
+          district: 'Odisha',
+          feeAmount: 25000,
+          paymentStatus: 'Paid',
+        },
+        feeTypeName: 'Directorate Registration (DR Deposit) by School',
+      });
+      setPayStep('paid');
+    } catch (err) {
+      console.error(err);
+      setPaymentProcessing(false);
+      setError('Failed to initiate DR Deposit payment. Please try again.');
+    }
+  };
+
+  // Handler: Legal Assist Payment
+  const handleLegalAssistPay = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     const cleanMobile = legalPhone.replace(/\D/g, '').slice(-10);
@@ -122,15 +208,15 @@ export default function PayClient() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          purpose: 'legal_defense_fund',
-          feeCategory: 'legal_fee',
+          purpose: 'legal_assist',
+          feeCategory: 'legal_assist',
           customAmount: finalAmount,
           studentName: legalName.trim(),
           payerPhone: cleanMobile,
         }),
       });
       const orderData = await orderRes.json();
-      const txnId = `TXN-LEG-${Date.now().toString().slice(-8)}`;
+      const txnId = `TXN-AST-${Date.now().toString().slice(-8)}`;
       const paidAt = new Date().toLocaleString('en-IN', {
         timeZone: 'Asia/Kolkata',
         dateStyle: 'medium',
@@ -142,24 +228,84 @@ export default function PayClient() {
         txnId,
         paidAt,
         student: {
-          studentId: 'LEGAL-CONTRIBUTOR',
+          studentId: 'LEGAL-ASSIST',
           studentName: legalName.trim(),
           mobileNumber: cleanMobile,
           zoneId: 'State-Wide',
           zoneName: 'Odisha State Legal Defense Wing',
-          schoolId: 'AOPSTSMA-LEGAL',
+          schoolId: 'AOPSTSMA-AST',
           schoolName: legalAffiliation || 'Association Legal Defense Wing',
           district: 'Odisha',
           feeAmount: finalAmount,
           paymentStatus: 'Paid',
         },
-        feeTypeName: `Legal Defense Fund — ${legalPurpose}`,
+        feeTypeName: `Legal Assistance Fund — ${legalPurpose}`,
       });
       setPayStep('paid');
     } catch (err) {
       console.error(err);
       setPaymentProcessing(false);
-      setError('Failed to initiate legal defense payment. Please try again.');
+      setError('Failed to initiate Legal Assist payment. Please try again.');
+    }
+  };
+
+  // Handler: Court Expenses Payment
+  const handleCourtExpensesPay = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    const cleanMobile = courtPhone.replace(/\D/g, '').slice(-10);
+    if (!courtName.trim() || cleanMobile.length !== 10) {
+      setError('Please enter your Institution / Full Name and a valid 10-digit Mobile Number.');
+      return;
+    }
+    const finalAmount = courtCustomAmount && Number(courtCustomAmount) > 0
+      ? Number(courtCustomAmount)
+      : courtAmount;
+
+    setPaymentProcessing(true);
+    try {
+      const orderRes = await fetch('/api/order/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          purpose: 'court_expenses',
+          feeCategory: 'court_expenses',
+          customAmount: finalAmount,
+          studentName: courtName.trim(),
+          payerPhone: cleanMobile,
+        }),
+      });
+      const orderData = await orderRes.json();
+      const txnId = `TXN-CRT-${Date.now().toString().slice(-8)}`;
+      const paidAt = new Date().toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+
+      setPaymentProcessing(false);
+      setPaidReceipt({
+        txnId,
+        paidAt,
+        student: {
+          studentId: 'COURT-EXPENSES',
+          studentName: courtName.trim(),
+          mobileNumber: cleanMobile,
+          zoneId: 'State-Wide',
+          zoneName: 'Orissa High Court & Supreme Court Wing',
+          schoolId: 'AOPSTSMA-CRT',
+          schoolName: courtAffiliation || 'State Association Legal Secretariat',
+          district: 'Odisha',
+          feeAmount: finalAmount,
+          paymentStatus: 'Paid',
+        },
+        feeTypeName: `Court Litigation Expenses — ${courtMatter}`,
+      });
+      setPayStep('paid');
+    } catch (err) {
+      console.error(err);
+      setPaymentProcessing(false);
+      setError('Failed to initiate Court Expenses payment. Please try again.');
     }
   };
 
@@ -550,23 +696,29 @@ export default function PayClient() {
         <div className="pay-card-grid">
           {/* LEFT COLUMN: PAYMENT / VERIFICATION FORM */}
           <div className="pay-card">
-            <h3>{feeCategory === 'student' ? 'Student Fee Verification' : 'Legal Defense & Court Fund'}</h3>
+            <h3>
+              {feeCategory === 'student' && '🎓 Student Fee Verification & Payment'}
+              {feeCategory === 'dr_deposit' && '🏫 DR Deposit by Member School (₹25,000)'}
+              {feeCategory === 'legal_assist' && '⚖️ Institutional Legal Assist Contribution'}
+              {feeCategory === 'court_expenses' && '📜 Court Litigation & Case Expenses Fund'}
+            </h3>
             <p className="pay-sub">
-              {feeCategory === 'student'
-                ? 'Select your Zone, your School, and enter your Full Name & Mobile Number as uploaded by the institution.'
-                : 'Direct voluntary legal defense contribution supporting High Court and Supreme Court advocacy.'}
+              {feeCategory === 'student' && 'Select your Zone and School, then enter Student Full Name & Mobile Number to verify roster and pay.'}
+              {feeCategory === 'dr_deposit' && 'Statutory ₹25,000 Directorate Registration deposit payable by recognized member training institutions.'}
+              {feeCategory === 'legal_assist' && 'Voluntary institutional legal assistance contribution supporting Senior Advocate counsel & state advocacy.'}
+              {feeCategory === 'court_expenses' && 'Litigation expense contribution safeguarding Orissa High Court WP(C) 5640/2009 & Supreme Court orders.'}
             </p>
 
-            {/* FEE TYPE TABS */}
-            <div className="fee-type-tabs" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.65rem' }}>
+            {/* 4 OFFICIAL FEE TYPE TABS */}
+            <div className="fee-type-tabs">
               <button
                 type="button"
                 onClick={() => { setFeeCategory('student'); setError(null); }}
                 style={{
                   border: feeCategory === 'student' ? '2px solid #0B2545' : '1px solid #CBD5E1',
-                  padding: '0.75rem 0.5rem',
+                  padding: '0.65rem 0.4rem',
                   borderRadius: '8px',
-                  fontSize: '0.85rem',
+                  fontSize: '0.82rem',
                   fontWeight: 700,
                   cursor: 'pointer',
                   background: feeCategory === 'student' ? '#0B2545' : '#FFFFFF',
@@ -576,88 +728,80 @@ export default function PayClient() {
                   transition: 'all 0.2s ease',
                 }}
               >
-                🎓 Student Exam Fee
-                <span
-                  style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    color: feeCategory === 'student' ? '#FDE68A' : '#B45309',
-                    marginTop: '0.15rem',
-                  }}
-                >
-                  ₹2,500 (Verified)
+                🎓 Student Fee
+                <span style={{ display: 'block', fontSize: '0.72rem', color: feeCategory === 'student' ? '#FDE68A' : '#B45309', marginTop: '0.15rem' }}>
+                  ₹2,500 (Candidate)
                 </span>
               </button>
 
               <button
                 type="button"
-                onClick={() => { setFeeCategory('legal'); setError(null); }}
+                onClick={() => { setFeeCategory('dr_deposit'); setError(null); }}
                 style={{
-                  border: feeCategory === 'legal' ? '2px solid #D97706' : '1px solid #CBD5E1',
-                  padding: '0.75rem 0.5rem',
+                  border: feeCategory === 'dr_deposit' ? '2px solid #0B2545' : '1px solid #CBD5E1',
+                  padding: '0.65rem 0.4rem',
                   borderRadius: '8px',
-                  fontSize: '0.85rem',
+                  fontSize: '0.82rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  background: feeCategory === 'legal' ? '#D97706' : '#FFFFFF',
-                  color: feeCategory === 'legal' ? '#FFFFFF' : '#334155',
+                  background: feeCategory === 'dr_deposit' ? '#0B2545' : '#FFFFFF',
+                  color: feeCategory === 'dr_deposit' ? '#FFFFFF' : '#334155',
                   textAlign: 'center',
-                  boxShadow: feeCategory === 'legal' ? '0 4px 12px rgba(217, 119, 6, 0.25)' : 'none',
+                  boxShadow: feeCategory === 'dr_deposit' ? '0 4px 12px rgba(11, 37, 69, 0.2)' : 'none',
                   transition: 'all 0.2s ease',
                 }}
               >
-                ⚖️ Legal Defense Fee
-                <span
-                  style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    color: feeCategory === 'legal' ? '#FEF3C7' : '#64748B',
-                    marginTop: '0.15rem',
-                  }}
-                >
-                  Court Defense Fund
+                🏫 DR Deposit
+                <span style={{ display: 'block', fontSize: '0.72rem', color: feeCategory === 'dr_deposit' ? '#FDE68A' : '#15803D', marginTop: '0.15rem' }}>
+                  ₹25,000 (School)
                 </span>
               </button>
-            </div>
 
-            {/* INSTITUTIONAL AFFILIATION NOTICE FOR COLLEGES */}
-            <div style={{
-              margin: '0.85rem 0 1.25rem 0',
-              padding: '0.75rem 1rem',
-              background: '#F0F9FF',
-              border: '1px solid #BAE6FD',
-              borderRadius: '8px',
-              fontSize: '0.8rem',
-              color: '#0369A1',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}>
-              <span>
-                🏛️ <strong>Looking to pay College Affiliation Fee (₹15,000)?</strong>
-                <br />
-                Institutional affiliation is processed inside the School / College Portal.
-              </span>
-              <Link
-                href="/school-login"
+              <button
+                type="button"
+                onClick={() => { setFeeCategory('legal_assist'); setError(null); }}
                 style={{
+                  border: feeCategory === 'legal_assist' ? '2px solid #D97706' : '1px solid #CBD5E1',
+                  padding: '0.65rem 0.4rem',
+                  borderRadius: '8px',
+                  fontSize: '0.82rem',
                   fontWeight: 700,
-                  color: '#0284C7',
-                  background: '#FFFFFF',
-                  padding: '0.35rem 0.75rem',
-                  borderRadius: '4px',
-                  border: '1px solid #BAE6FD',
-                  textDecoration: 'none',
-                  fontSize: '0.78rem',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.2rem',
+                  cursor: 'pointer',
+                  background: feeCategory === 'legal_assist' ? '#D97706' : '#FFFFFF',
+                  color: feeCategory === 'legal_assist' ? '#FFFFFF' : '#334155',
+                  textAlign: 'center',
+                  boxShadow: feeCategory === 'legal_assist' ? '0 4px 12px rgba(217, 119, 6, 0.25)' : 'none',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                Go to College Login &rarr;
-              </Link>
+                ⚖️ Legal Assist
+                <span style={{ display: 'block', fontSize: '0.72rem', color: feeCategory === 'legal_assist' ? '#FEF3C7' : '#64748B', marginTop: '0.15rem' }}>
+                  Preset / Custom
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setFeeCategory('court_expenses'); setError(null); }}
+                style={{
+                  border: feeCategory === 'court_expenses' ? '2px solid #7C3AED' : '1px solid #CBD5E1',
+                  padding: '0.65rem 0.4rem',
+                  borderRadius: '8px',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  background: feeCategory === 'court_expenses' ? '#7C3AED' : '#FFFFFF',
+                  color: feeCategory === 'court_expenses' ? '#FFFFFF' : '#334155',
+                  textAlign: 'center',
+                  boxShadow: feeCategory === 'court_expenses' ? '0 4px 12px rgba(124, 58, 237, 0.25)' : 'none',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                📜 Court Expenses
+                <span style={{ display: 'block', fontSize: '0.72rem', color: feeCategory === 'court_expenses' ? '#EDE9FE' : '#64748B', marginTop: '0.15rem' }}>
+                  Litigation Fund
+                </span>
+              </button>
             </div>
 
             {/* ERROR / SUCCESS ALERTS */}
@@ -672,17 +816,139 @@ export default function PayClient() {
               </div>
             )}
 
-            {/* FORM 1: LEGAL DEFENSE FORM */}
-            {feeCategory === 'legal' ? (
-              <form onSubmit={handleLegalPay} className="pay-form">
+            {/* FORM 1: DR DEPOSIT BY SCHOOL (₹25,000) */}
+            {feeCategory === 'dr_deposit' ? (
+              <form onSubmit={handleDrDepositPay} className="pay-form">
+                <div className="form-group">
+                  <label htmlFor="drZoneSelect">
+                    1. Select School Zone <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <select
+                    id="drZoneSelect"
+                    value={drZoneId}
+                    onChange={(e) => {
+                      const z = e.target.value;
+                      setDrZoneId(z);
+                      const f = SCHOOLS.filter((s) => s.zone === z)[0];
+                      if (f) setDrSchoolName(f.name);
+                    }}
+                  >
+                    {ZONES.map((z) => (
+                      <option key={z.id} value={z.id}>
+                        {z.name} ({z.schoolCount} Institutions)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="drSchoolSelect">
+                    2. Member Institution / Training School <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <select
+                    id="drSchoolSelect"
+                    value={drSchoolName}
+                    onChange={(e) => setDrSchoolName(e.target.value)}
+                  >
+                    {drAvailableSchools.map((s, idx) => (
+                      <option key={idx} value={s.name}>
+                        {s.name} ({s.district})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="drRepresentative">
+                    3. Principal / Authorized Secretary Name <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="drRepresentative"
+                    placeholder="e.g. Dr. B. K. Mohapatra, Principal"
+                    value={drRepresentative}
+                    onChange={(e) => setDrRepresentative(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="drPhone">
+                    4. Authorized Mobile Number <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 600, color: '#475569' }}>
+                      +91
+                    </span>
+                    <input
+                      type="tel"
+                      id="drPhone"
+                      maxLength={10}
+                      placeholder="9861012345"
+                      style={{ paddingLeft: '48px' }}
+                      value={drPhone}
+                      onChange={(e) => setDrPhone(e.target.value.replace(/\D/g, ''))}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>5. Fixed Statutory DR Deposit Amount</label>
+                  <div style={{
+                    padding: '0.85rem 1.25rem',
+                    background: '#F0FDF4',
+                    border: '2px solid #16A34A',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                    <div>
+                      <b style={{ color: '#15803D', fontSize: '1.25rem' }}>₹25,000.00</b>
+                      <small style={{ display: 'block', color: '#166534', fontSize: '0.78rem' }}>
+                        Official Directorate Registration Fee (Session 2026-2027)
+                      </small>
+                    </div>
+                    <span style={{ background: '#DCFCE7', color: '#15803D', padding: '0.25rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800 }}>
+                      FIXED BY ASSOCIATION
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={paymentProcessing}
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem',
+                    background: 'linear-gradient(135deg, #0B2545 0%, #15803D 100%)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(11, 37, 69, 0.25)',
+                    marginTop: '0.5rem',
+                  }}
+                >
+                  {paymentProcessing
+                    ? 'Connecting to Gateway...'
+                    : '🏫 Pay ₹25,000 DR Deposit & Generate Certificate'}
+                </button>
+              </form>
+            ) : feeCategory === 'legal_assist' ? (
+              /* FORM 2: LEGAL ASSIST */
+              <form onSubmit={handleLegalAssistPay} className="pay-form">
                 <div className="form-group">
                   <label htmlFor="legalName">
-                    1. Contributor Full Name <span style={{ color: '#EF4444' }}>*</span>
+                    1. Contributor / Institution / Advocate Name <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <input
                     type="text"
                     id="legalName"
-                    placeholder="Enter full legal name (e.g. Adv. Rajesh Mohapatra)"
+                    placeholder="Enter full name / school patron name"
                     value={legalName}
                     onChange={(e) => setLegalName(e.target.value)}
                     required
@@ -705,7 +971,7 @@ export default function PayClient() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="legalAffiliation">3. Associated Zone / Member Institution / Role</label>
+                  <label htmlFor="legalAffiliation">3. Associated Member Institution / Zone / Role</label>
                   <input
                     type="text"
                     id="legalAffiliation"
@@ -716,26 +982,23 @@ export default function PayClient() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="legalPurpose">4. Legal Defense Matter / Purpose</label>
+                  <label htmlFor="legalPurpose">4. Legal Assistance Purpose</label>
                   <select
                     id="legalPurpose"
                     value={legalPurpose}
                     onChange={(e) => setLegalPurpose(e.target.value)}
                   >
-                    <option value="Orissa High Court & Supreme Court Legal Defense Fund">
-                      Orissa High Court &amp; Supreme Court Legal Defense Fund
+                    <option value="Senior Advocate Legal Defense & State Counsel Assistance">
+                      Senior Advocate Legal Defense &amp; State Counsel Assistance
                     </option>
-                    <option value="Senior Counsel Representation in WP(C) 5640/2009">
-                      Senior Counsel Representation in WP(C) 5640/2009
+                    <option value="Special Counsel Engagement for Division Bench Hearing">
+                      Special Counsel Engagement for Division Bench Hearing
                     </option>
-                    <option value="Supreme Court SLP CC 12896/2014 Ongoing Protection Fund">
-                      Supreme Court SLP CC 12896/2014 Ongoing Protection Fund
+                    <option value="State CT Education Policy & Directorate Legal Representation">
+                      State CT Education Policy &amp; Directorate Legal Representation
                     </option>
-                    <option value="State CT Education Policy & BSE Directorate Representation">
-                      State CT Education Policy &amp; BSE Directorate Representation
-                    </option>
-                    <option value="General Association Legal Action & Defense Contribution">
-                      General Association Legal Action &amp; Defense Contribution
+                    <option value="General Association Legal Assistance & Safeguard Fund">
+                      General Association Legal Assistance &amp; Safeguard Fund
                     </option>
                   </select>
                 </div>
@@ -744,7 +1007,7 @@ export default function PayClient() {
                 <div className="form-group">
                   <label>5. Contribution Amount (₹)</label>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.45rem', marginTop: '0.35rem' }}>
-                    {[1000, 2500, 5000, 10000].map((amt) => (
+                    {[2500, 5000, 10000, 25000].map((amt) => (
                       <button
                         key={amt}
                         type="button"
@@ -782,7 +1045,7 @@ export default function PayClient() {
                   style={{
                     width: '100%',
                     padding: '0.9rem',
-                    background: 'linear-gradient(135deg, #0B2545 0%, #1E40AF 100%)',
+                    background: 'linear-gradient(135deg, #0B2545 0%, #D97706 100%)',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '6px',
@@ -795,7 +1058,130 @@ export default function PayClient() {
                 >
                   {paymentProcessing
                     ? 'Connecting to Gateway...'
-                    : `⚖️ Pay ₹${getFeeAmount().toLocaleString('en-IN')} Legal Contribution Now`}
+                    : `⚖️ Pay ₹${getFeeAmount().toLocaleString('en-IN')} Legal Assist Contribution`}
+                </button>
+              </form>
+            ) : feeCategory === 'court_expenses' ? (
+              /* FORM 3: COURT EXPENSES */
+              <form onSubmit={handleCourtExpensesPay} className="pay-form">
+                <div className="form-group">
+                  <label htmlFor="courtName">
+                    1. Institution / Contributor Full Name <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="courtName"
+                    placeholder="Enter institution or representative name"
+                    value={courtName}
+                    onChange={(e) => setCourtName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="courtPhone">
+                    2. Contact Mobile Number <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    id="courtPhone"
+                    maxLength={10}
+                    placeholder="10-digit mobile number"
+                    value={courtPhone}
+                    onChange={(e) => setCourtPhone(e.target.value.replace(/\D/g, ''))}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="courtAffiliation">3. Member Training School / Zone</label>
+                  <input
+                    type="text"
+                    id="courtAffiliation"
+                    placeholder="e.g. Cuttack Zone / Member Institution"
+                    value={courtAffiliation}
+                    onChange={(e) => setCourtAffiliation(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="courtMatter">4. Judicial Matter / Court Reference</label>
+                  <select
+                    id="courtMatter"
+                    value={courtMatter}
+                    onChange={(e) => setCourtMatter(e.target.value)}
+                  >
+                    <option value="Orissa High Court WP(C) 5640/2009 & Supreme Court SLP CC 12896/2014">
+                      Orissa High Court WP(C) 5640/2009 &amp; Supreme Court SLP CC 12896/2014
+                    </option>
+                    <option value="High Court of Orissa Division Bench Case Litigation Expenses">
+                      High Court of Orissa Division Bench Case Litigation Expenses
+                    </option>
+                    <option value="Supreme Court of India Special Leave Petition (SLP) Fund">
+                      Supreme Court of India Special Leave Petition (SLP) Fund
+                    </option>
+                    <option value="Judicial Filing, Paperbook, Stamp & Registry Costs">
+                      Judicial Filing, Paperbook, Stamp &amp; Registry Costs
+                    </option>
+                  </select>
+                </div>
+
+                {/* Amount Selection Chips */}
+                <div className="form-group">
+                  <label>5. Litigation Expense Contribution (₹)</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.45rem', marginTop: '0.35rem' }}>
+                    {[5000, 10000, 25000, 50000].map((amt) => (
+                      <button
+                        key={amt}
+                        type="button"
+                        onClick={() => { setCourtAmount(amt); setCourtCustomAmount(''); }}
+                        style={{
+                          padding: '0.6rem 0.25rem',
+                          borderRadius: '6px',
+                          border: courtAmount === amt && !courtCustomAmount ? '2px solid #7C3AED' : '1px solid #CBD5E1',
+                          background: courtAmount === amt && !courtCustomAmount ? '#EDE9FE' : '#FFFFFF',
+                          color: courtAmount === amt && !courtCustomAmount ? '#6D28D9' : '#334155',
+                          fontWeight: 700,
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ₹{amt.toLocaleString('en-IN')}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: '0.65rem' }}>
+                    <input
+                      type="number"
+                      placeholder="Or enter custom litigation contribution in ₹"
+                      value={courtCustomAmount}
+                      onChange={(e) => setCourtCustomAmount(e.target.value)}
+                      style={{ fontSize: '0.9rem' }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={paymentProcessing}
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem',
+                    background: 'linear-gradient(135deg, #0B2545 0%, #7C3AED 100%)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(11, 37, 69, 0.25)',
+                    marginTop: '0.5rem',
+                  }}
+                >
+                  {paymentProcessing
+                    ? 'Connecting to Gateway...'
+                    : `📜 Pay ₹${getFeeAmount().toLocaleString('en-IN')} Court Expenses Now`}
                 </button>
               </form>
             ) : (
@@ -1026,49 +1412,127 @@ export default function PayClient() {
 
       {/* SUMMARY / PAYMENT UNLOCK CARD */}
       <div className="pay-card summary-card">
-        <h3>{feeCategory === 'legal' ? '⚖️ Legal Defense Summary' : 'Fee Details & Checkout'}</h3>
+        <h3>
+          {feeCategory === 'student' && 'Fee Details & Candidate Checkout'}
+          {feeCategory === 'dr_deposit' && '🏫 DR Deposit Summary (Session 2026-2027)'}
+          {feeCategory === 'legal_assist' && '⚖️ Legal Assist Fund Summary'}
+          {feeCategory === 'court_expenses' && '📜 Court Litigation Expenses Summary'}
+        </h3>
 
-        {feeCategory === 'legal' ? (
+        {feeCategory === 'dr_deposit' ? (
           <div style={{ padding: '0.5rem 0' }}>
-            <div style={{ padding: '1rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', marginBottom: '1rem' }}>
+            <div style={{ padding: '1rem', background: '#F0FDF4', borderRadius: '8px', border: '1px solid #BBF7D0', marginBottom: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '1.75rem' }}>🛡️</span>
+                <span style={{ fontSize: '1.75rem' }}>🏛️</span>
                 <div>
-                  <h4 style={{ margin: 0, color: '#0B2545', fontSize: '1.05rem', fontWeight: 800 }}>
-                    Judicial Defense Fund
+                  <h4 style={{ margin: 0, color: '#15803D', fontSize: '1.05rem', fontWeight: 800 }}>
+                    Directorate Registration Deposit
                   </h4>
-                  <small style={{ color: '#64748B' }}>State Association Legal Action Registry</small>
+                  <small style={{ color: '#166534' }}>Statutory Member Institution Account</small>
                 </div>
               </div>
-
-              <p style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.6, margin: 0 }}>
-                Contributions directly fund Senior Advocate representation before the <b>Hon’ble High Court of Orissa</b> and the <b>Supreme Court of India</b> protecting CT trainee qualification recognition and member institution autonomy.
+              <p style={{ fontSize: '0.82rem', color: '#14532D', lineHeight: 1.6, margin: 0 }}>
+                Statutory deposit of <b>₹25,000</b> remitted under Societies Registration Act XXI of 1860 for annual Directorate affiliation and candidate eligibility recognition.
               </p>
             </div>
 
             <div style={{ background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
-                <span style={{ color: '#64748B' }}>Selected Contribution:</span>
-                <b style={{ color: '#0B2545', fontSize: '1.1rem' }}>₹{getFeeAmount().toLocaleString('en-IN')}</b>
+                <span style={{ color: '#64748B' }}>Statutory Fee:</span>
+                <b style={{ color: '#15803D', fontSize: '1.15rem' }}>₹25,000.00</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Institution:</span>
+                <b style={{ color: '#0F172A', textAlign: 'right', maxWidth: '60%' }}>{drSchoolName}</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Representative:</span>
+                <b style={{ color: '#0F172A' }}>{drRepresentative || 'Principal / Secretary'}</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', borderTop: '1px solid #E2E8F0', paddingTop: '0.5rem' }}>
+                <span style={{ color: '#64748B' }}>Certificate:</span>
+                <b style={{ color: '#15803D' }}>Digital DR Certificate with Apex Seal ✓</b>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1.25rem', padding: '0.75rem', background: '#FEF3C7', borderLeft: '4px solid #D97706', borderRadius: '0 6px 6px 0', fontSize: '0.78rem', color: '#92400E' }}>
+              📜 <strong>Instant Verification:</strong> Completing this ₹25,000 DR deposit marks the school as active in the State Registry and issues a printable Directorate Certificate.
+            </div>
+          </div>
+        ) : feeCategory === 'legal_assist' ? (
+          <div style={{ padding: '0.5rem 0' }}>
+            <div style={{ padding: '1rem', background: '#FFFBEB', borderRadius: '8px', border: '1px solid #FDE68A', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '1.75rem' }}>⚖️</span>
+                <div>
+                  <h4 style={{ margin: 0, color: '#92400E', fontSize: '1.05rem', fontWeight: 800 }}>
+                    Legal Assistance Wing
+                  </h4>
+                  <small style={{ color: '#B45309' }}>Senior Counsel &amp; State Advocacy Fund</small>
+                </div>
+              </div>
+              <p style={{ fontSize: '0.82rem', color: '#78350F', lineHeight: 1.6, margin: 0 }}>
+                Supports Senior Advocates, legal research, and state-level education policy consultations protecting member training colleges across Odisha.
+              </p>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Contribution:</span>
+                <b style={{ color: '#D97706', fontSize: '1.15rem' }}>₹{getFeeAmount().toLocaleString('en-IN')}</b>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
                 <span style={{ color: '#64748B' }}>Contributor:</span>
                 <b style={{ color: '#0F172A' }}>{legalName || 'Patron / Representative'}</b>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
-                <span style={{ color: '#64748B' }}>Matter Reference:</span>
-                <span style={{ color: '#D97706', fontSize: '0.76rem', fontWeight: 700, textAlign: 'right', maxWidth: '60%' }}>
+                <span style={{ color: '#64748B' }}>Purpose:</span>
+                <span style={{ color: '#B45309', fontSize: '0.76rem', fontWeight: 700, textAlign: 'right', maxWidth: '60%' }}>
                   {legalPurpose}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', borderTop: '1px solid #E2E8F0', paddingTop: '0.5rem' }}>
-                <span style={{ color: '#64748B' }}>Judicial Receipt:</span>
-                <b style={{ color: '#166534' }}>Instant Digital Slip with State Seal ✓</b>
+                <span style={{ color: '#64748B' }}>Official Record:</span>
+                <b style={{ color: '#166534' }}>Instant Digital Receipt with State Seal ✓</b>
               </div>
             </div>
+          </div>
+        ) : feeCategory === 'court_expenses' ? (
+          <div style={{ padding: '0.5rem 0' }}>
+            <div style={{ padding: '1rem', background: '#F5F3FF', borderRadius: '8px', border: '1px solid #DDD6FE', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '1.75rem' }}>📜</span>
+                <div>
+                  <h4 style={{ margin: 0, color: '#5B21B6', fontSize: '1.05rem', fontWeight: 800 }}>
+                    Judicial Litigation Fund
+                  </h4>
+                  <small style={{ color: '#6D28D9' }}>Orissa High Court &amp; Supreme Court Proceedings</small>
+                </div>
+              </div>
+              <p style={{ fontSize: '0.82rem', color: '#4C1D95', lineHeight: 1.6, margin: 0 }}>
+                Directly finances court filings, paperbook preparation, and Special Leave Petitions safeguarding the historic judgments in <b>WP(C) 5640/2009</b> and <b>SLP CC 12896/2014</b>.
+              </p>
+            </div>
 
-            <div style={{ marginTop: '1.25rem', padding: '0.75rem', background: '#FEF3C7', borderLeft: '4px solid #D97706', borderRadius: '0 6px 6px 0', fontSize: '0.78rem', color: '#92400E' }}>
-              📜 <strong>Certified Defense Record:</strong> Every legal contribution generates an official association legal receipt cited with Orissa HC WP(C) 5640/2009 proceedings.
+            <div style={{ background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Litigation Amount:</span>
+                <b style={{ color: '#7C3AED', fontSize: '1.15rem' }}>₹{getFeeAmount().toLocaleString('en-IN')}</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Institution:</span>
+                <b style={{ color: '#0F172A' }}>{courtName || 'Patron / School'}</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#64748B' }}>Case Matter:</span>
+                <span style={{ color: '#7C3AED', fontSize: '0.76rem', fontWeight: 700, textAlign: 'right', maxWidth: '60%' }}>
+                  {courtMatter}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', borderTop: '1px solid #E2E8F0', paddingTop: '0.5rem' }}>
+                <span style={{ color: '#64748B' }}>Judicial Receipt:</span>
+                <b style={{ color: '#166534' }}>Signed Court Expense Receipt ✓</b>
+              </div>
             </div>
           </div>
         ) : payStep === 'ready_to_pay' && verifiedStudent ? (
@@ -1217,15 +1681,25 @@ export default function PayClient() {
               <b>{paidReceipt.paidAt}</b>
             </div>
             <div className="r-item">
-              <span>Candidate Name</span>
+              <span>
+                {paidReceipt.student.studentId?.startsWith('DR-')
+                  ? 'Authorized Representative'
+                  : paidReceipt.student.studentId?.includes('LEGAL') || paidReceipt.student.studentId?.includes('COURT')
+                  ? 'Contributor / Patron Name'
+                  : 'Candidate Full Name'}
+              </span>
               <b style={{ color: '#0B2545' }}>{paidReceipt.student.studentName}</b>
             </div>
             <div className="r-item">
-              <span>Training Institution</span>
+              <span>
+                {paidReceipt.student.studentId?.startsWith('DR-')
+                  ? 'Recognized Member Institution'
+                  : 'Affiliated Institution / School'}
+              </span>
               <b>{paidReceipt.student.schoolName}</b>
             </div>
             <div className="r-item">
-              <span>Jurisdiction Zone</span>
+              <span>State Jurisdiction / Zone</span>
               <b>{paidReceipt.student.zoneName}</b>
             </div>
             <div className="r-item">
