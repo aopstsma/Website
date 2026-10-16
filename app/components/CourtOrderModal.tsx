@@ -90,10 +90,10 @@ export default function CourtOrderModal({ doc, onClose }: CourtOrderModalProps) 
             borderBottom: '3px solid #D97706',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <span style={{ fontSize: '1.4rem' }}>⚖️</span>
-            <div>
-              <h3 style={{ fontSize: '1.05rem', color: '#FFFFFF', margin: 0, fontFamily: 'var(--ui)', fontWeight: 700 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0, flex: 1, paddingRight: '0.5rem' }}>
+            <span style={{ fontSize: '1.4rem', flexShrink: 0 }}>⚖️</span>
+            <div style={{ minWidth: 0 }}>
+              <h3 style={{ fontSize: '1.05rem', color: '#FFFFFF', margin: 0, fontFamily: 'var(--ui)', fontWeight: 700, wordBreak: 'break-word' }}>
                 {doc.title}
               </h3>
               <p style={{ fontSize: '0.78rem', color: '#CBD5E1', margin: 0 }}>
@@ -117,6 +117,7 @@ export default function CourtOrderModal({ doc, onClose }: CourtOrderModalProps) 
               placeItems: 'center',
               cursor: 'pointer',
               transition: 'background 0.18s',
+              flexShrink: 0,
             }}
           >
             &times;
@@ -130,8 +131,11 @@ export default function CourtOrderModal({ doc, onClose }: CourtOrderModalProps) 
               display: 'flex',
               backgroundColor: '#F1F5F9',
               borderBottom: '1px solid #E2E8F0',
-              padding: '0.35rem 1.5rem 0',
+              padding: '0.35rem 1rem 0',
               gap: '0.5rem',
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              maxWidth: '100%',
             }}
           >
             <button

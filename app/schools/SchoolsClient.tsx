@@ -62,7 +62,7 @@ export default function SchoolsClient() {
         <label className="visually-hidden" htmlFor="school-search">
           Search member schools
         </label>
-        <div className="search-input-wrap" style={{ position: 'relative', flex: '1 1 300px' }}>
+        <div className="search-input-wrap" style={{ position: 'relative', flex: '1 1 240px', minWidth: 0, width: '100%', maxWidth: '100%' }}>
           <input
             type="search"
             id="school-search"

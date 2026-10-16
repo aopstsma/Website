@@ -195,7 +195,7 @@ export default function AchievementsPage() {
                 marginBottom: '1.5rem',
               }}
             >
-              <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: '420px' }}>
+              <div style={{ position: 'relative', flex: '1 1 240px', maxWidth: '420px', minWidth: 0, width: '100%' }}>
                 <input
                   type="text"
                   placeholder="🔍 Search orders by number, year, or keyword..."

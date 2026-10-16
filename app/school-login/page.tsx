@@ -183,7 +183,7 @@ export default function SchoolLoginPage() {
   return (
     <div className="section" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center' }}>
       <div className="wrap" style={{ maxWidth: '540px', width: '100%' }}>
-        <div className="pay-card" style={{ padding: '2.5rem 2rem' }}>
+        <div className="pay-card">
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>

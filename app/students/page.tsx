@@ -496,9 +496,10 @@ export default function StudentPortalPage() {
                     </div>
 
                     {/* Candidate Details & Photo */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                    <div className="admit-candidate-grid">
                       {/* Left: Info Table */}
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                      <div style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+                        <table style={{ width: '100%', minWidth: '260px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                         <tbody>
                           <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                             <td style={{ padding: '0.5rem 0', fontWeight: 700, color: '#475569', width: '38%' }}>Candidate Name:</td>
@@ -538,6 +539,7 @@ export default function StudentPortalPage() {
                           </tr>
                         </tbody>
                       </table>
+                    </div>
 
                       {/* Right: Photo & Verification Box */}
                       <div style={{ textAlign: 'center' }}>
@@ -574,52 +576,54 @@ export default function StudentPortalPage() {
                       <h4 style={{ fontSize: '0.9rem', color: '#0B2545', textTransform: 'uppercase', marginBottom: '0.5rem', borderBottom: '1px solid #CBD5E1', paddingBottom: '0.25rem' }}>
                         Examination Schedule &amp; Subject Papers
                       </h4>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
-                        <thead>
-                          <tr style={{ backgroundColor: '#F1F5F9', borderBottom: '2px solid #CBD5E1' }}>
-                            <th style={{ padding: '0.4rem 0.5rem' }}>Paper</th>
-                            <th style={{ padding: '0.4rem 0.5rem' }}>Subject Name</th>
-                            <th style={{ padding: '0.4rem 0.5rem' }}>Date</th>
-                            <th style={{ padding: '0.4rem 0.5rem' }}>Timing</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                            <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper I</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>Contemporary Society &amp; Education in India</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>14.10.2026</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
-                          </tr>
-                          <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                            <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper II</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>Child Psychology, Learning &amp; Development</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>16.10.2026</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
-                          </tr>
-                          <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                            <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper III</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>Pedagogy of Mother Tongue (Odia)</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>19.10.2026</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
-                          </tr>
-                          <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                            <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper IV</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>Curriculum &amp; Pedagogic Studies in Mathematics</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>21.10.2026</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
-                          </tr>
-                          <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                            <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper V</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>General Science &amp; Environmental Studies</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>23.10.2026</td>
-                            <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+                        <table style={{ width: '100%', minWidth: '460px', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
+                          <thead>
+                            <tr style={{ backgroundColor: '#F1F5F9', borderBottom: '2px solid #CBD5E1' }}>
+                              <th style={{ padding: '0.4rem 0.5rem' }}>Paper</th>
+                              <th style={{ padding: '0.4rem 0.5rem' }}>Subject Name</th>
+                              <th style={{ padding: '0.4rem 0.5rem' }}>Date</th>
+                              <th style={{ padding: '0.4rem 0.5rem' }}>Timing</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
+                              <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper I</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>Contemporary Society &amp; Education in India</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>14.10.2026</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
+                            </tr>
+                            <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
+                              <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper II</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>Child Psychology, Learning &amp; Development</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>16.10.2026</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
+                            </tr>
+                            <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
+                              <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper III</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>Pedagogy of Mother Tongue (Odia)</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>19.10.2026</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
+                            </tr>
+                            <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
+                              <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper IV</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>Curriculum &amp; Pedagogic Studies in Mathematics</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>21.10.2026</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
+                            </tr>
+                            <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
+                              <td style={{ padding: '0.4rem 0.5rem', fontWeight: 700 }}>Paper V</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>General Science &amp; Environmental Studies</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>23.10.2026</td>
+                              <td style={{ padding: '0.4rem 0.5rem' }}>10:00 AM – 01:00 PM</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
 
                     {/* Official Signatures & QR Seal */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '1.5rem', borderTop: '2px solid #0B2545', marginTop: '1.5rem' }}>
+                    <div className="admit-signatures-row">
                       <div style={{ textAlign: 'center', width: '180px' }}>
                         <div style={{ height: '40px', borderBottom: '1px dashed #64748B' }}></div>
                         <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginTop: '0.3rem' }}>

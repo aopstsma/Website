@@ -29,36 +29,38 @@ export default function HomePage() {
         position: 'relative',
         zIndex: 5,
       }}>
-        <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🏛️</span>
-            <div>
-              <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>Societies Regd. No. 1422/80</b>
-              <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>Govt. of Odisha Societies Act XXI of 1860 &middot; Estd. 1980</small>
+        <div className="wrap">
+          <div className="statutory-prestige-grid">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🏛️</span>
+              <div>
+                <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>Societies Regd. No. 1422/80</b>
+                <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>Govt. of Odisha Societies Act XXI of 1860 &middot; Estd. 1980</small>
+              </div>
             </div>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>⚖️</span>
-            <div>
-              <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>High Court of Orissa Judgments</b>
-              <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>W.P.(C) 5640/2009 &amp; 10372/2008 &middot; Justice M. M. Das</small>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>⚖️</span>
+              <div>
+                <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>High Court of Orissa Judgments</b>
+                <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>W.P.(C) 5640/2009 &amp; 10372/2008 &middot; Justice M. M. Das</small>
+              </div>
             </div>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🇮🇳</span>
-            <div>
-              <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>Supreme Court of India Safeguards</b>
-              <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>SLP (Civil) CC No. 12896/2014 &amp; 24707/2014</small>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🇮🇳</span>
+              <div>
+                <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>Supreme Court of India Safeguards</b>
+                <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>SLP (Civil) CC No. 12896/2014 &amp; 24707/2014</small>
+              </div>
             </div>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🛡️</span>
-            <div>
-              <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>90 Member Training Schools</b>
-              <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>5 Regional State Zones &middot; 30 Districts of Odisha</small>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <span style={{ fontSize: '1.35rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🛡️</span>
+              <div>
+                <b style={{ color: '#FDE68A', display: 'block', fontSize: '0.85rem', letterSpacing: '0.3px' }}>90 Member Training Schools</b>
+                <small style={{ color: '#CBD5E1', fontSize: '0.74rem' }}>5 Regional State Zones &middot; 30 Districts of Odisha</small>
+              </div>
             </div>
           </div>
         </div>

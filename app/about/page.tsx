@@ -45,7 +45,7 @@ export default function AboutPage() {
             <div className="head__rule"></div>
             <h2>Office bearers</h2>
           </div>
-          <div className="bearers reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', marginTop: '1.5rem' }}>
+          <div className="bearers reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
             <div className="bearer" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '2.25rem 1.5rem', boxShadow: '0 4px 20px rgba(11,37,69,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{
                 position: 'relative',
@@ -152,7 +152,7 @@ export default function AboutPage() {
           </div>
 
           {/* REGISTERED CENTRAL HEADQUARTERS & OFFICE ADDRESS */}
-          <div className="reveal" style={{ marginTop: '3.5rem', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '2rem', boxShadow: '0 4px 20px rgba(11,37,69,0.05)' }}>
+          <div className="reveal" style={{ marginTop: '3.5rem', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: 'clamp(1.2rem, 3.5vw, 2rem)', boxShadow: '0 4px 20px rgba(11,37,69,0.05)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
               <span style={{ fontSize: '1.8rem' }}>🏛️</span>
               <div>

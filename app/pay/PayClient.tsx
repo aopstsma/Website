@@ -440,19 +440,7 @@ export default function PayClient() {
       </div>
 
       {/* PROGRESS STEPPER BAR */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '0.5rem',
-          marginBottom: '2rem',
-          background: '#FFFFFF',
-          padding: '1rem',
-          borderRadius: '8px',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-        }}
-      >
+      <div className="pay-stepper-grid">
         <div style={{ textAlign: 'center' }}>
           <span
             style={{
