@@ -4663,6 +4663,10 @@ p { margin: 0 0 1.1em; max-width: 68ch; }
   .czc-branch-bar {
     display: none;
   }
+  .notebook-zone-hierarchy-grid,
+  .notebook-school-top-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 

@@ -33,6 +33,14 @@ export interface AcademicBatchInfo {
   remarks: string;
 }
 
+export interface SchoolCandidateRecord {
+  slNo: number;
+  rollLabel: string;
+  name: string;
+  listType: 'Regular DR List (01–109)' | 'Supplementary DR List (01–06)';
+  pageNo: number;
+}
+
 export interface SchoolFullDetails {
   schoolCode: string;
   slNo: number;
@@ -42,6 +50,14 @@ export interface SchoolFullDetails {
   zoneShortCode: string;
   district: string;
   address: {
+    at: string;
+    po: string;
+    via?: string;
+    circle?: string;
+    educationalDistrict?: string;
+    block?: string;
+    telegraphOffice?: string;
+    landline?: string;
     atPo: string;
     dist: string;
     pin: string;
@@ -57,6 +73,10 @@ export interface SchoolFullDetails {
   };
   batches: AcademicBatchInfo[];
   invigilators: CentreInvigilator[];
+  drFormPdf?: string;
+  drFormDate?: string;
+  drExamYear?: string;
+  candidates?: SchoolCandidateRecord[];
 }
 
 export interface Zone {
@@ -398,7 +418,17 @@ export const ZONES: Zone[] = [
 export const SCHOOLS: School[] = [
   // ==================== BHUBANESWAR ZONE (15 Schools) ====================
   { slNo: 1,  name: 'Rajadhani School Of Education', zone: 'bhubaneswar', district: 'Bhubaneswar, Khordha' },
-  { slNo: 2,  name: 'Odisha Nobel C.T School', zone: 'bhubaneswar', district: 'Khordha' },
+  {
+    slNo: 2,
+    name: 'Orissa Noble C.T. School',
+    zone: 'bhubaneswar',
+    district: 'Khurda',
+    atPo: 'At: Surya Nagar, Post: Surya Nagar, Via: Bhubaneswar',
+    pin: '751003',
+    secretaryName: 'Santosh Kumar Behera (Headmaster)',
+    secretaryPhone: '0674-2397022',
+    email: 'orissa.noble.ct@aopstsma.in',
+  },
   { slNo: 3,  name: 'Lingaraj Secondary Training School', zone: 'bhubaneswar', district: 'Khordha' },
   { slNo: 4,  name: 'Anjali Education', zone: 'bhubaneswar', district: 'Khordha' },
   { slNo: 5,  name: 'Anchalika Secondary Training School', zone: 'bhubaneswar', district: 'Nayagarh' },
@@ -828,11 +858,210 @@ export function getZoneDetails(zoneId: string): Zone {
   return ZONES.find((z) => z.id === normalized) || ZONES[1]; // Default to Central Zone Cuttack
 }
 
+export const ORISSA_NOBLE_CT_CANDIDATES: SchoolCandidateRecord[] = [
+  // Page 1 (Sl. No. 01 to 20)
+  { slNo: 1, rollLabel: '01', name: 'ABADHUTA MAHARANA', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 2, rollLabel: '02', name: 'AJAYA KUMAR SETHY', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 3, rollLabel: '03', name: 'AKHILA KUMAR PRADHAN', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 4, rollLabel: '04', name: 'AKSHYA PATRA', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 5, rollLabel: '05', name: 'BABAJI KHAMARI', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 6, rollLabel: '06', name: 'BALMIKI BISHOYI', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 7, rollLabel: '07', name: 'BASANT KUMAR BALIARISINGH', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 8, rollLabel: '08', name: 'BHASKAR CHANDRA JENA', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 9, rollLabel: '09', name: 'BIBHUTI RANJAN BISWAL', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 10, rollLabel: '10', name: 'BIDYUTA LATA SAHOO', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 11, rollLabel: '11', name: 'BIJAYA KUMAR SAHOO', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 12, rollLabel: '12', name: 'BINAPANI DASH', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 13, rollLabel: '13', name: 'BINAYAKA SARANGI', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 14, rollLabel: '14', name: 'BINODA BIHARI PRADHAN', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 15, rollLabel: '15', name: 'BIPIN BIHARI SUBUDHI', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 16, rollLabel: '16', name: 'BIRANCHI NARAYAN SAHOO', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 17, rollLabel: '17', name: 'BIRENDRA KUMAR TARASIA', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 18, rollLabel: '18', name: 'BISWAMBHARA PANIGRAHI', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 19, rollLabel: '19', name: 'CHANDRA SEKHAR PRADHAN', listType: 'Regular DR List (01–109)', pageNo: 1 },
+  { slNo: 20, rollLabel: '20', name: 'DANARDAN PANDA', listType: 'Regular DR List (01–109)', pageNo: 1 },
+
+  // Page 2 (Sl. No. 21 to 40)
+  { slNo: 21, rollLabel: '21', name: 'DILLIP KUMAR MANADHATA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 22, rollLabel: '22', name: 'DINABANDHU BERIA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 23, rollLabel: '23', name: 'DOLAMANI MEHER', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 24, rollLabel: '24', name: 'DIPAK KUMAR KHUNTIA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 25, rollLabel: '25', name: 'DHUKHISYAM PRADHAN', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 26, rollLabel: '26', name: 'GANGADHAR SAHOO', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 27, rollLabel: '27', name: 'GANGADHAR SANDHA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 28, rollLabel: '28', name: 'GAYATRI BHUYAN', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 29, rollLabel: '29', name: 'GELAMANI DEI', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 30, rollLabel: '30', name: 'GOPAL GAUDU', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 31, rollLabel: '31', name: 'GOURI SUKLA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 32, rollLabel: '32', name: 'HRUSIKESH BEHERA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 33, rollLabel: '33', name: 'JANARDAN BHANJA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 34, rollLabel: '34', name: 'JANMEJAYA BEHERA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 35, rollLabel: '35', name: 'JOCHHANA RANI DAS', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 36, rollLabel: '36', name: 'KABITA KUMARI PRADHAN', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 37, rollLabel: '37', name: 'KABITA PUROHIT', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 38, rollLabel: '38', name: 'KALU CHARAN PANDA', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 39, rollLabel: '39', name: 'KANHU CHARAN MEHER', listType: 'Regular DR List (01–109)', pageNo: 2 },
+  { slNo: 40, rollLabel: '40', name: 'KHAGESWAR MEHER', listType: 'Regular DR List (01–109)', pageNo: 2 },
+
+  // Page 3 (Sl. No. 41 to 60)
+  { slNo: 41, rollLabel: '41', name: 'KUBER PRADHAN', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 42, rollLabel: '42', name: 'KUNTALA KUMARI DEI', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 43, rollLabel: '43', name: 'MAMATA PANIGRAHI', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 44, rollLabel: '44', name: 'MANJULATA BARIK', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 45, rollLabel: '45', name: 'MANJUSHREE MISHRA', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 46, rollLabel: '46', name: 'MANORAMA PADHI', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 47, rollLabel: '47', name: 'MEENAKETAN BHOI', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 48, rollLabel: '48', name: 'TARINI CHARAN SAHU', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 49, rollLabel: '49', name: 'MOHAMMED JAN', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 50, rollLabel: '50', name: 'MOHAN SAHOO', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 51, rollLabel: '51', name: 'MURALIDHAR BEHERA', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 52, rollLabel: '52', name: 'NIRMALA JENA', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 53, rollLabel: '53', name: 'NIRANJAN BISWAL', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 54, rollLabel: '54', name: 'NIRUPAMA BISWAL', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 55, rollLabel: '55', name: 'PRADEEPTA KUMAR ACHARYA', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 56, rollLabel: '56', name: 'PANCHANANA DALAI', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 57, rollLabel: '57', name: 'PANDABA SUNA', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 58, rollLabel: '58', name: 'PANGARI SUSANTA KUMAR UDAYABHANU', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 59, rollLabel: '59', name: 'PARAKSHITA BHOI', listType: 'Regular DR List (01–109)', pageNo: 3 },
+  { slNo: 60, rollLabel: '60', name: 'PRABASINI NAYAK', listType: 'Regular DR List (01–109)', pageNo: 3 },
+
+  // Page 4 (Sl. No. 61 to 80)
+  { slNo: 61, rollLabel: '61', name: 'PRADEEP KUMAR BISWAL', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 62, rollLabel: '62', name: 'PRADEEPTA KUMAR ROUTRAY', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 63, rollLabel: '63', name: 'PRAFULLA KUMAR BEHERA', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 64, rollLabel: '64', name: 'PRAFULLA KUMAR DASH', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 65, rollLabel: '65', name: 'PRAFULLA KUMAR PARIDA', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 66, rollLabel: '66', name: 'PRAHALLADA BEHERA', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 67, rollLabel: '67', name: 'PRANAB KUMAR MOHANTY', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 68, rollLabel: '68', name: 'PRASANNA KUMAR BHANJA', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 69, rollLabel: '69', name: 'PRASANTA KUMAR NAYAK', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 70, rollLabel: '70', name: 'PRASANTA KUMAR PANI', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 71, rollLabel: '71', name: 'PRATAP CHANDRA BISWAL', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 72, rollLabel: '72', name: 'PURNAMASI BISWAL', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 73, rollLabel: '73', name: 'PUSPALATA PUHAN', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 74, rollLabel: '74', name: 'RABINARAYAN NATH SHARMA', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 75, rollLabel: '75', name: 'RABINDRA KUMAR BEHERA', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 76, rollLabel: '76', name: 'RABINDRA KUMAR NAYAK', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 77, rollLabel: '77', name: 'RAGHUNATH BHOI', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 78, rollLabel: '78', name: 'RAJALAXMI MOHAPATRA', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 79, rollLabel: '79', name: 'RAJANI KANTA ROUT', listType: 'Regular DR List (01–109)', pageNo: 4 },
+  { slNo: 80, rollLabel: '80', name: 'RAJA KISHOR MUDULI', listType: 'Regular DR List (01–109)', pageNo: 4 },
+
+  // Page 5 (Sl. No. 81 to 100)
+  { slNo: 81, rollLabel: '81', name: 'RAMANANDA KAMPA', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 82, rollLabel: '82', name: 'RENUBALA MOHANTY', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 83, rollLabel: '83', name: 'RITANJALI PADHY', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 84, rollLabel: '84', name: 'ROHITA TANDI', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 85, rollLabel: '85', name: 'SAILA BALA ROUT', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 86, rollLabel: '86', name: 'SAHADEV KUMAR SAHA', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 87, rollLabel: '87', name: 'SANGHAMITRA MOHANTY', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 88, rollLabel: '88', name: 'SANGRAM KESHARI BHANJA', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 89, rollLabel: '89', name: 'SANKARSAN PANDA', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 90, rollLabel: '90', name: 'SANTOSH KUMAR JENA', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 91, rollLabel: '91', name: 'SAROJINI DEI', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 92, rollLabel: '92', name: 'SATYA PRIYA ROUT', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 93, rollLabel: '93', name: 'SUPRAVA PRADHAN', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 94, rollLabel: '94', name: 'SURATHA NAIK', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 95, rollLabel: '95', name: 'SURENDRA MAHAKUR', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 96, rollLabel: '96', name: 'SURJYAMANI BUDHIA', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 97, rollLabel: '97', name: 'SURYA NARAYAN PANDA', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 98, rollLabel: '98', name: 'SWADHIN KUMAR ROUT', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 99, rollLabel: '99', name: 'TRINATH NAYAK', listType: 'Regular DR List (01–109)', pageNo: 5 },
+  { slNo: 100, rollLabel: '100', name: 'TUSHAR RANJAN PANDA', listType: 'Regular DR List (01–109)', pageNo: 5 },
+
+  // Page 6 (Sl. No. 101 to 109)
+  { slNo: 101, rollLabel: '101', name: 'BISHNU CHARAN RATH', listType: 'Regular DR List (01–109)', pageNo: 6 },
+  { slNo: 102, rollLabel: '102', name: 'B. PRADEEP KUMAR PATRA', listType: 'Regular DR List (01–109)', pageNo: 6 },
+  { slNo: 103, rollLabel: '103', name: 'HARIHAR SA', listType: 'Regular DR List (01–109)', pageNo: 6 },
+  { slNo: 104, rollLabel: '104', name: 'JHUNUBALA NAYAK', listType: 'Regular DR List (01–109)', pageNo: 6 },
+  { slNo: 105, rollLabel: '105', name: 'KRUSHNA CHANDRA MOHARANA', listType: 'Regular DR List (01–109)', pageNo: 6 },
+  { slNo: 106, rollLabel: '106', name: 'MAMATA MAYEE MOHANTY', listType: 'Regular DR List (01–109)', pageNo: 6 },
+  { slNo: 107, rollLabel: '107', name: 'PRADEEP KUMAR SINGH BABU', listType: 'Regular DR List (01–109)', pageNo: 6 },
+  { slNo: 108, rollLabel: '108', name: 'SATYA NARAYAN PANIGRAHI', listType: 'Regular DR List (01–109)', pageNo: 6 },
+  { slNo: 109, rollLabel: '109', name: 'SUSANT KUMAR DASH', listType: 'Regular DR List (01–109)', pageNo: 6 },
+
+  // Page 7 (Supplementary DR List Sl. No. 01 to 06 — Total 115 Candidates)
+  { slNo: 110, rollLabel: 'S-01', name: 'MANJULA MEKAP', listType: 'Supplementary DR List (01–06)', pageNo: 7 },
+  { slNo: 111, rollLabel: 'S-02', name: 'RANJANA MEKAP', listType: 'Supplementary DR List (01–06)', pageNo: 7 },
+  { slNo: 112, rollLabel: 'S-03', name: 'PURNA CHANDRA MANDAL', listType: 'Supplementary DR List (01–06)', pageNo: 7 },
+  { slNo: 113, rollLabel: 'S-04', name: 'NRUSINGH CHARAN SAHOO', listType: 'Supplementary DR List (01–06)', pageNo: 7 },
+  { slNo: 114, rollLabel: 'S-05', name: 'AKHILA KUMAR POLAI', listType: 'Supplementary DR List (01–06)', pageNo: 7 },
+  { slNo: 115, rollLabel: 'S-06', name: 'MANOJ MOHAN BARAL', listType: 'Supplementary DR List (01–06)', pageNo: 7 },
+];
+
 export function getSchoolFullDetails(school: School, fallbackIndex = 1): SchoolFullDetails {
   const zone = getZoneDetails(school.zone);
   const sl = school.slNo || fallbackIndex;
   const prefix = ZONE_PREFIX_MAP[zone.id] || 'SCH';
   const schoolCode = school.code || `SCH-${prefix}-${String(sl).padStart(2, '0')}`;
+
+  const isOrissaNoble =
+    school.name.toLowerCase().includes('noble') || school.name.toLowerCase().includes('nobel');
+
+  if (isOrissaNoble) {
+    return {
+      schoolCode: 'SCH-BBS-02',
+      slNo: sl,
+      name: 'Orissa Noble C.T. School',
+      zoneId: 'bhubaneswar',
+      zoneName: zone.fullTitle || 'Bhubaneswar Zone (BBS)',
+      zoneShortCode: zone.code || 'BZB-HQ',
+      district: 'Khurda',
+      address: {
+        at: 'Surya Nagar',
+        po: 'Surya Nagar',
+        via: 'Bhubaneswar',
+        circle: 'Khurda',
+        educationalDistrict: 'Bhubaneswar',
+        block: 'Bhubaneswar',
+        telegraphOffice: 'Bhubaneswar',
+        landline: '0674-2397022',
+        atPo: 'At: Surya Nagar, Post: Surya Nagar, Via: Bhubaneswar',
+        dist: 'Khurda',
+        pin: '751003',
+      },
+      secretary: {
+        name: 'Santosh Kumar Behera',
+        designation: 'Headmaster / Head of the Institution',
+        idCardNo: 'AOP-HM-BBS-02',
+        phone: '0674-2397022 / +91 63709 87576',
+        whatsapp: '916370987576',
+        email: 'orissa.noble.ct@aopstsma.in',
+        photo: '/assets/img/secretary-avatar.svg',
+      },
+      batches: [
+        {
+          order: '1st Batch',
+          batchLabel: '1989 - 1990 Batch',
+          session: '1989 - 1990 Batch',
+          remarks: '1st Recognized C.T. Training Batch — Verified under BSE Exam Form No. 29 (2009)',
+        },
+        {
+          order: '2nd Batch',
+          batchLabel: '1990 - 1991 Batch',
+          session: '1990 - 1991 Batch',
+          remarks: '2nd Recognized C.T. Training Batch — Verified under BSE Exam Form No. 29 (2009)',
+        },
+        {
+          order: '3rd Batch',
+          batchLabel: '1991 - 1992 Batch',
+          session: '1991 - 1992 Batch',
+          remarks: '3rd Recognized C.T. Training Batch — Verified under BSE Exam Form No. 29 (2009)',
+        },
+        {
+          order: 'Other Batch',
+          batchLabel: '1992 - 1993 Other Batch (115 DR Candidates)',
+          session: '1992 - 1993 Other Batch',
+          remarks: '115 Verified Candidates (109 Regular + 06 Supplementary) in BSE Form No. 29 dated 22/06/2009',
+        },
+      ],
+      invigilators: zone.centres || [],
+      drFormPdf: '/assets/docs/orissa-noble-ct-school-dr-2009.pdf',
+      drFormDate: '22/06/2009',
+      drExamYear: '2009',
+      candidates: ORISSA_NOBLE_CT_CANDIDATES,
+    };
+  }
 
   // Derive clean locality name from school title for At/P.O.
   const cleanLocality = school.name
@@ -861,13 +1090,15 @@ export function getSchoolFullDetails(school: School, fallbackIndex = 1): SchoolF
     zoneShortCode: zone.code || 'CZC',
     district: school.district || 'Odisha',
     address: {
+      at: cleanLocality || school.district || 'Odisha',
+      po: cleanLocality || school.district || 'Odisha',
       atPo: atPoLocality,
       dist: school.district || 'Odisha',
       pin,
     },
     secretary: {
       name: school.secretaryName || `Secretary (${cleanLocality || school.name})`,
-      designation: 'Secretary / Head of Institution',
+      designation: 'Secretary',
       idCardNo: `AOP-SEC-${prefix}-${String(sl).padStart(2, '0')}`,
       phone: school.secretaryPhone || '+91 63709 87576',
       whatsapp: '916370987576',
@@ -877,26 +1108,26 @@ export function getSchoolFullDetails(school: School, fallbackIndex = 1): SchoolF
     batches: [
       {
         order: '1st Batch',
-        batchLabel: '1989–90 Batch',
-        session: '89–90 Batch',
+        batchLabel: '1989 - 1990 Batch',
+        session: '1989 - 1990 Batch',
         remarks: '1st Recognized C.T. Training Batch (1989–1990)',
       },
       {
         order: '2nd Batch',
-        batchLabel: '1990–91 Batch',
-        session: '90–91 Batch',
+        batchLabel: '1990 - 1991 Batch',
+        session: '1990 - 1991 Batch',
         remarks: '2nd Recognized C.T. Training Batch (1990–1991)',
       },
       {
         order: '3rd Batch',
-        batchLabel: '1991–92 Batch',
-        session: '91–92 Batch',
+        batchLabel: '1991 - 1992 Batch',
+        session: '1991 - 1992 Batch',
         remarks: '3rd Recognized C.T. Training Batch (1991–1992)',
       },
       {
-        order: 'Others',
-        batchLabel: '1992–93 Batch',
-        session: '92–93 Batch',
+        order: 'Other Batch',
+        batchLabel: '1992 - 1993 Other Batch',
+        session: '1992 - 1993 Other Batch',
         remarks: 'Subsequent & Additional Batch Records (1992–1993)',
       },
     ],

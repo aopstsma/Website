@@ -31,10 +31,10 @@ export default function SiteHeader() {
     { href: '/about', label: 'About' },
     { href: '/zones', label: 'Zones' },
     { href: '/schools', label: 'Schools' },
-    { href: '/achievements', label: 'Court Orders' },
     { href: '/students', label: 'Student Portal' },
+    { href: '/videos', label: 'Videos' },
+    { href: '/achievements', label: 'Court Orders' },
     { href: '/services', label: 'Services' },
-    { href: '/gallery', label: 'Gallery' },
     { href: '/contact', label: 'Contact' },
   ];
 

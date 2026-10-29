@@ -66,8 +66,38 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ============ 2. QUICK PORTAL ACTIONS (4 PRESTIGIOUS GATEWAYS) ============ */}
+      {/* ============ 2. QUICK PORTAL ACTIONS (PROMINENT GATEWAYS) ============ */}
       <div className="wrap" style={{ position: 'relative' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: '0.65rem',
+            marginTop: '1.5rem',
+            marginBottom: '0.5rem',
+          }}
+        >
+          <Link href="/zones" className="school-click-here-btn">
+            🗺️ Explore Zones
+          </Link>
+          <Link href="/schools" className="school-click-here-btn">
+            🏫 Find a School
+          </Link>
+          <Link href="/students" className="school-click-here-btn" style={{ background: '#059669' }}>
+            🎓 Student Registration
+          </Link>
+          <Link href="/videos" className="school-click-here-btn" style={{ background: '#7E22CE' }}>
+            🎬 Watch Videos (50 Clips)
+          </Link>
+          <Link href="/schools" className="school-click-here-btn">
+            🏛️ Association Directory
+          </Link>
+          <Link href="/contact" className="school-click-here-btn">
+            📞 Contact Us
+          </Link>
+        </div>
+
         <div className="quick-portal-grid">
           <Link className="quick-card" href="/schools">
             <div className="quick-card__icon">🏫</div>

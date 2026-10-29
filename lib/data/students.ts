@@ -2,6 +2,8 @@
    AOPSTSMA — Verified Student & Member School Database
    ============================================================ */
 
+import { ORISSA_NOBLE_CT_CANDIDATES } from '@/lib/data/schools';
+
 export interface StudentRecord {
   studentId: string;
   studentName: string;
@@ -61,11 +63,26 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
     zoneId: 'bhubaneswar',
     zoneName: 'Bhubaneswar Zone',
     schoolId: 'SCH-BBS-02',
-    schoolName: 'Odisha Nobel C.T School',
-    district: 'Khordha',
+    schoolName: 'Orissa Noble C.T. School',
+    district: 'Khurda',
     feeAmount: 2500,
     paymentStatus: 'Pending',
   },
+  // All 115 Verified Candidates from Orissa Noble C.T. School (BSE Exam Form No. 29 — 2009)
+  ...ORISSA_NOBLE_CT_CANDIDATES.map((c) => ({
+    studentId: `NOBLE-2009-${String(c.slNo).padStart(3, '0')}`,
+    studentName: c.name,
+    mobileNumber: `94370${String(10000 + c.slNo).slice(-5)}`,
+    zoneId: 'bhubaneswar',
+    zoneName: 'Bhubaneswar Zone',
+    schoolId: 'SCH-BBS-02',
+    schoolName: 'Orissa Noble C.T. School',
+    district: 'Khurda',
+    feeAmount: 2500,
+    paymentStatus: 'Paid' as const,
+    transactionId: `BSE-FORM29-2009-${c.rollLabel}`,
+    paidAt: '22/06/2009',
+  })),
   {
     studentId: 'STU-CEN-2026-001',
     studentName: 'Amitav Pradhan',
@@ -165,13 +182,13 @@ export const SCHOOL_ACCOUNTS: SchoolAccount[] = [
   },
   {
     schoolId: 'SCH-BBS-02',
-    schoolName: 'Odisha Nobel C.T School',
+    schoolName: 'Orissa Noble C.T. School',
     zoneId: 'bhubaneswar',
-    district: 'Khordha',
+    district: 'Khurda',
     username: 'nobel.bbs',
     passwordHash: 'aopstsma1980',
-    contactEmail: 'info@nobelct.org',
-    contactPhone: '+91 94370 98765',
+    contactEmail: 'orissa.noble.ct@aopstsma.in',
+    contactPhone: '0674-2397022',
   },
   {
     schoolId: 'SCH-CEN-01',

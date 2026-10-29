@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ZONES,
   SCHOOLS,
@@ -15,56 +16,77 @@ import {
 export default function SchoolsClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const chartRef = useRef<HTMLDivElement>(null);
+  const schoolSectionRef = useRef<HTMLDivElement>(null);
 
   const [query, setQuery] = useState('');
-  const rawParam = searchParams.get('zone') || 'all';
+  const rawParam = searchParams.get('zone') || 'balasore';
   const normalizedZone =
-    rawParam === 'cuttack' ? 'central' : rawParam === 'berhampur' ? 'ganjam' : rawParam;
+    rawParam === 'cuttack'
+      ? 'central'
+      : rawParam === 'berhampur'
+      ? 'ganjam'
+      : rawParam === 'all'
+      ? 'all'
+      : rawParam;
+
   const [selectedZone, setSelectedZone] = useState(normalizedZone);
 
-  // Default featured school: Jagannath Secondary Training School (Central Zone Cuttack)
-  const defaultCentralSchool = useMemo(
+  // Default to Baleswar Zone -> Sugo Secondary Training School (as shown in Notebook Page 1)
+  const defaultBaleswarSchool = useMemo(
     () =>
-      SCHOOLS.find((s) => s.zone === 'central' && s.name.toLowerCase().includes('jagannath')) ||
+      SCHOOLS.find((s) => s.zone === 'balasore' && s.name.toLowerCase().includes('sugo')) ||
+      SCHOOLS.find((s) => s.zone === 'balasore') ||
       SCHOOLS[0],
     []
   );
 
-  const [activeSchool, setActiveSchool] = useState<School>(defaultCentralSchool);
+  const [activeSchool, setActiveSchool] = useState<School>(defaultBaleswarSchool);
+  const [showBatches, setShowBatches] = useState<boolean>(true);
   const [activeBatchIdx, setActiveBatchIdx] = useState<number>(0);
   const [activeCentreIdx, setActiveCentreIdx] = useState<number>(0);
   const [modalSchool, setModalSchool] = useState<SchoolFullDetails | null>(null);
 
   useEffect(() => {
-    const p = searchParams.get('zone') || 'all';
+    const p = searchParams.get('zone');
+    if (!p) return;
     const norm = p === 'cuttack' ? 'central' : p === 'berhampur' ? 'ganjam' : p;
     setSelectedZone(norm);
 
     if (norm !== 'all') {
-      const firstInZone =
-        norm === 'central'
-          ? defaultCentralSchool
-          : SCHOOLS.find((s) => s.zone === norm);
+      const firstInZone = SCHOOLS.find((s) => s.zone === norm);
       if (firstInZone) {
         setActiveSchool(firstInZone);
         setActiveCentreIdx(0);
       }
     }
-  }, [searchParams, defaultCentralSchool]);
+  }, [searchParams]);
 
   const zoneName = (id: string) => {
     const found = ZONES.find((z) => z.id === id);
     return found ? found.name : id;
   };
 
+  // Ordered 1 to 5 exactly as written in the notebook:
+  // 1 - BALESWAR - 40 School
+  // 2 - CENTRAL - 24 School
+  // 3 - Bhubaneswar - 15 School
+  // 4 - Sambalpur - 9 School
+  // 5 - Berhampur - 2 School
+  const orderedZones = [
+    { num: 1, id: 'balasore', title: 'BALESWAR', count: 40 },
+    { num: 2, id: 'central', title: 'CENTRAL', count: 24 },
+    { num: 3, id: 'bhubaneswar', title: 'Bhubaneswar', count: 15 },
+    { num: 4, id: 'sambalpur', title: 'Sambalpur', count: 9 },
+    { num: 5, id: 'ganjam', title: 'Berhampur', count: 2 },
+  ];
+
   const chips = [
     { id: 'all', label: `All (${SCHOOLS.length})` },
-    { id: 'central', label: 'Central Cuttack (24)' },
-    { id: 'balasore', label: 'Baleswar (40)' },
-    { id: 'bhubaneswar', label: 'Bhubaneswar (15)' },
-    { id: 'sambalpur', label: 'Sambalpur (9)' },
-    { id: 'ganjam', label: 'Berhampur (2)' },
+    { id: 'balasore', label: '1. Baleswar (40)' },
+    { id: 'central', label: '2. Central (24)' },
+    { id: 'bhubaneswar', label: '3. Bhubaneswar (15)' },
+    { id: 'sambalpur', label: '4. Sambalpur (9)' },
+    { id: 'ganjam', label: '5. Berhampur (2)' },
   ];
 
   const filteredSchools = useMemo(() => {
@@ -80,50 +102,44 @@ export default function SchoolsClient() {
     });
   }, [query, selectedZone]);
 
-  // Active school full details & zone hierarchy details
   const activeDetails = useMemo(
     () => getSchoolFullDetails(activeSchool, activeSchool.slNo || 1),
     [activeSchool]
   );
+
   const activeZoneObj = useMemo(
     () => getZoneDetails(activeSchool.zone),
     [activeSchool]
   );
 
-  // Schools in currently displayed chart zone for quick dropdown switching
   const schoolsInChartZone = useMemo(
     () => SCHOOLS.filter((s) => s.zone === activeSchool.zone),
     [activeSchool.zone]
   );
 
-  const handleChipClick = (zoneId: string) => {
+  const handleZoneSelect = (zoneId: string) => {
     setSelectedZone(zoneId);
     if (zoneId !== 'all') {
-      const firstSchool =
-        zoneId === 'central'
-          ? defaultCentralSchool
-          : SCHOOLS.find((s) => s.zone === zoneId);
+      const firstSchool = SCHOOLS.find((s) => s.zone === zoneId);
       if (firstSchool) {
         setActiveSchool(firstSchool);
         setActiveCentreIdx(0);
       }
-    }
-    if (zoneId === 'all') {
-      router.replace('/schools', { scroll: false });
-    } else {
       router.replace(`/schools?zone=${zoneId}`, { scroll: false });
+    } else {
+      router.replace('/schools', { scroll: false });
     }
   };
 
-  const handleSelectSchoolFromDirectory = (school: School, idx: number, openModal = true) => {
+  const handleSchoolClick = (school: School, idx: number, openPopup = false) => {
     setActiveSchool(school);
     setActiveCentreIdx(0);
-    setActiveBatchIdx(0);
+    setShowBatches(true);
     const full = getSchoolFullDetails(school, school.slNo || idx + 1);
-    if (openModal) {
+    if (openPopup) {
       setModalSchool(full);
-    } else if (chartRef.current) {
-      chartRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (schoolSectionRef.current) {
+      schoolSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -133,499 +149,757 @@ export default function SchoolsClient() {
   return (
     <div className="schools-directory-wrap">
       {/* =====================================================================
-          1. INTERACTIVE ZONAL & SCHOOL DETAILS HIERARCHY CHART (CZC & ALL ZONES)
+          1. AOPSTSMA SCHOOL SECTION FLOWCHART (MATCHING NOTEBOOK PAGE 1)
          ===================================================================== */}
-      <div className="czc-flowchart-shell" ref={chartRef}>
-        {/* Zone Selector Strip inside Chart */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.65rem',
-            marginBottom: '1rem',
-            paddingBottom: '0.85rem',
-            borderBottom: '1px solid #DBEAFE',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span
+      <div className="czc-flowchart-shell">
+        {/* TOP: AOPSTSMA -> SCHOOL SECTION -> ( Logo ) */}
+        <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              letterSpacing: '0.12em',
+              color: '#1E40AF',
+              textTransform: 'uppercase',
+            }}
+          >
+            AOPSTSMA
+          </div>
+          <h2
+            style={{
+              fontSize: 'clamp(1.25rem, 2.5vw, 1.65rem)',
+              fontWeight: 900,
+              color: '#0B2545',
+              textDecoration: 'underline',
+              textDecorationColor: '#D97706',
+              marginTop: '0.15rem',
+            }}
+          >
+            SCHOOL SECTION
+          </h2>
+
+          {/* ( Logo ) Circle */}
+          <div
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              marginTop: '0.65rem',
+            }}
+          >
+            <div
               style={{
-                background: '#0B2545',
-                color: '#FDE68A',
-                fontSize: '0.72rem',
-                fontWeight: 800,
-                padding: '0.25rem 0.65rem',
-                borderRadius: '6px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
+                width: '74px',
+                height: '74px',
+                borderRadius: '50%',
+                border: '3px solid #0B2545',
+                outline: '2px solid #D97706',
+                background: '#FFFFFF',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 6px 18px rgba(11,37,69,0.15)',
+                overflow: 'hidden',
               }}
             >
-              🏛️ Interactive Zone &amp; School Hierarchy
+              <Image
+                src="/assets/img/aopstsma-seal.jpg"
+                alt="AOPSTSMA Logo"
+                width={66}
+                height={66}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
+              />
+            </div>
+            <span
+              style={{
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                color: '#0B2545',
+                marginTop: '0.25rem',
+              }}
+            >
+              ( Logo )
             </span>
-            <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
-              Select any zone or school to inspect President, Admin Officer, Secretary, Batches &amp; Invigilators:
+            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1E40AF', lineHeight: 1 }}>
+              &darr;
+            </span>
+          </div>
+        </div>
+
+        {/* [ ZONE ] (Select from 5 Zone) */}
+        <div
+          style={{
+            maxWidth: '780px',
+            margin: '0 auto 1.25rem',
+            background: '#FFFFFF',
+            border: '2px solid #0B2545',
+            borderRadius: '14px',
+            padding: '1.1rem 1.25rem',
+            boxShadow: '0 6px 20px rgba(11,37,69,0.06)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.65rem',
+              flexWrap: 'wrap',
+              marginBottom: '0.85rem',
+            }}
+          >
+            <span
+              style={{
+                border: '2px solid #0B2545',
+                background: '#0B2545',
+                color: '#FDE68A',
+                fontWeight: 900,
+                fontSize: '0.88rem',
+                padding: '0.3rem 1.1rem',
+                borderRadius: '6px',
+                letterSpacing: '0.06em',
+              }}
+            >
+              ZONE
+            </span>
+            <span style={{ fontSize: '0.92rem', fontWeight: 800, color: '#334155' }}>
+              (Select from 5 Zone)
             </span>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-            {ZONES.map((z) => {
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: '0.55rem',
+            }}
+          >
+            {orderedZones.map((z) => {
               const isSelected = activeZoneObj.id === z.id;
               return (
                 <button
                   key={z.id}
                   type="button"
-                  onClick={() => {
-                    const targetSchool =
-                      z.id === 'central'
-                        ? defaultCentralSchool
-                        : SCHOOLS.find((s) => s.zone === z.id) || defaultCentralSchool;
-                    setActiveSchool(targetSchool);
-                    setActiveCentreIdx(0);
-                  }}
+                  onClick={() => handleZoneSelect(z.id)}
                   style={{
-                    padding: '0.32rem 0.7rem',
-                    borderRadius: '999px',
-                    border: isSelected ? '1.5px solid #D97706' : '1px solid #CBD5E1',
-                    background: isSelected ? '#0B2545' : '#FFFFFF',
-                    color: isSelected ? '#FDE68A' : '#334155',
-                    fontSize: '0.75rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.65rem 0.9rem',
+                    borderRadius: '8px',
+                    border: isSelected ? '2px solid #D97706' : '1.5px solid #CBD5E1',
+                    background: isSelected
+                      ? 'linear-gradient(135deg, #0B2545 0%, #1E3A8A 100%)'
+                      : '#F8FAFC',
+                    color: isSelected ? '#FFFFFF' : '#0F172A',
                     fontWeight: 800,
+                    fontSize: '0.86rem',
                     cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.15s ease',
                   }}
                 >
-                  {z.code} &middot; {z.name.replace(' Zone', '')}
+                  <span>
+                    {z.num} &ndash; {z.title}
+                  </span>
+                  <span
+                    style={{
+                      background: isSelected ? '#FDE68A' : '#E2E8F0',
+                      color: '#0B2545',
+                      padding: '0.15rem 0.55rem',
+                      borderRadius: '999px',
+                      fontSize: '0.75rem',
+                      fontWeight: 900,
+                    }}
+                  >
+                    {z.count} School
+                  </span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* TOP HEADER BANNER: == Central Zone Cuttack (CZC) == */}
-        <div className="czc-title-banner">
-          <span className="czc-title-lines" aria-hidden="true" />
-          <div className="czc-title-pill">
-            {activeZoneObj.fullTitle || `${activeZoneObj.name} (${activeZoneObj.code || 'CZC'})`}
-          </div>
-          <span className="czc-title-lines" aria-hidden="true" />
-        </div>
-
-        {/* REPORTING HIERARCHY PILLS (From Sketch: Reports to Association / Reports to President) */}
-        <div className="czc-reports-top-bar">
-          <span className="czc-report-pill">
-            ↗ Zonal President <strong>Reports to Association (AOPSTSMA State HQ)</strong>
-          </span>
-          <span className="czc-report-pill">
-            ← Administrative Officer <strong>Reports to Zonal President</strong>
-          </span>
-          <span className="czc-report-pill">
-            ↑ Centre Invigilators <strong>Report to Administrative Officer</strong>
-          </span>
-        </div>
-
-        {/* TOP ROW: PRESIDENT (Left) <-- [ LOGO / CZC ] --> ADMINISTRATIVE OFFICER (Right) */}
-        <div className="czc-top-grid">
-          {/* LEFT BOX: ZONAL PRESIDENT */}
-          <div className="czc-officer-card czc-officer-card--president">
-            <div className="czc-officer-top">
-              <div className="czc-photo-box">
-                <img
-                  src={activeZoneObj.president?.photo || '/assets/img/president-nirmal-kanta-mohanty.jpg'}
-                  alt={activeZoneObj.president?.name || 'Zonal President'}
-                />
-                <span className="czc-photo-tag">PHOTO / ID</span>
+        {/* SELECTED ZONE BRANCH + HIERARCHY SIDEBAR (As drawn in Notebook Page 1) */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 250px',
+            gap: '1.25rem',
+            alignItems: 'start',
+            marginBottom: '1.5rem',
+          }}
+          className="notebook-zone-hierarchy-grid"
+        >
+          {/* LEFT: Selected Zone -> President & Administrative Officer */}
+          <div
+            style={{
+              background: '#FFFFFF',
+              border: '2px solid #1E40AF',
+              borderRadius: '14px',
+              padding: '1.25rem',
+            }}
+          >
+            {/* Selected Zone Header Box */}
+            <div style={{ textAlign: 'center', marginBottom: '0.85rem' }}>
+              <div
+                style={{
+                  display: 'inline-block',
+                  border: '2px solid #0B2545',
+                  background: '#EFF6FF',
+                  color: '#0B2545',
+                  fontWeight: 900,
+                  fontSize: '1.05rem',
+                  padding: '0.4rem 1.5rem',
+                  borderRadius: '8px',
+                }}
+              >
+                {activeZoneObj.name} ({activeZoneObj.schoolCount} Schools)
               </div>
-              <div className="czc-officer-info">
-                <span className="czc-role-badge">↗ Reports to Association</span>
-                <h3 className="czc-officer-title">
-                  {activeZoneObj.president?.designation || `President (${activeZoneObj.name})`}
-                </h3>
-                <div className="czc-officer-name">
-                  👤 {activeZoneObj.president?.name || 'Zonal President'}
-                </div>
-                <div className="czc-officer-subrole">
-                  ✦ {activeZoneObj.president?.subRole || 'Incharge Additional President'} &middot; ID:{' '}
-                  {activeZoneObj.president?.idCardNo}
-                </div>
+              <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1E40AF', marginTop: '0.2rem' }}>
+                &darr;
               </div>
             </div>
 
-            <div className="czc-phone-strip">
-              <div className="czc-phone-icon-group">
-                <span style={{ fontSize: '1.15rem' }}>📱</span>
-                <div>
-                  <small style={{ display: 'block', fontSize: '0.66rem', color: '#475569' }}>
-                    Mobile # (WhatsApp)
-                  </small>
-                  <span>{activeZoneObj.president?.phone || '+91 63709 87576'}</span>
-                </div>
-              </div>
-              <div className="czc-phone-actions">
-                <a
-                  href={`tel:${(activeZoneObj.president?.phone || '+916370987576').replace(/\s+/g, '')}`}
-                  className="czc-mini-btn czc-mini-btn--call"
-                >
-                  📞 Call
-                </a>
-                <a
-                  href={`https://wa.me/${activeZoneObj.president?.whatsapp || '916370987576'}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="czc-mini-btn czc-mini-btn--wa"
-                >
-                  💬 WhatsApp
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* CENTER HUB: LOGO + CZC CIRCLE EMBLEM */}
-          <div className="czc-center-hub">
-            <span className="czc-logo-pill">Logo</span>
-            <div className="czc-emblem-row">
-              <span className="czc-arrow-horiz" title="Connected to Zonal President">
-                &larr;
-              </span>
-              <div className="czc-circle-emblem">
-                <strong>{activeZoneObj.code || 'CZC'}</strong>
-                <small>AOPSTSMA</small>
-              </div>
-              <span className="czc-arrow-horiz" title="Connected to Administrative Officer">
-                &rarr;
-              </span>
-            </div>
-            <span
-              style={{
-                fontSize: '0.7rem',
-                fontWeight: 800,
-                color: '#1E40AF',
-                background: '#EFF6FF',
-                padding: '0.15rem 0.55rem',
-                borderRadius: '999px',
-                border: '1px solid #BFDBFE',
-              }}
-            >
-              &larr; Admin Reports to President
-            </span>
-          </div>
-
-          {/* RIGHT BOX: ADMINISTRATIVE OFFICER */}
-          <div className="czc-officer-card czc-officer-card--admin">
-            <div className="czc-officer-top">
-              <div className="czc-photo-box">
-                <img
-                  src={activeZoneObj.adminOfficer?.photo || '/assets/img/secretary-alia-pradhan.jpg'}
-                  alt={activeZoneObj.adminOfficer?.name || 'Administrative Officer'}
-                />
-                <span className="czc-photo-tag">PHOTO / ID</span>
-              </div>
-              <div className="czc-officer-info">
-                <span className="czc-role-badge">&larr; Reports to President</span>
-                <h3 className="czc-officer-title">
-                  {activeZoneObj.adminOfficer?.designation || 'Name Administrative Officer'}
-                </h3>
-                <div className="czc-officer-name">
-                  👤 {activeZoneObj.adminOfficer?.name || 'Administrative Officer'}
-                </div>
-                <div className="czc-officer-subrole">
-                  ✦ {activeZoneObj.adminOfficer?.subRole || 'Name Incharge Officer'} &middot; ID:{' '}
-                  {activeZoneObj.adminOfficer?.idCardNo}
-                </div>
-              </div>
-            </div>
-
-            <div className="czc-phone-strip">
-              <div className="czc-phone-icon-group">
-                <span style={{ fontSize: '1.15rem' }}>📱</span>
-                <div>
-                  <small style={{ display: 'block', fontSize: '0.66rem', color: '#475569' }}>
-                    Phone No / WhatsApp
-                  </small>
-                  <span>{activeZoneObj.adminOfficer?.phone || '+91 63709 87576'}</span>
-                </div>
-              </div>
-              <div className="czc-phone-actions">
-                <a
-                  href={`tel:${(activeZoneObj.adminOfficer?.phone || '+916370987576').replace(/\s+/g, '')}`}
-                  className="czc-mini-btn czc-mini-btn--call"
-                >
-                  📞 Call
-                </a>
-                <a
-                  href={`https://wa.me/${activeZoneObj.adminOfficer?.whatsapp || '916370987576'}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="czc-mini-btn czc-mini-btn--wa"
-                >
-                  💬 WhatsApp
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* VERTICAL STEM FROM CZC LOGO TO SELECTED SCHOOL CLOUD */}
-        <div className="czc-stem-down" />
-
-        {/* MIDDLE HUB: SELECTED SCHOOL (e.g. Jagannath Secondary Training School -> [Click Here ✓]) */}
-        <div className="czc-school-cloud">
-          <span className="czc-school-cloud-tag">
-            {activeDetails.zoneName} &middot; Code: {activeDetails.schoolCode}
-          </span>
-          <h3>🏫 {activeDetails.name}</h3>
-
-          <div className="czc-school-picker-row">
-            <label htmlFor="czc-school-dropdown" className="visually-hidden">
-              Choose member school in {activeZoneObj.name}
-            </label>
-            <select
-              id="czc-school-dropdown"
-              className="czc-school-select"
-              value={activeSchool.name}
-              onChange={(e) => {
-                const found = SCHOOLS.find(
-                  (s) => s.name === e.target.value && s.zone === activeSchool.zone
-                );
-                if (found) {
-                  setActiveSchool(found);
-                  setActiveCentreIdx(0);
-                }
-              }}
-            >
-              {schoolsInChartZone.map((s, i) => (
-                <option key={`${s.zone}-${i}`} value={s.name}>
-                  #{String(s.slNo || i + 1).padStart(2, '0')} — {s.name} ({s.district})
-                </option>
-              ))}
-            </select>
-
-            <button
-              type="button"
-              onClick={() => setModalSchool(activeDetails)}
-              className="czc-click-here-badge"
-              style={{ cursor: 'pointer' }}
-            >
-              ✓ Click Here &mdash; Open Full School Card
-            </button>
-          </div>
-        </div>
-
-        {/* VERTICAL STEM + HORIZONTAL TREE BRANCH BAR */}
-        <div className="czc-stem-down" />
-        <div className="czc-branch-bar" />
-
-        {/* BOTTOM 3-COLUMN HIERARCHY:
-            1. Secretary + Address (Sch At/PO, Dist, Pin)
-            2. Academic Batches (1st 89-90, 2nd 90-91, 3rd 91-92, Others 92-93)
-            3. Invigilator / Inspector (Centre-wise 1, 2, 3 -> Reports to Admin Officer)
-        */}
-        <div className="czc-bottom-branches">
-          {/* BRANCH 1 (LEFT): SECRETARY + SCHOOL ADDRESS */}
-          <div className="czc-secretary-card">
-            <div className="czc-officer-top">
-              <div className="czc-photo-box">
-                <img src={activeDetails.secretary.photo} alt={activeDetails.secretary.name} />
-                <span className="czc-photo-tag">ID / PHOTO</span>
-              </div>
-              <div className="czc-officer-info">
-                <span className="czc-role-badge">School Authority</span>
-                <h4 className="czc-officer-title">Name Secretary</h4>
-                <div className="czc-officer-name">👤 {activeDetails.secretary.name}</div>
-                <div className="czc-officer-subrole">
-                  🪪 ID Card: <strong>{activeDetails.secretary.idCardNo}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="czc-phone-strip">
-              <div className="czc-phone-icon-group">
-                <span style={{ fontSize: '1.15rem' }}>📱</span>
-                <div>
-                  <small style={{ display: 'block', fontSize: '0.66rem', color: '#475569' }}>
-                    Mobile / WhatsApp
-                  </small>
-                  <span>{activeDetails.secretary.phone}</span>
-                </div>
-              </div>
-              <div className="czc-phone-actions">
-                <a
-                  href={`tel:${activeDetails.secretary.phone.replace(/\s+/g, '')}`}
-                  className="czc-mini-btn czc-mini-btn--call"
-                >
-                  📞 Call
-                </a>
-                <a
-                  href={`https://wa.me/${activeDetails.secretary.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="czc-mini-btn czc-mini-btn--wa"
-                >
-                  💬 WhatsApp
-                </a>
-              </div>
-            </div>
-
-            {/* SCHOOL ADDRESS BOX (Sch At / PO / Dist / Pin) */}
-            <div className="czc-address-box">
-              <div className="czc-address-title">📍 School Address Details (Sch At / PO / Dist / Pin)</div>
-              <div className="czc-address-row">
-                <span>Sch At / P.O. &ndash;</span>
-                <b>{activeDetails.address.atPo}</b>
-              </div>
-              <div className="czc-address-row">
-                <span>Dist &ndash;</span>
-                <b>{activeDetails.address.dist}</b>
-              </div>
-              <div className="czc-address-row">
-                <span>PIN Code &ndash;</span>
-                <b>{activeDetails.address.pin}</b>
-              </div>
-            </div>
-          </div>
-
-          {/* BRANCH 2 (CENTER): 4 HISTORICAL ACADEMIC BATCHES (89-90 to 92-93) */}
-          <div className="czc-batches-card">
-            <div className="czc-batches-head">🎓 Recognized Training Batches</div>
-            <div className="czc-batch-list">
-              {activeDetails.batches.map((b, idx) => (
-                <button
-                  key={b.order}
-                  type="button"
-                  onClick={() => setActiveBatchIdx(idx)}
-                  className={`czc-batch-item ${activeBatchIdx === idx ? 'is-active' : ''}`}
-                >
-                  <span className="czc-batch-order">{b.order}</span>
-                  <span className="czc-batch-session">{b.session}</span>
-                </button>
-              ))}
-            </div>
-
+            {/* Two Officer Boxes: President (Left) & Administrative Officer (Right) */}
             <div
               style={{
-                marginTop: '0.75rem',
-                background: '#F0F9FF',
-                border: '1px solid #BAE6FD',
-                borderRadius: '8px',
-                padding: '0.6rem 0.75rem',
-                fontSize: '0.76rem',
-                color: '#0C4A6E',
-                lineHeight: 1.45,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gap: '1rem',
               }}
             >
-              <strong style={{ display: 'block', color: '#0369A1', marginBottom: '0.15rem' }}>
-                ✓ {activeDetails.batches[activeBatchIdx]?.order} ({activeDetails.batches[activeBatchIdx]?.batchLabel})
-              </strong>
-              {activeDetails.batches[activeBatchIdx]?.remarks} under{' '}
-              <strong>{activeDetails.name}</strong>.
-            </div>
-          </div>
-
-          {/* BRANCH 3 (RIGHT): INVIGILATOR / INSPECTOR (CENTRE-WISE, REPORTS TO ADMIN OFFICER) */}
-          <div className="czc-invigilator-card">
-            <div className="czc-upward-report-banner">
-              <span>↑ Reports Directly To:</span>
-              <strong>Administrative Officer ({activeZoneObj.code || 'CZC'})</strong>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem' }}>
-              <span className="czc-role-badge">
-                Centre-Wise (Not School) &middot; {activeDetails.invigilators.length} Centres
-              </span>
-              <small style={{ fontSize: '0.7rem', color: '#831843', fontWeight: 700 }}>
-                (May be 1, 2, or 3 according to Centres)
-              </small>
-            </div>
-
-            {/* CENTRE SWITCHER TABS (Centre 1, Centre 2, Centre 3) */}
-            <div className="czc-centre-tabs">
-              {activeDetails.invigilators.map((inv, idx) => (
-                <button
-                  key={inv.idCardNo}
-                  type="button"
-                  onClick={() => setActiveCentreIdx(idx)}
-                  className={`czc-centre-tab ${activeCentreIdx === idx ? 'is-active' : ''}`}
-                >
-                  Centre #{inv.centreNo}
-                </button>
-              ))}
-            </div>
-
-            {currentInvigilator && (
-              <div className="czc-centre-detail-box">
-                <div className="czc-officer-top">
+              {/* PRESIDENT BOX */}
+              <div className="czc-officer-card czc-officer-card--president">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <div className="czc-photo-box">
-                    <img src={currentInvigilator.photo} alt={currentInvigilator.name} />
+                    <img
+                      src={
+                        activeZoneObj.president?.photo ||
+                        '/assets/img/president-nirmal-kanta-mohanty.jpg'
+                      }
+                      alt="President"
+                    />
                     <span className="czc-photo-tag">PHOTO</span>
                   </div>
-                  <div className="czc-officer-info">
-                    <h4 className="czc-officer-title" style={{ fontSize: '0.95rem' }}>
-                      Name Inspector / Invigilator
-                    </h4>
-                    <div className="czc-officer-name">👤 {currentInvigilator.name}</div>
-                    <div className="czc-officer-subrole">
-                      🏷️ Designation: <strong>{currentInvigilator.designation}</strong>
-                    </div>
-                    <div className="czc-officer-subrole" style={{ color: '#9D174D' }}>
-                      🏛️ Centre: <strong>{currentInvigilator.centreName}</strong>
-                    </div>
+                  <div>
+                    <span className="czc-role-badge">Zonal President</span>
+                    <h3 className="czc-officer-title">President</h3>
                   </div>
                 </div>
 
-                <div className="czc-phone-strip" style={{ marginTop: '0.65rem' }}>
-                  <div className="czc-phone-icon-group">
-                    <span style={{ fontSize: '1.1rem' }}>📱</span>
-                    <div>
-                      <small style={{ display: 'block', fontSize: '0.65rem', color: '#475569' }}>
-                        Mobile / WhatsApp
-                      </small>
-                      <span>{currentInvigilator.phone}</span>
-                    </div>
+                <div
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid #86EFAC',
+                    borderRadius: '8px',
+                    padding: '0.65rem 0.8rem',
+                    fontSize: '0.83rem',
+                    lineHeight: 1.65,
+                  }}
+                >
+                  <div>
+                    &ndash; <strong>Name:</strong> {activeZoneObj.president?.name}
                   </div>
-                  <div className="czc-phone-actions">
+                  <div>
+                    &ndash; <strong>Designation:</strong> {activeZoneObj.president?.designation}
+                  </div>
+                  <div>
+                    &ndash; <strong>Mobile:</strong>{' '}
+                    <a
+                      href={`tel:${(activeZoneObj.president?.phone || '+916370987576').replace(/\s+/g, '')}`}
+                      style={{ color: '#0B2545', fontWeight: 700 }}
+                    >
+                      {activeZoneObj.president?.phone}
+                    </a>
+                  </div>
+                  <div>
+                    &ndash; <strong>Whatsapp:</strong>{' '}
+                    <a
+                      href={`https://wa.me/${activeZoneObj.president?.whatsapp || '916370987576'}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#15803D', fontWeight: 800, textDecoration: 'underline' }}
+                    >
+                      Chat on WhatsApp ({activeZoneObj.president?.phone})
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* ADMINISTRATIVE OFFICER BOX */}
+              <div className="czc-officer-card czc-officer-card--admin">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <div className="czc-photo-box">
+                    <img
+                      src={
+                        activeZoneObj.adminOfficer?.photo ||
+                        '/assets/img/secretary-alia-pradhan.jpg'
+                      }
+                      alt="Administrative Officer"
+                    />
+                    <span className="czc-photo-tag">PHOTO</span>
+                  </div>
+                  <div>
+                    <span className="czc-role-badge">Zonal Administration</span>
+                    <h3 className="czc-officer-title">Administrative Officer</h3>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid #FDBA74',
+                    borderRadius: '8px',
+                    padding: '0.65rem 0.8rem',
+                    fontSize: '0.83rem',
+                    lineHeight: 1.65,
+                  }}
+                >
+                  <div>
+                    &ndash; <strong>Name:</strong> {activeZoneObj.adminOfficer?.name}
+                  </div>
+                  <div>
+                    &ndash; <strong>Designation:</strong> {activeZoneObj.adminOfficer?.designation}
+                  </div>
+                  <div>
+                    &ndash; <strong>Mobile:</strong>{' '}
+                    <a
+                      href={`tel:${(activeZoneObj.adminOfficer?.phone || '+916370987576').replace(/\s+/g, '')}`}
+                      style={{ color: '#0B2545', fontWeight: 700 }}
+                    >
+                      {activeZoneObj.adminOfficer?.phone}
+                    </a>
+                  </div>
+                  <div>
+                    &ndash; <strong>Whatsapp:</strong>{' '}
+                    <a
+                      href={`https://wa.me/${activeZoneObj.adminOfficer?.whatsapp || '916370987576'}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#15803D', fontWeight: 800, textDecoration: 'underline' }}
+                    >
+                      Chat on WhatsApp ({activeZoneObj.adminOfficer?.phone})
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: HIERARCHY BOX (Association -> President -> Administrative -> Invigilator) */}
+          <div
+            style={{
+              background: 'linear-gradient(180deg, #0B2545 0%, #1E3A8A 100%)',
+              color: '#FFFFFF',
+              borderRadius: '14px',
+              border: '2px solid #D97706',
+              padding: '1.15rem 1rem',
+              textAlign: 'center',
+              boxShadow: '0 8px 24px rgba(11,37,69,0.18)',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '0.85rem',
+                fontWeight: 900,
+                color: '#FDE68A',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                borderBottom: '1px solid rgba(253,230,138,0.35)',
+                paddingBottom: '0.45rem',
+                marginBottom: '0.75rem',
+              }}
+            >
+              Hierarchy
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+              <div
+                style={{
+                  width: '100%',
+                  background: 'rgba(255,255,255,0.12)',
+                  border: '1px solid rgba(253,230,138,0.5)',
+                  borderRadius: '8px',
+                  padding: '0.45rem',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  color: '#FDE68A',
+                }}
+              >
+                🏛️ Association
+              </div>
+              <span style={{ color: '#FDE68A', fontWeight: 900 }}>&darr;</span>
+              <div
+                style={{
+                  width: '100%',
+                  background: 'rgba(22,163,74,0.28)',
+                  border: '1px solid #86EFAC',
+                  borderRadius: '8px',
+                  padding: '0.45rem',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                }}
+              >
+                👤 President
+              </div>
+              <span style={{ color: '#FDE68A', fontWeight: 900 }}>&darr;</span>
+              <div
+                style={{
+                  width: '100%',
+                  background: 'rgba(234,88,12,0.28)',
+                  border: '1px solid #FDBA74',
+                  borderRadius: '8px',
+                  padding: '0.45rem',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                }}
+              >
+                📋 Administrative
+              </div>
+              <span style={{ color: '#FDE68A', fontWeight: 900 }}>&darr;</span>
+              <div
+                style={{
+                  width: '100%',
+                  background: 'rgba(219,39,119,0.28)',
+                  border: '1px solid #F472B6',
+                  borderRadius: '8px',
+                  padding: '0.45rem',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                }}
+              >
+                🔍 Invigilator
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===================================================================
+            [ SCHOOL ] SECTION -> SUGO SECONDARY TRAINING SCHOOL ( CLICK ) -> SEE THE BATCH
+            & BELOW: SECRETARY (Name, Designation, Mobile, WP, AT, PO, Dist, Pin) + INVIGILATOR (Name, Designation, Mobile, Center)
+           =================================================================== */}
+        <div
+          ref={schoolSectionRef}
+          style={{
+            background: '#FFFFFF',
+            border: '2px solid #0284C7',
+            borderRadius: '16px',
+            padding: '1.35rem',
+            boxShadow: '0 8px 26px rgba(2,132,199,0.1)',
+          }}
+        >
+          {/* Top Row: [ School ] + Selected School Name + ( Click ) ---> See the Batch */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1.15fr 1fr',
+              gap: '1.25rem',
+              alignItems: 'center',
+              paddingBottom: '1.15rem',
+              borderBottom: '2px dashed #BAE6FD',
+              marginBottom: '1.25rem',
+            }}
+            className="notebook-school-top-grid"
+          >
+            {/* Left: [ School ] Box + Dropdown + ( Click ) */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.55rem' }}>
+                <span
+                  style={{
+                    border: '2px solid #0B2545',
+                    background: '#0B2545',
+                    color: '#FFFFFF',
+                    fontWeight: 900,
+                    fontSize: '0.8rem',
+                    padding: '0.22rem 0.85rem',
+                    borderRadius: '6px',
+                  }}
+                >
+                  School
+                </span>
+                <span style={{ fontSize: '0.8rem', color: '#475569', fontWeight: 700 }}>
+                  Code: {activeDetails.schoolCode} &middot; {activeZoneObj.name}
+                </span>
+              </div>
+
+              <h3
+                style={{
+                  fontSize: 'clamp(1.15rem, 2.2vw, 1.45rem)',
+                  fontWeight: 900,
+                  color: '#0B2545',
+                  margin: '0 0 0.65rem 0',
+                  textDecoration: 'underline',
+                  textDecorationColor: '#0284C7',
+                }}
+              >
+                🏫 {activeDetails.name}
+              </h3>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                <select
+                  aria-label="Select School"
+                  className="czc-school-select"
+                  value={activeSchool.name}
+                  onChange={(e) => {
+                    const found = SCHOOLS.find(
+                      (s) => s.name === e.target.value && s.zone === activeSchool.zone
+                    );
+                    if (found) {
+                      setActiveSchool(found);
+                      setActiveCentreIdx(0);
+                    }
+                  }}
+                >
+                  {schoolsInChartZone.map((s, i) => (
+                    <option key={`${s.zone}-${i}`} value={s.name}>
+                      #{String(s.slNo || i + 1).padStart(2, '0')} — {s.name} ({s.district})
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="button"
+                  onClick={() => setShowBatches((prev) => !prev)}
+                  style={{
+                    border: '2px solid #0B2545',
+                    background: '#FEF3C7',
+                    color: '#0B2545',
+                    fontWeight: 900,
+                    fontSize: '0.86rem',
+                    padding: '0.5rem 1.15rem',
+                    borderRadius: '999px',
+                    cursor: 'pointer',
+                    boxShadow: '0 3px 10px rgba(217,119,6,0.2)',
+                  }}
+                >
+                  ( Click ) &mdash; See the Batch &rarr;
+                </button>
+              </div>
+            </div>
+
+            {/* Right: See the Batch -> 1989-1990, 1990-1991, 1991-1992, 1992-1993 Other Batch */}
+            <div
+              style={{
+                background: '#F0F9FF',
+                border: '2px solid #0284C7',
+                borderRadius: '12px',
+                padding: '0.9rem 1rem',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '0.82rem',
+                  fontWeight: 900,
+                  color: '#0369A1',
+                  marginBottom: '0.55rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                🎓 See the Batch ({activeDetails.name})
+              </div>
+              {showBatches && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.42rem' }}>
+                  {activeDetails.batches.map((b, idx) => (
+                    <button
+                      key={b.order}
+                      type="button"
+                      onClick={() => setActiveBatchIdx(idx)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        background: activeBatchIdx === idx ? '#0B2545' : '#FFFFFF',
+                        color: activeBatchIdx === idx ? '#FDE68A' : '#0F172A',
+                        border:
+                          activeBatchIdx === idx ? '1.5px solid #D97706' : '1px solid #BAE6FD',
+                        borderRadius: '8px',
+                        padding: '0.45rem 0.75rem',
+                        fontWeight: 800,
+                        fontSize: '0.84rem',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <span>&rarr; {b.batchLabel}</span>
+                      <span style={{ fontSize: '0.72rem', opacity: 0.9 }}>✓ Verified</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* BELOW SCHOOL: 2 SIDE-BY-SIDE CARDS:
+              1. Secretary (- Name, - Designation, - Mobile, - WP, - AT, - PO, - Dist, - Pin)
+              2. Invigilator (- Name, - Designation, - Mobile, - Center)
+          */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+              gap: '1.25rem',
+            }}
+          >
+            {/* LEFT CARD: SECRETARY */}
+            <div className="czc-secretary-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div className="czc-photo-box">
+                  <img src={activeDetails.secretary.photo} alt={activeDetails.secretary.name} />
+                  <span className="czc-photo-tag">PHOTO</span>
+                </div>
+                <div>
+                  <span className="czc-role-badge">School Head / Authority</span>
+                  <h4 className="czc-officer-title" style={{ fontSize: '1.15rem' }}>
+                    Secretary
+                  </h4>
+                  <small style={{ color: '#6B21A8', fontWeight: 700 }}>
+                    ID: {activeDetails.secretary.idCardNo}
+                  </small>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: '#FFFFFF',
+                  border: '1.5px solid #C084FC',
+                  borderRadius: '10px',
+                  padding: '0.85rem 1rem',
+                  fontSize: '0.86rem',
+                  lineHeight: 1.75,
+                }}
+              >
+                <div>
+                  &ndash; <strong>Name:</strong> {activeDetails.secretary.name}
+                </div>
+                <div>
+                  &ndash; <strong>Designation:</strong> {activeDetails.secretary.designation}
+                </div>
+                <div>
+                  &ndash; <strong>Mobile:</strong>{' '}
+                  <a
+                    href={`tel:${activeDetails.secretary.phone.replace(/\s+/g, '')}`}
+                    style={{ color: '#0B2545', fontWeight: 800 }}
+                  >
+                    {activeDetails.secretary.phone}
+                  </a>
+                </div>
+                <div>
+                  &ndash; <strong>WP (WhatsApp):</strong>{' '}
+                  <a
+                    href={`https://wa.me/${activeDetails.secretary.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#15803D', fontWeight: 800, textDecoration: 'underline' }}
+                  >
+                    {activeDetails.secretary.phone} (Click to WhatsApp)
+                  </a>
+                </div>
+                <hr style={{ border: 'none', borderTop: '1px dashed #D8B4FE', margin: '0.45rem 0' }} />
+                <div>
+                  &ndash; <strong>AT:</strong> {activeDetails.address.at}
+                </div>
+                <div>
+                  &ndash; <strong>PO:</strong> {activeDetails.address.po}
+                </div>
+                <div>
+                  &ndash; <strong>Dist:</strong> {activeDetails.address.dist}
+                </div>
+                <div>
+                  &ndash; <strong>Pin:</strong> {activeDetails.address.pin}
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT CARD: INVIGILATOR */}
+            <div className="czc-invigilator-card">
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '0.75rem',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <div className="czc-photo-box">
+                    <img
+                      src={currentInvigilator?.photo || '/assets/img/president-avatar.svg'}
+                      alt={currentInvigilator?.name || 'Invigilator'}
+                    />
+                    <span className="czc-photo-tag">PHOTO</span>
+                  </div>
+                  <div>
+                    <span className="czc-role-badge">↑ Reports to Administrative Officer</span>
+                    <h4 className="czc-officer-title" style={{ fontSize: '1.15rem' }}>
+                      Invigilator
+                    </h4>
+                  </div>
+                </div>
+
+                {/* Centre 1 / 2 / 3 Switcher */}
+                <div className="czc-centre-tabs">
+                  {activeDetails.invigilators.map((inv, idx) => (
+                    <button
+                      key={inv.idCardNo}
+                      type="button"
+                      onClick={() => setActiveCentreIdx(idx)}
+                      className={`czc-centre-tab ${activeCentreIdx === idx ? 'is-active' : ''}`}
+                    >
+                      Center #{inv.centreNo}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {currentInvigilator && (
+                <div
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1.5px solid #F472B6',
+                    borderRadius: '10px',
+                    padding: '0.85rem 1rem',
+                    fontSize: '0.86rem',
+                    lineHeight: 1.8,
+                  }}
+                >
+                  <div>
+                    &ndash; <strong>Name:</strong> {currentInvigilator.name}
+                  </div>
+                  <div>
+                    &ndash; <strong>Designation:</strong> {currentInvigilator.designation}
+                  </div>
+                  <div>
+                    &ndash; <strong>Mobile:</strong>{' '}
                     <a
                       href={`tel:${currentInvigilator.phone.replace(/\s+/g, '')}`}
-                      className="czc-mini-btn czc-mini-btn--call"
+                      style={{ color: '#0B2545', fontWeight: 800 }}
                     >
-                      📞 Call
-                    </a>
+                      {currentInvigilator.phone}
+                    </a>{' '}
+                    &middot;{' '}
                     <a
                       href={`https://wa.me/${currentInvigilator.whatsapp}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="czc-mini-btn czc-mini-btn--wa"
+                      style={{ color: '#15803D', fontWeight: 800, textDecoration: 'underline' }}
                     >
-                      💬 WhatsApp
+                      WhatsApp
                     </a>
                   </div>
+                  <div>
+                    &ndash; <strong>Center:</strong>{' '}
+                    <span style={{ color: '#9D174D', fontWeight: 800 }}>
+                      {currentInvigilator.centreName}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-
-        {/* BOTTOM EMAIL STRIP (As shown at the bottom of Image 1) */}
-        <div className="czc-email-footer">
-          <span style={{ fontSize: '1.25rem' }}>✉️</span>
-          <span>
-            Email &rarr;{' '}
-            <a
-              href={`mailto:${activeDetails.secretary.email}`}
-              style={{ color: '#6B21A8', textDecoration: 'underline', fontWeight: 800 }}
-            >
-              {activeDetails.secretary.email}
-            </a>
-          </span>
-          <span style={{ color: '#94A3B8' }}>|</span>
-          <span>
-            Zonal Desk:{' '}
-            <a
-              href={`mailto:${activeZoneObj.email || 'info@aopstsma.in'}`}
-              style={{ color: '#0B2545', textDecoration: 'underline', fontWeight: 800 }}
-            >
-              {activeZoneObj.email || 'info@aopstsma.in'}
-            </a>
-          </span>
         </div>
       </div>
 
@@ -671,7 +945,7 @@ export default function SchoolsClient() {
               className="chip"
               data-filter={chip.id}
               aria-pressed={selectedZone === chip.id}
-              onClick={() => handleChipClick(chip.id)}
+              onClick={() => handleZoneSelect(chip.id)}
             >
               {chip.label}
             </button>
@@ -683,13 +957,13 @@ export default function SchoolsClient() {
       <div className="schools-count-strip">
         <span className="count-tag">
           {filteredSchools.length
-            ? `Showing ${filteredSchools.length} of ${SCHOOLS.length} verified member schools — Click any school to view full details`
+            ? `Showing ${filteredSchools.length} of ${SCHOOLS.length} verified member schools — Click any school to inspect Secretary, Invigilator & Batches`
             : 'No matching institutions'}
         </span>
         {selectedZone !== 'all' && (
           <button
             type="button"
-            onClick={() => handleChipClick('all')}
+            onClick={() => handleZoneSelect('all')}
             style={{
               background: 'none',
               border: 'none',
@@ -700,12 +974,12 @@ export default function SchoolsClient() {
               textDecoration: 'underline',
             }}
           >
-            Clear Filter &times;
+            Show All 90 Schools &times;
           </button>
         )}
       </div>
 
-      {/* MOBILE-ONLY LUXURY INSTITUTION CARDS (Screens < 768px) */}
+      {/* MOBILE-ONLY LUXURY INSTITUTION CARDS */}
       <div className="schools-mobile-cards">
         {filteredSchools.length > 0 ? (
           filteredSchools.map((s, idx) => {
@@ -725,7 +999,7 @@ export default function SchoolsClient() {
                   </span>
                   <button
                     type="button"
-                    onClick={() => handleChipClick(s.zone)}
+                    onClick={() => handleZoneSelect(s.zone)}
                     className="school-card-mobile__zone"
                   >
                     🏛️ {zoneName(s.zone)}
@@ -739,36 +1013,25 @@ export default function SchoolsClient() {
                     fontSize: '0.8rem',
                     color: '#475569',
                     margin: '0.35rem 0 0.65rem 0',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.2rem',
+                    lineHeight: 1.5,
                   }}
                 >
-                  <span>
-                    📍 <strong>At/P.O.:</strong> {full.address.atPo}, <strong>Dist:</strong>{' '}
-                    {full.address.dist} &ndash; <strong>{full.address.pin}</strong>
-                  </span>
-                  <span>
-                    🎓 <strong>Batches:</strong> 89–90, 90–91, 91–92, 92–93
-                  </span>
+                  <div>
+                    📍 <strong>AT:</strong> {full.address.at} | <strong>PO:</strong> {full.address.po} |{' '}
+                    <strong>Dist:</strong> {full.address.dist} &ndash; <strong>{full.address.pin}</strong>
+                  </div>
+                  <div>
+                    🎓 <strong>Batches:</strong> 1989–90, 1990–91, 1991–92, 1992–93
+                  </div>
                 </div>
 
-                <div
-                  className="school-card-mobile__meta"
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    flexWrap: 'wrap',
-                  }}
-                >
+                <div className="school-card-mobile__meta">
                   <button
                     type="button"
-                    onClick={() => handleSelectSchoolFromDirectory(s, idx, true)}
+                    onClick={() => handleSchoolClick(s, idx, true)}
                     className={`school-click-here-btn ${isSelected ? 'is-selected' : ''}`}
                   >
-                    ✓ Click Here &mdash; View All Details
+                    ( Click ) &mdash; See Batch, Secretary &amp; Invigilator
                   </button>
                 </div>
               </div>
@@ -782,7 +1045,7 @@ export default function SchoolsClient() {
               className="btn btn--primary"
               onClick={() => {
                 setQuery('');
-                handleChipClick('all');
+                handleZoneSelect('all');
               }}
             >
               Reset Search &amp; Zone
@@ -791,17 +1054,17 @@ export default function SchoolsClient() {
         )}
       </div>
 
-      {/* DESKTOP/TABLET TABLE VIEW (Screens >= 768px) */}
+      {/* DESKTOP/TABLET TABLE VIEW */}
       <div className="schools-desktop-table-wrap">
         <table className="school-table">
           <thead>
             <tr>
               <th style={{ width: '64px', textAlign: 'center' }}>#</th>
-              <th>Institution / School Name</th>
-              <th>Association Zone</th>
-              <th>At/P.O., District &amp; PIN</th>
-              <th>Batches</th>
-              <th style={{ textAlign: 'center' }}>School Details</th>
+              <th>School Name</th>
+              <th>Zone</th>
+              <th>AT / PO / Dist / Pin</th>
+              <th>See the Batch</th>
+              <th style={{ textAlign: 'center' }}>Action</th>
             </tr>
           </thead>
           <tbody id="school-rows">
@@ -816,7 +1079,7 @@ export default function SchoolsClient() {
                       background: isSelected ? '#F0F9FF' : undefined,
                       cursor: 'pointer',
                     }}
-                    onClick={() => handleSelectSchoolFromDirectory(s, idx, true)}
+                    onClick={() => handleSchoolClick(s, idx, true)}
                   >
                     <td style={{ textAlign: 'center', color: '#64748B', fontWeight: 700 }}>
                       {String(s.slNo || idx + 1).padStart(2, '0')}
@@ -826,7 +1089,7 @@ export default function SchoolsClient() {
                         {s.name}
                       </div>
                       <small style={{ color: '#64748B', fontWeight: 600 }}>
-                        Code: {full.schoolCode} &middot; Secy ID: {full.secretary.idCardNo}
+                        Code: {full.schoolCode} &middot; Secretary: {full.secretary.name}
                       </small>
                     </td>
                     <td>
@@ -835,34 +1098,37 @@ export default function SchoolsClient() {
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          handleChipClick(s.zone);
+                          handleZoneSelect(s.zone);
                         }}
                         className="table-zone-link"
                       >
                         {zoneName(s.zone)}
                       </Link>
                     </td>
-                    <td style={{ color: '#334155', fontSize: '0.86rem' }}>
+                    <td style={{ color: '#334155', fontSize: '0.84rem' }}>
                       <div>
-                        📍 <strong>{full.address.dist}</strong> &ndash; {full.address.pin}
+                        <strong>AT:</strong> {full.address.at}, <strong>PO:</strong> {full.address.po}
                       </div>
-                      <small style={{ color: '#64748B' }}>At/P.O.: {full.address.atPo}</small>
+                      <div>
+                        <strong>Dist:</strong> {full.address.dist} &ndash;{' '}
+                        <strong>Pin:</strong> {full.address.pin}
+                      </div>
                     </td>
                     <td style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0369A1' }}>
-                      89–90 &bull; 90–91
+                      1989–1990 &bull; 1990–1991
                       <br />
-                      91–92 &bull; 92–93
+                      1991–1992 &bull; 1992–1993
                     </td>
                     <td style={{ textAlign: 'center' }}>
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleSelectSchoolFromDirectory(s, idx, true);
+                          handleSchoolClick(s, idx, true);
                         }}
                         className={`school-click-here-btn ${isSelected ? 'is-selected' : ''}`}
                       >
-                        ✓ Click Here
+                        ( Click )
                       </button>
                     </td>
                   </tr>
@@ -881,13 +1147,13 @@ export default function SchoolsClient() {
       </div>
 
       {/* =====================================================================
-          3. FULL SCHOOL DETAILS MODAL (OPENS WHEN ANY SCHOOL'S "CLICK HERE" IS CLICKED)
+          3. POPUP MODAL WHEN ANY SCHOOL'S "( CLICK )" IS PRESSED
          ===================================================================== */}
       {modalSchool && (
         <div
           role="dialog"
           aria-modal="true"
-          aria-label={`${modalSchool.name} Full Details`}
+          aria-label={`${modalSchool.name} Details`}
           onClick={() => setModalSchool(null)}
           style={{
             position: 'fixed',
@@ -908,16 +1174,14 @@ export default function SchoolsClient() {
               background: '#FFFFFF',
               borderRadius: '18px',
               border: '2px solid #D97706',
-              maxWidth: '980px',
+              maxWidth: '940px',
               width: '100%',
               maxHeight: '92vh',
               overflowY: 'auto',
               padding: '1.5rem',
               boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
-              position: 'relative',
             }}
           >
-            {/* Modal Header */}
             <div
               style={{
                 display: 'flex',
@@ -944,7 +1208,7 @@ export default function SchoolsClient() {
                 >
                   {modalSchool.zoneName} &middot; {modalSchool.schoolCode}
                 </span>
-                <h2 style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.65rem)', color: '#0B2545', margin: 0 }}>
+                <h2 style={{ fontSize: 'clamp(1.2rem, 2.4vw, 1.6rem)', color: '#0B2545', margin: 0 }}>
                   🏫 {modalSchool.name}
                 </h2>
               </div>
@@ -966,137 +1230,120 @@ export default function SchoolsClient() {
               </button>
             </div>
 
-            {/* Zonal Command Summary inside Modal */}
-            {(() => {
-              const z = getZoneDetails(modalSchool.zoneId);
-              return (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                    gap: '1rem',
-                    marginBottom: '1.25rem',
-                  }}
-                >
-                  {/* Zonal President */}
-                  <div className="czc-officer-card czc-officer-card--president">
-                    <div className="czc-officer-top">
-                      <div className="czc-photo-box">
-                        <img
-                          src={z.president?.photo || '/assets/img/president-nirmal-kanta-mohanty.jpg'}
-                          alt={z.president?.name || 'President'}
-                        />
-                        <span className="czc-photo-tag">PHOTO</span>
-                      </div>
-                      <div className="czc-officer-info">
-                        <span className="czc-role-badge">↗ Reports to Association</span>
-                        <h4 className="czc-officer-title">{z.president?.designation}</h4>
-                        <div className="czc-officer-name">👤 {z.president?.name}</div>
-                        <div className="czc-officer-subrole">📱 {z.president?.phone}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Administrative Officer */}
-                  <div className="czc-officer-card czc-officer-card--admin">
-                    <div className="czc-officer-top">
-                      <div className="czc-photo-box">
-                        <img
-                          src={z.adminOfficer?.photo || '/assets/img/secretary-alia-pradhan.jpg'}
-                          alt={z.adminOfficer?.name || 'Administrative Officer'}
-                        />
-                        <span className="czc-photo-tag">PHOTO / ID</span>
-                      </div>
-                      <div className="czc-officer-info">
-                        <span className="czc-role-badge">&larr; Reports to President</span>
-                        <h4 className="czc-officer-title">{z.adminOfficer?.designation}</h4>
-                        <div className="czc-officer-name">👤 {z.adminOfficer?.name}</div>
-                        <div className="czc-officer-subrole">📱 {z.adminOfficer?.phone}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* 3 Branches inside Modal: Secretary & Address | Batches | Centre-wise Invigilators */}
-            <div className="czc-bottom-branches">
-              {/* Secretary + Address */}
-              <div className="czc-secretary-card">
-                <div className="czc-officer-top">
-                  <div className="czc-photo-box">
-                    <img src={modalSchool.secretary.photo} alt={modalSchool.secretary.name} />
-                    <span className="czc-photo-tag">ID / PHOTO</span>
-                  </div>
-                  <div className="czc-officer-info">
-                    <span className="czc-role-badge">School Secretary</span>
-                    <h4 className="czc-officer-title">{modalSchool.secretary.name}</h4>
-                    <div className="czc-officer-subrole">
-                      🪪 ID: <strong>{modalSchool.secretary.idCardNo}</strong>
-                    </div>
-                    <div className="czc-officer-subrole">📱 {modalSchool.secretary.phone}</div>
-                  </div>
-                </div>
-
-                <div className="czc-address-box">
-                  <div className="czc-address-title">📍 School Address (Sch At / PO / Dist / Pin)</div>
-                  <div className="czc-address-row">
-                    <span>Sch At / P.O. &ndash;</span>
-                    <b>{modalSchool.address.atPo}</b>
-                  </div>
-                  <div className="czc-address-row">
-                    <span>Dist &ndash;</span>
-                    <b>{modalSchool.address.dist}</b>
-                  </div>
-                  <div className="czc-address-row">
-                    <span>PIN &ndash;</span>
-                    <b>{modalSchool.address.pin}</b>
-                  </div>
-                </div>
+            {/* See the Batch */}
+            <div
+              style={{
+                background: '#F0F9FF',
+                border: '1.5px solid #0284C7',
+                borderRadius: '12px',
+                padding: '0.9rem 1rem',
+                marginBottom: '1.25rem',
+              }}
+            >
+              <div style={{ fontWeight: 900, fontSize: '0.85rem', color: '#0369A1', marginBottom: '0.5rem' }}>
+                🎓 See the Batch:
               </div>
-
-              {/* 4 Academic Batches */}
-              <div className="czc-batches-card">
-                <div className="czc-batches-head">🎓 Recognized Batches</div>
-                <div className="czc-batch-list">
-                  {modalSchool.batches.map((b) => (
-                    <div key={b.order} className="czc-batch-item is-active">
-                      <span className="czc-batch-order">{b.order}</span>
-                      <span className="czc-batch-session">{b.session}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Centre-wise Invigilators */}
-              <div className="czc-invigilator-card">
-                <div className="czc-upward-report-banner">
-                  <span>↑ Reports To:</span>
-                  <strong>Administrative Officer ({modalSchool.zoneShortCode})</strong>
-                </div>
-                <span className="czc-role-badge">
-                  Centre-Wise Invigilators (1, 2, or 3 Centres)
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  {modalSchool.invigilators.map((inv) => (
-                    <div key={inv.idCardNo} className="czc-centre-detail-box">
-                      <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#831843' }}>
-                        🏛️ Centre #{inv.centreNo}: {inv.centreName}
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: '#0F172A', marginTop: '0.2rem' }}>
-                        👤 <strong>{inv.name}</strong> ({inv.designation})
-                      </div>
-                      <div style={{ fontSize: '0.76rem', color: '#475569', marginTop: '0.15rem' }}>
-                        📱 Mobile/WhatsApp: <strong>{inv.phone}</strong>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+                  gap: '0.5rem',
+                }}
+              >
+                {modalSchool.batches.map((b) => (
+                  <div
+                    key={b.order}
+                    style={{
+                      background: '#FFFFFF',
+                      border: '1px solid #BAE6FD',
+                      borderRadius: '8px',
+                      padding: '0.5rem 0.75rem',
+                      fontWeight: 800,
+                      fontSize: '0.84rem',
+                      color: '#0B2545',
+                    }}
+                  >
+                    &rarr; {b.batchLabel}
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="czc-email-footer" style={{ marginTop: '1rem' }}>
-              <span>✉️ Email &rarr; {modalSchool.secretary.email}</span>
+            {/* Secretary & Invigilator Side by Side */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '1.15rem',
+              }}
+            >
+              {/* Secretary */}
+              <div className="czc-secretary-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <div className="czc-photo-box">
+                    <img src={modalSchool.secretary.photo} alt={modalSchool.secretary.name} />
+                    <span className="czc-photo-tag">PHOTO</span>
+                  </div>
+                  <div>
+                    <span className="czc-role-badge">School Authority</span>
+                    <h4 className="czc-officer-title">Secretary</h4>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid #C084FC',
+                    borderRadius: '8px',
+                    padding: '0.75rem 0.9rem',
+                    fontSize: '0.85rem',
+                    lineHeight: 1.75,
+                  }}
+                >
+                  <div>&ndash; <strong>Name:</strong> {modalSchool.secretary.name}</div>
+                  <div>&ndash; <strong>Designation:</strong> {modalSchool.secretary.designation}</div>
+                  <div>&ndash; <strong>Mobile:</strong> {modalSchool.secretary.phone}</div>
+                  <div>&ndash; <strong>WP:</strong> {modalSchool.secretary.phone}</div>
+                  <div>&ndash; <strong>AT:</strong> {modalSchool.address.at}</div>
+                  <div>&ndash; <strong>PO:</strong> {modalSchool.address.po}</div>
+                  <div>&ndash; <strong>Dist:</strong> {modalSchool.address.dist}</div>
+                  <div>&ndash; <strong>Pin:</strong> {modalSchool.address.pin}</div>
+                </div>
+              </div>
+
+              {/* Invigilator */}
+              <div className="czc-invigilator-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <div className="czc-photo-box">
+                    <img
+                      src={modalSchool.invigilators[0]?.photo || '/assets/img/president-avatar.svg'}
+                      alt="Invigilator"
+                    />
+                    <span className="czc-photo-tag">PHOTO</span>
+                  </div>
+                  <div>
+                    <span className="czc-role-badge">↑ Reports to Administrative Officer</span>
+                    <h4 className="czc-officer-title">Invigilator</h4>
+                  </div>
+                </div>
+                {modalSchool.invigilators.map((inv) => (
+                  <div
+                    key={inv.idCardNo}
+                    style={{
+                      background: '#FFFFFF',
+                      border: '1px solid #F472B6',
+                      borderRadius: '8px',
+                      padding: '0.65rem 0.85rem',
+                      fontSize: '0.84rem',
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    <div>&ndash; <strong>Name:</strong> {inv.name}</div>
+                    <div>&ndash; <strong>Designation:</strong> {inv.designation}</div>
+                    <div>&ndash; <strong>Mobile:</strong> {inv.phone}</div>
+                    <div>&ndash; <strong>Center:</strong> {inv.centreName}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

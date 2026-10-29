@@ -23,19 +23,22 @@ export default function SiteFooter() {
             <h4>Quick Navigation</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               <li style={{ marginBottom: '0.5rem' }}><Link href="/about">About the Association</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/zones">Regional Zones</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/schools">Member School Registry</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/zones">Explore 5 Regional Zones</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/schools">School &amp; Batch Directory</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/students">Student Registration Portal</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/videos">Educational Video Library (50 Clips)</Link></li>
               <li style={{ marginBottom: '0.5rem' }}><Link href="/achievements">High Court Orders &amp; Records</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4>Member Services</h4>
+            <h4>Member &amp; Legal Links</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/services">Annual Portal &amp; Fee Dues</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/contact">Affiliation &amp; Enrollment</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/services">Legal Representation Aid</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/contact">Helpdesk &amp; Contact</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/pay">Online Fee &amp; Legal Portal</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/admin-login">Administration Panel</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/privacy-policy">Privacy Policy</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/terms">Terms &amp; Conditions</Link></li>
+              <li style={{ marginBottom: '0.5rem' }}><Link href="/contact">Contact Us &amp; Helpdesk</Link></li>
             </ul>
           </div>
 
@@ -60,7 +63,16 @@ export default function SiteFooter() {
 
         <div className="site-footer__base">
           <span>&copy; {currentYear} AOPSTSMA &middot; All Orissa Private Secondary Training Schools Management Association.</span>
-          <span>Official Institutional Portal &middot; aopstsma.in</span>
+          <span>
+            <Link href="/privacy-policy" style={{ textDecoration: 'underline', marginRight: '0.75rem' }}>
+              Privacy Policy
+            </Link>
+            &middot;
+            <Link href="/terms" style={{ textDecoration: 'underline', margin: '0 0.75rem' }}>
+              Terms &amp; Conditions
+            </Link>
+            &middot; aopstsma.in
+          </span>
         </div>
       </div>
     </footer>
