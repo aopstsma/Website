@@ -312,18 +312,13 @@ export default function SchoolsClient() {
           </div>
         </div>
 
-        {/* SELECTED ZONE BRANCH + HIERARCHY SIDEBAR (As drawn in Notebook Page 1) */}
+        {/* SELECTED ZONE BRANCH (President & Administrative Officer) */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 250px',
-            gap: '1.25rem',
-            alignItems: 'start',
             marginBottom: '1.5rem',
           }}
-          className="notebook-zone-hierarchy-grid"
         >
-          {/* LEFT: Selected Zone -> President & Administrative Officer */}
+          {/* Selected Zone -> President & Administrative Officer */}
           <div
             style={{
               background: '#FFFFFF',
@@ -364,16 +359,6 @@ export default function SchoolsClient() {
               {/* PRESIDENT BOX */}
               <div className="czc-officer-card czc-officer-card--president">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <div className="czc-photo-box">
-                    <img
-                      src={
-                        activeZoneObj.president?.photo ||
-                        '/assets/img/president-nirmal-kanta-mohanty.jpg'
-                      }
-                      alt="President"
-                    />
-                    <span className="czc-photo-tag">PHOTO</span>
-                  </div>
                   <div>
                     <span className="czc-role-badge">Zonal President</span>
                     <h3 className="czc-officer-title">President</h3>
@@ -422,16 +407,6 @@ export default function SchoolsClient() {
               {/* ADMINISTRATIVE OFFICER BOX */}
               <div className="czc-officer-card czc-officer-card--admin">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <div className="czc-photo-box">
-                    <img
-                      src={
-                        activeZoneObj.adminOfficer?.photo ||
-                        '/assets/img/secretary-alia-pradhan.jpg'
-                      }
-                      alt="Administrative Officer"
-                    />
-                    <span className="czc-photo-tag">PHOTO</span>
-                  </div>
                   <div>
                     <span className="czc-role-badge">Zonal Administration</span>
                     <h3 className="czc-officer-title">Administrative Officer</h3>
@@ -475,93 +450,6 @@ export default function SchoolsClient() {
                     </a>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT: HIERARCHY BOX (Association -> President -> Administrative -> Invigilator) */}
-          <div
-            style={{
-              background: 'linear-gradient(180deg, #0B2545 0%, #1E3A8A 100%)',
-              color: '#FFFFFF',
-              borderRadius: '14px',
-              border: '2px solid #D97706',
-              padding: '1.15rem 1rem',
-              textAlign: 'center',
-              boxShadow: '0 8px 24px rgba(11,37,69,0.18)',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '0.85rem',
-                fontWeight: 900,
-                color: '#FDE68A',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                borderBottom: '1px solid rgba(253,230,138,0.35)',
-                paddingBottom: '0.45rem',
-                marginBottom: '0.75rem',
-              }}
-            >
-              Hierarchy
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-              <div
-                style={{
-                  width: '100%',
-                  background: 'rgba(255,255,255,0.12)',
-                  border: '1px solid rgba(253,230,138,0.5)',
-                  borderRadius: '8px',
-                  padding: '0.45rem',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                  color: '#FDE68A',
-                }}
-              >
-                🏛️ Association
-              </div>
-              <span style={{ color: '#FDE68A', fontWeight: 900 }}>&darr;</span>
-              <div
-                style={{
-                  width: '100%',
-                  background: 'rgba(22,163,74,0.28)',
-                  border: '1px solid #86EFAC',
-                  borderRadius: '8px',
-                  padding: '0.45rem',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                }}
-              >
-                👤 President
-              </div>
-              <span style={{ color: '#FDE68A', fontWeight: 900 }}>&darr;</span>
-              <div
-                style={{
-                  width: '100%',
-                  background: 'rgba(234,88,12,0.28)',
-                  border: '1px solid #FDBA74',
-                  borderRadius: '8px',
-                  padding: '0.45rem',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                }}
-              >
-                📋 Administrative
-              </div>
-              <span style={{ color: '#FDE68A', fontWeight: 900 }}>&darr;</span>
-              <div
-                style={{
-                  width: '100%',
-                  background: 'rgba(219,39,119,0.28)',
-                  border: '1px solid #F472B6',
-                  borderRadius: '8px',
-                  padding: '0.45rem',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                }}
-              >
-                🔍 Invigilator
               </div>
             </div>
           </div>
@@ -764,10 +652,6 @@ export default function SchoolsClient() {
             {/* LEFT CARD: SECRETARY */}
             <div className="czc-secretary-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                <div className="czc-photo-box">
-                  <img src={activeDetails.secretary.photo} alt={activeDetails.secretary.name} />
-                  <span className="czc-photo-tag">PHOTO</span>
-                </div>
                 <div>
                   <span className="czc-role-badge">School Head / Authority</span>
                   <h4 className="czc-officer-title" style={{ fontSize: '1.15rem' }}>
@@ -865,13 +749,6 @@ export default function SchoolsClient() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <div className="czc-photo-box">
-                    <img
-                      src={currentInvigilator?.photo || '/assets/img/president-avatar.svg'}
-                      alt={currentInvigilator?.name || 'Invigilator'}
-                    />
-                    <span className="czc-photo-tag">PHOTO</span>
-                  </div>
                   <div>
                     <span className="czc-role-badge">↑ Reports to Administrative Officer</span>
                     <h4 className="czc-officer-title" style={{ fontSize: '1.15rem' }}>
@@ -1472,10 +1349,6 @@ export default function SchoolsClient() {
               {/* Secretary */}
               <div className="czc-secretary-card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <div className="czc-photo-box">
-                    <img src={modalSchool.secretary.photo} alt={modalSchool.secretary.name} />
-                    <span className="czc-photo-tag">PHOTO</span>
-                  </div>
                   <div>
                     <span className="czc-role-badge">School Authority</span>
                     <h4 className="czc-officer-title">Secretary</h4>
@@ -1522,13 +1395,6 @@ export default function SchoolsClient() {
               {/* Invigilator */}
               <div className="czc-invigilator-card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <div className="czc-photo-box">
-                    <img
-                      src={modalSchool.invigilators[0]?.photo || '/assets/img/president-avatar.svg'}
-                      alt="Invigilator"
-                    />
-                    <span className="czc-photo-tag">PHOTO</span>
-                  </div>
                   <div>
                     <span className="czc-role-badge">↑ Reports to Administrative Officer</span>
                     <h4 className="czc-officer-title">Invigilator</h4>
