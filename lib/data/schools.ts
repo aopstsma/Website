@@ -3,14 +3,76 @@
    All Orissa Private Secondary Training Schools Management Association
    ============================================================ */
 
+export interface ZoneOfficer {
+  name: string;
+  designation: string;
+  subRole: string;
+  idCardNo: string;
+  phone: string;
+  whatsapp: string;
+  photo: string;
+  reportsTo: string;
+}
+
+export interface CentreInvigilator {
+  centreNo: number;
+  centreName: string;
+  name: string;
+  designation: string;
+  idCardNo: string;
+  phone: string;
+  whatsapp: string;
+  photo: string;
+  reportsTo: string;
+}
+
+export interface AcademicBatchInfo {
+  order: string;
+  batchLabel: string;
+  session: string;
+  remarks: string;
+}
+
+export interface SchoolFullDetails {
+  schoolCode: string;
+  slNo: number;
+  name: string;
+  zoneId: string;
+  zoneName: string;
+  zoneShortCode: string;
+  district: string;
+  address: {
+    atPo: string;
+    dist: string;
+    pin: string;
+  };
+  secretary: {
+    name: string;
+    designation: string;
+    idCardNo: string;
+    phone: string;
+    whatsapp: string;
+    email: string;
+    photo: string;
+  };
+  batches: AcademicBatchInfo[];
+  invigilators: CentreInvigilator[];
+}
+
 export interface Zone {
   id: string;
+  code?: string;
+  fullTitle?: string;
   name: string;
   districts: string;
   schoolCount: number;
   badge: string;
   status: string;
   pending?: boolean;
+  email?: string;
+  president?: ZoneOfficer;
+  adminOfficer?: ZoneOfficer;
+  centres?: CentreInvigilator[];
 }
 
 export interface School {
@@ -18,6 +80,12 @@ export interface School {
   zone: string;
   district: string;
   slNo?: number;
+  code?: string;
+  atPo?: string;
+  pin?: string;
+  secretaryName?: string;
+  secretaryPhone?: string;
+  email?: string;
 }
 
 export interface DocumentRecord {
@@ -41,43 +109,289 @@ export interface DocumentRecord {
 export const ZONES: Zone[] = [
   {
     id: 'balasore',
+    code: 'BZB',
+    fullTitle: 'Baleswar Zone (BZB)',
     name: 'Baleswar Zone',
     districts: 'Mayurbhanj, Keonjhar, Balasore, Bhadrak',
     schoolCount: 40,
     badge: 'North Coastal & Tribal Range',
-    status: 'Active Registered Zone (40 Institutions)'
+    status: 'Active Registered Zone (40 Institutions)',
+    email: 'baleswar.zone@aopstsma.in',
+    president: {
+      name: 'President (Baleswar Zone)',
+      designation: 'President (Baleswar Zone)',
+      subRole: 'Incharge Additional President',
+      idCardNo: 'AOP-BZB-PRES-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/president-nirmal-kanta-mohanty.jpg',
+      reportsTo: 'Reports to Association (AOPSTSMA State HQ)'
+    },
+    adminOfficer: {
+      name: 'Administrative Officer (Baleswar Zone)',
+      designation: 'Administrative Officer',
+      subRole: 'Name Incharge Officer',
+      idCardNo: 'AOP-BZB-AO-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/secretary-alia-pradhan.jpg',
+      reportsTo: 'Reports to Zonal President (Baleswar Zone)'
+    },
+    centres: [
+      {
+        centreNo: 1,
+        centreName: 'Baleswar Zonal Centre – I (Balasore HQ)',
+        name: 'Centre Invigilator / Inspector – I',
+        designation: 'Invigilator / Centre Inspector',
+        idCardNo: 'BZB-INV-01',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/president-avatar.svg',
+        reportsTo: 'Administrative Officer (Baleswar Zone)'
+      },
+      {
+        centreNo: 2,
+        centreName: 'Baleswar Zonal Centre – II (Mayurbhanj / Baripada)',
+        name: 'Centre Invigilator / Inspector – II',
+        designation: 'Invigilator / Centre Inspector',
+        idCardNo: 'BZB-INV-02',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/secretary-avatar.svg',
+        reportsTo: 'Administrative Officer (Baleswar Zone)'
+      },
+      {
+        centreNo: 3,
+        centreName: 'Baleswar Zonal Centre – III (Bhadrak / Keonjhar)',
+        name: 'Centre Invigilator / Inspector – III',
+        designation: 'Invigilator / Centre Inspector',
+        idCardNo: 'BZB-INV-03',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/president-avatar.svg',
+        reportsTo: 'Administrative Officer (Baleswar Zone)'
+      }
+    ]
   },
   {
     id: 'central',
-    name: 'Central Zone',
+    code: 'CZC',
+    fullTitle: 'Central Zone Cuttack (CZC)',
+    name: 'Central Zone Cuttack',
     districts: 'Cuttack, Kendrapara, Jajpur, Dhenkanal, Angul',
     schoolCount: 24,
     badge: 'Judicial & Mahanadi Belt',
-    status: 'High Court Jurisdiction (24 Institutions)'
+    status: 'High Court Jurisdiction (24 Institutions)',
+    email: 'czc.cuttack@aopstsma.in',
+    president: {
+      name: 'Nirmal Kanta Mohanty',
+      designation: 'President (Central Zone Cuttack)',
+      subRole: 'Incharge Additional President',
+      idCardNo: 'AOP-CZC-PRES-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/president-nirmal-kanta-mohanty.jpg',
+      reportsTo: 'Reports to Association (AOPSTSMA State HQ)'
+    },
+    adminOfficer: {
+      name: 'Administrative Officer (CZC)',
+      designation: 'Administrative Officer (Central Zone Cuttack)',
+      subRole: 'Name Incharge Officer',
+      idCardNo: 'AOP-CZC-AO-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/secretary-alia-pradhan.jpg',
+      reportsTo: 'Reports to President (Central Zone Cuttack)'
+    },
+    centres: [
+      {
+        centreNo: 1,
+        centreName: 'Central Zone Exam Centre – I (Cuttack HQ)',
+        name: 'Centre Invigilator / Inspector – I',
+        designation: 'Invigilator / Inspector (Centre-1)',
+        idCardNo: 'CZC-INV-01',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/president-avatar.svg',
+        reportsTo: 'Administrative Officer (Central Zone Cuttack)'
+      },
+      {
+        centreNo: 2,
+        centreName: 'Central Zone Exam Centre – II (Kendrapara / Jajpur)',
+        name: 'Centre Invigilator / Inspector – II',
+        designation: 'Invigilator / Inspector (Centre-2)',
+        idCardNo: 'CZC-INV-02',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/secretary-avatar.svg',
+        reportsTo: 'Administrative Officer (Central Zone Cuttack)'
+      },
+      {
+        centreNo: 3,
+        centreName: 'Central Zone Exam Centre – III (Dhenkanal / Angul)',
+        name: 'Centre Invigilator / Inspector – III',
+        designation: 'Invigilator / Inspector (Centre-3)',
+        idCardNo: 'CZC-INV-03',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/president-avatar.svg',
+        reportsTo: 'Administrative Officer (Central Zone Cuttack)'
+      }
+    ]
   },
   {
     id: 'bhubaneswar',
+    code: 'BZB-HQ',
+    fullTitle: 'Bhubaneswar Zone (BBS)',
     name: 'Bhubaneswar Zone',
     districts: 'Khordha, Nayagarh, Puri (State Capital HQ)',
     schoolCount: 15,
     badge: 'State Secretariat & Apex Liaison',
-    status: 'Central Command & Secretariat (15 Institutions)'
+    status: 'Central Command & Secretariat (15 Institutions)',
+    email: 'bbsr.zone@aopstsma.in',
+    president: {
+      name: 'Nirmal Kanta Mohanty',
+      designation: 'President (Bhubaneswar Zone)',
+      subRole: 'Incharge Additional President',
+      idCardNo: 'AOP-BBS-PRES-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/president-nirmal-kanta-mohanty.jpg',
+      reportsTo: 'Reports to Association (AOPSTSMA State HQ)'
+    },
+    adminOfficer: {
+      name: 'Alia Pradhan',
+      designation: 'Administrative Officer (Bhubaneswar Zone)',
+      subRole: 'Name Incharge Officer',
+      idCardNo: 'AOP-BBS-AO-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/secretary-alia-pradhan.jpg',
+      reportsTo: 'Reports to President (Bhubaneswar Zone)'
+    },
+    centres: [
+      {
+        centreNo: 1,
+        centreName: 'Bhubaneswar Zonal Centre – I (Khordha / BBSR)',
+        name: 'Centre Invigilator / Inspector – I',
+        designation: 'Invigilator / Centre Inspector',
+        idCardNo: 'BBS-INV-01',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/president-avatar.svg',
+        reportsTo: 'Administrative Officer (Bhubaneswar Zone)'
+      },
+      {
+        centreNo: 2,
+        centreName: 'Bhubaneswar Zonal Centre – II (Puri / Nayagarh)',
+        name: 'Centre Invigilator / Inspector – II',
+        designation: 'Invigilator / Centre Inspector',
+        idCardNo: 'BBS-INV-02',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/secretary-avatar.svg',
+        reportsTo: 'Administrative Officer (Bhubaneswar Zone)'
+      }
+    ]
   },
   {
     id: 'sambalpur',
+    code: 'SZS',
+    fullTitle: 'Sambalpur Zone (SZS)',
     name: 'Sambalpur Zone',
     districts: 'Sambalpur, Sundargarh, Bargarh, Jharsuguda',
     schoolCount: 9,
     badge: 'Western Range',
-    status: 'Western Educational Division (9 Institutions)'
+    status: 'Western Educational Division (9 Institutions)',
+    email: 'sambalpur.zone@aopstsma.in',
+    president: {
+      name: 'President (Sambalpur Zone)',
+      designation: 'President (Sambalpur Zone)',
+      subRole: 'Incharge Additional President',
+      idCardNo: 'AOP-SZS-PRES-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/president-nirmal-kanta-mohanty.jpg',
+      reportsTo: 'Reports to Association (AOPSTSMA State HQ)'
+    },
+    adminOfficer: {
+      name: 'Administrative Officer (Sambalpur Zone)',
+      designation: 'Administrative Officer',
+      subRole: 'Name Incharge Officer',
+      idCardNo: 'AOP-SZS-AO-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/secretary-alia-pradhan.jpg',
+      reportsTo: 'Reports to President (Sambalpur Zone)'
+    },
+    centres: [
+      {
+        centreNo: 1,
+        centreName: 'Sambalpur Zonal Centre – I (Sambalpur HQ)',
+        name: 'Centre Invigilator / Inspector – I',
+        designation: 'Invigilator / Centre Inspector',
+        idCardNo: 'SZS-INV-01',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/president-avatar.svg',
+        reportsTo: 'Administrative Officer (Sambalpur Zone)'
+      },
+      {
+        centreNo: 2,
+        centreName: 'Sambalpur Zonal Centre – II (Sundargarh)',
+        name: 'Centre Invigilator / Inspector – II',
+        designation: 'Invigilator / Centre Inspector',
+        idCardNo: 'SZS-INV-02',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/secretary-avatar.svg',
+        reportsTo: 'Administrative Officer (Sambalpur Zone)'
+      }
+    ]
   },
   {
     id: 'ganjam',
+    code: 'BZG',
+    fullTitle: 'Berhampur Zone (BZG)',
     name: 'Berhampur Zone',
     districts: 'Ganjam, Gajapati, Southern Range',
     schoolCount: 2,
     badge: 'Southern Coastal Division',
-    status: 'Southern Regional Registry (2 Institutions)'
+    status: 'Southern Regional Registry (2 Institutions)',
+    email: 'berhampur.zone@aopstsma.in',
+    president: {
+      name: 'President (Berhampur Zone)',
+      designation: 'President (Berhampur Zone)',
+      subRole: 'Incharge Additional President',
+      idCardNo: 'AOP-BZG-PRES-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/president-nirmal-kanta-mohanty.jpg',
+      reportsTo: 'Reports to Association (AOPSTSMA State HQ)'
+    },
+    adminOfficer: {
+      name: 'Administrative Officer (Berhampur Zone)',
+      designation: 'Administrative Officer',
+      subRole: 'Name Incharge Officer',
+      idCardNo: 'AOP-BZG-AO-01',
+      phone: '+91 63709 87576',
+      whatsapp: '916370987576',
+      photo: '/assets/img/secretary-alia-pradhan.jpg',
+      reportsTo: 'Reports to President (Berhampur Zone)'
+    },
+    centres: [
+      {
+        centreNo: 1,
+        centreName: 'Berhampur Zonal Centre – I (Ganjam HQ)',
+        name: 'Centre Invigilator / Inspector – I',
+        designation: 'Invigilator / Centre Inspector',
+        idCardNo: 'BZG-INV-01',
+        phone: '+91 63709 87576',
+        whatsapp: '916370987576',
+        photo: '/assets/img/president-avatar.svg',
+        reportsTo: 'Administrative Officer (Berhampur Zone)'
+      }
+    ]
   }
 ];
 
@@ -472,3 +786,120 @@ export const DOCUMENTS: DocumentRecord[] = [
     date: 'Nov 2025'
   }
 ];
+
+const DISTRICT_PIN_MAP: Record<string, string> = {
+  'Cuttack': '753001',
+  'Jagatsinghpur': '754103',
+  'Kendrapara': '754211',
+  'Kendrapada': '754211',
+  'Jajpur': '755001',
+  'Jajapur': '755001',
+  'Dhenkanal': '759001',
+  'Angul': '759122',
+  'Anugul': '759122',
+  'Bhubaneswar, Khordha': '751010',
+  'Bhubaneswar': '751010',
+  'Khordha': '752055',
+  'Nayagarh': '752069',
+  'Puri': '752001',
+  'Berhampur, Ganjam': '760001',
+  'Ganjam': '761026',
+  'Baleswar': '756001',
+  'Bhadrak': '756100',
+  'Chandimal': '756025',
+  'Naliapal': '756036',
+  'Kendujhar': '758001',
+  'Mangalpur': '756042',
+  'Mayurbhanj': '757001',
+  'Sundargarh': '770001',
+  'Sambalpur': '768001',
+};
+
+const ZONE_PREFIX_MAP: Record<string, string> = {
+  central: 'CEN',
+  balasore: 'BAL',
+  bhubaneswar: 'BBS',
+  sambalpur: 'SAM',
+  ganjam: 'GAN',
+};
+
+export function getZoneDetails(zoneId: string): Zone {
+  const normalized = zoneId === 'cuttack' ? 'central' : zoneId === 'berhampur' ? 'ganjam' : zoneId;
+  return ZONES.find((z) => z.id === normalized) || ZONES[1]; // Default to Central Zone Cuttack
+}
+
+export function getSchoolFullDetails(school: School, fallbackIndex = 1): SchoolFullDetails {
+  const zone = getZoneDetails(school.zone);
+  const sl = school.slNo || fallbackIndex;
+  const prefix = ZONE_PREFIX_MAP[zone.id] || 'SCH';
+  const schoolCode = school.code || `SCH-${prefix}-${String(sl).padStart(2, '0')}`;
+
+  // Derive clean locality name from school title for At/P.O.
+  const cleanLocality = school.name
+    .replace(/Secondary Training School/gi, '')
+    .replace(/School Of Education/gi, '')
+    .replace(/C\.T School/gi, '')
+    .replace(/Education Complex/gi, '')
+    .replace(/Education Centre/gi, '')
+    .replace(/& Pharmaceutical School/gi, '')
+    .trim();
+
+  const atPoLocality = school.atPo || (cleanLocality ? `${cleanLocality}, P.O. – ${cleanLocality}` : `At/P.O. – ${school.district}`);
+  const pin = school.pin || DISTRICT_PIN_MAP[school.district] || '751010';
+  const slug = school.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '.')
+    .replace(/^\.|\.$/g, '')
+    .slice(0, 22);
+
+  return {
+    schoolCode,
+    slNo: sl,
+    name: school.name,
+    zoneId: zone.id,
+    zoneName: zone.fullTitle || zone.name,
+    zoneShortCode: zone.code || 'CZC',
+    district: school.district || 'Odisha',
+    address: {
+      atPo: atPoLocality,
+      dist: school.district || 'Odisha',
+      pin,
+    },
+    secretary: {
+      name: school.secretaryName || `Secretary (${cleanLocality || school.name})`,
+      designation: 'Secretary / Head of Institution',
+      idCardNo: `AOP-SEC-${prefix}-${String(sl).padStart(2, '0')}`,
+      phone: school.secretaryPhone || '+91 63709 87576',
+      whatsapp: '916370987576',
+      email: school.email || `${slug}@aopstsma.in`,
+      photo: '/assets/img/secretary-avatar.svg',
+    },
+    batches: [
+      {
+        order: '1st Batch',
+        batchLabel: '1989–90 Batch',
+        session: '89–90 Batch',
+        remarks: '1st Recognized C.T. Training Batch (1989–1990)',
+      },
+      {
+        order: '2nd Batch',
+        batchLabel: '1990–91 Batch',
+        session: '90–91 Batch',
+        remarks: '2nd Recognized C.T. Training Batch (1990–1991)',
+      },
+      {
+        order: '3rd Batch',
+        batchLabel: '1991–92 Batch',
+        session: '91–92 Batch',
+        remarks: '3rd Recognized C.T. Training Batch (1991–1992)',
+      },
+      {
+        order: 'Others',
+        batchLabel: '1992–93 Batch',
+        session: '92–93 Batch',
+        remarks: 'Subsequent & Additional Batch Records (1992–1993)',
+      },
+    ],
+    invigilators: zone.centres || [],
+  };
+}
