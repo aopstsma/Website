@@ -2358,56 +2358,175 @@ p { margin: 0 0 1.1em; max-width: 68ch; }
    Site Footer
    ============================================================ */
 .site-footer {
-  background: var(--navy-950);
+  background: linear-gradient(180deg, #061529 0%, #040D1A 100%);
   color: #94A3B8;
-  padding-block: 4.5rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-block: 4rem 2rem;
+  border-top: 3px solid #D97706;
   font-size: var(--t-sm);
 }
+
 .site-footer__grid {
   display: grid;
-  grid-template-columns: 2fr repeat(auto-fit, minmax(180px, 1fr));
-  gap: 3rem;
-  margin-bottom: 3.5rem;
+  grid-template-columns: 1.45fr 1fr 1fr 1.25fr;
+  gap: 2.5rem;
+  align-items: start;
+  margin-bottom: 3rem;
 }
-@media (max-width: 768px) {
+
+@media (max-width: 1024px) {
   .site-footer__grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.25rem;
   }
 }
+
+@media (max-width: 640px) {
+  .site-footer__grid {
+    grid-template-columns: 1fr;
+    gap: 1.85rem;
+  }
+}
+
 .site-footer h4 {
   font-family: var(--ui);
-  font-size: var(--t-xs);
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--gold-400);
-  margin-bottom: 1.25rem;
+  color: #FBBF24;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(251, 191, 36, 0.22);
 }
-.site-footer a {
-  display: block;
+
+.site-footer__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.site-footer__list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   color: #CBD5E1;
   text-decoration: none;
-  margin-bottom: 0.65rem;
-  transition: color 0.18s;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: color 0.18s ease, transform 0.18s ease;
 }
-.site-footer a:hover {
-  color: var(--gold-400);
+
+.site-footer__list a::before {
+  content: "›";
+  color: #D97706;
+  font-weight: 900;
+  font-size: 1rem;
+  line-height: 1;
 }
+
+.site-footer__list a:hover {
+  color: #FDE68A;
+  transform: translateX(3px);
+}
+
+.site-footer__contact-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.site-footer__contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  text-decoration: none;
+  color: #E2E8F0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.site-footer__contact-item:hover {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.site-footer__contact-item small {
+  display: block;
+  font-size: 0.68rem;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.site-footer__contact-item strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.site-footer__address {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.82rem;
+  color: #CBD5E1;
+  line-height: 1.5;
+}
+
 .site-footer p {
   color: #94A3B8;
   line-height: 1.6;
 }
+
 .site-footer__base {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 1.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  font-size: var(--t-xs);
+  font-size: 0.82rem;
+  color: #94A3B8;
+}
+
+.site-footer__copy strong {
+  color: #FDE68A;
+}
+
+.site-footer__bottom-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.site-footer__bottom-links a {
+  display: inline-block;
+  color: #CBD5E1;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.18s ease;
+}
+
+.site-footer__bottom-links a:hover {
+  color: #FBBF24;
+  text-decoration: underline;
+}
+
+.site-footer__dot {
   color: #64748B;
 }
 
@@ -2713,13 +2832,13 @@ p { margin: 0 0 1.1em; max-width: 68ch; }
 
 .fee-type-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
   margin-bottom: 1.25rem;
 }
 @media (max-width: 768px) {
   .fee-type-tabs {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
   }
 }

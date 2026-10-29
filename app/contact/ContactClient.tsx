@@ -32,7 +32,7 @@ export default function ContactClient() {
     { id: 'affiliation', label: '🏛️ School Affiliation', desc: 'New membership & recognition registration' },
     { id: 'legal', label: '⚖️ High Court Orders', desc: 'Urgent stay decrees, WP case copy & legal shield' },
     { id: 'fee_portal', label: '🎓 Student Fee / Portal', desc: 'Exam candidate fee, verification & receipts' },
-    { id: 'dir_renewal', label: '📑 DIR Renewal / NCTE', desc: 'Regulatory compliance & board renewal deposits' },
+    { id: 'dir_renewal', label: '📑 DR Deposit / NCTE', desc: 'Regulatory compliance & board DR Deposit' },
     { id: 'general', label: '📢 General Secretariat', desc: 'Executive meetings & office liaison' },
   ];
 

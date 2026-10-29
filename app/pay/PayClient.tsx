@@ -18,10 +18,10 @@ interface StudentData {
   paymentStatus: 'Pending' | 'Paid';
 }
 
-export type FeeCategory = 'student' | 'dr_deposit' | 'legal_assist' | 'court_expenses';
+export type FeeCategory = 'student' | 'legal_assist' | 'court_expenses';
 
 export default function PayClient() {
-  // Fee Category: 4 Official Payment Channels
+  // Fee Category: 3 Public Payment Channels (DR Deposit is inside School Secretary Login Dashboard)
   const [feeCategory, setFeeCategory] = useState<FeeCategory>('student');
 
   // Fee 1 (Student): Step 1 & 2 Zone & School Selection
@@ -103,9 +103,6 @@ export default function PayClient() {
   };
 
   const getFeeAmount = () => {
-    if (feeCategory === 'dr_deposit') {
-      return 25000;
-    }
     if (feeCategory === 'legal_assist') {
       return legalCustomAmount && Number(legalCustomAmount) > 0
         ? Number(legalCustomAmount)
@@ -120,9 +117,6 @@ export default function PayClient() {
   };
 
   const getFeeTypeName = () => {
-    if (feeCategory === 'dr_deposit') {
-      return 'Directorate Registration (DR Deposit) by School';
-    }
     if (feeCategory === 'legal_assist') {
       return `Legal Assistance Fund (${legalPurpose})`;
     }
@@ -130,63 +124,6 @@ export default function PayClient() {
       return `Court Litigation Expenses (${courtMatter})`;
     }
     return 'Student Candidate Examination & Registration Fee';
-  };
-
-  // Handler: DR Deposit Payment (₹25,000)
-  const handleDrDepositPay = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    const cleanMobile = drPhone.replace(/\D/g, '').slice(-10);
-    if (!drRepresentative.trim() || cleanMobile.length !== 10) {
-      setError('Please enter the Principal / Authorized Signatory Name and valid 10-digit Mobile Number.');
-      return;
-    }
-
-    setPaymentProcessing(true);
-    try {
-      const orderRes = await fetch('/api/order/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          purpose: 'dr_deposit',
-          feeCategory: 'dr_deposit',
-          schoolCode: drSchoolName,
-          payerPhone: cleanMobile,
-          studentName: drRepresentative.trim(),
-        }),
-      });
-      const orderData = await orderRes.json();
-      const txnId = `TXN-DR-${Date.now().toString().slice(-8)}`;
-      const paidAt = new Date().toLocaleString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      });
-
-      setPaymentProcessing(false);
-      setPaidReceipt({
-        txnId,
-        paidAt,
-        student: {
-          studentId: 'DR-DEP-' + Date.now().toString().slice(-6),
-          studentName: drRepresentative.trim() + ' (Authorized Signatory)',
-          mobileNumber: cleanMobile,
-          zoneId: drZoneId,
-          zoneName: ZONES.find((z) => z.id === drZoneId)?.name || 'Bhubaneswar Zone',
-          schoolId: 'AOPSTSMA-DR',
-          schoolName: drSchoolName,
-          district: 'Odisha',
-          feeAmount: 25000,
-          paymentStatus: 'Paid',
-        },
-        feeTypeName: 'Directorate Registration (DR Deposit) by School',
-      });
-      setPayStep('paid');
-    } catch (err) {
-      console.error(err);
-      setPaymentProcessing(false);
-      setError('Failed to initiate DR Deposit payment. Please try again.');
-    }
   };
 
   // Handler: Legal Assist Payment
@@ -698,18 +635,16 @@ export default function PayClient() {
           <div className="pay-card">
             <h3>
               {feeCategory === 'student' && '🎓 Student Fee Verification & Payment'}
-              {feeCategory === 'dr_deposit' && '🏫 DR Deposit by Member School (₹25,000)'}
               {feeCategory === 'legal_assist' && '⚖️ Institutional Legal Assist Contribution'}
               {feeCategory === 'court_expenses' && '📜 Court Litigation & Case Expenses Fund'}
             </h3>
             <p className="pay-sub">
               {feeCategory === 'student' && 'Select your Zone and School, then enter Student Full Name & Mobile Number to verify roster and pay.'}
-              {feeCategory === 'dr_deposit' && 'Statutory ₹25,000 Directorate Registration deposit payable by recognized member training institutions.'}
               {feeCategory === 'legal_assist' && 'Voluntary institutional legal assistance contribution supporting Senior Advocate counsel & state advocacy.'}
               {feeCategory === 'court_expenses' && 'Litigation expense contribution safeguarding Orissa High Court WP(C) 5640/2009 & Supreme Court orders.'}
             </p>
 
-            {/* 4 OFFICIAL FEE TYPE TABS */}
+            {/* 3 PUBLIC FEE TYPE TABS (DR Deposit is inside School Secretary Portal) */}
             <div className="fee-type-tabs">
               <button
                 type="button"
@@ -731,29 +666,6 @@ export default function PayClient() {
                 🎓 Student Fee
                 <span style={{ display: 'block', fontSize: '0.72rem', color: feeCategory === 'student' ? '#FDE68A' : '#B45309', marginTop: '0.15rem' }}>
                   ₹2,500 (Candidate)
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => { setFeeCategory('dr_deposit'); setError(null); }}
-                style={{
-                  border: feeCategory === 'dr_deposit' ? '2px solid #0B2545' : '1px solid #CBD5E1',
-                  padding: '0.65rem 0.4rem',
-                  borderRadius: '8px',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  background: feeCategory === 'dr_deposit' ? '#0B2545' : '#FFFFFF',
-                  color: feeCategory === 'dr_deposit' ? '#FFFFFF' : '#334155',
-                  textAlign: 'center',
-                  boxShadow: feeCategory === 'dr_deposit' ? '0 4px 12px rgba(11, 37, 69, 0.2)' : 'none',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                🏫 DR Deposit
-                <span style={{ display: 'block', fontSize: '0.72rem', color: feeCategory === 'dr_deposit' ? '#FDE68A' : '#15803D', marginTop: '0.15rem' }}>
-                  ₹25,000 (School)
                 </span>
               </button>
 
@@ -804,6 +716,39 @@ export default function PayClient() {
               </button>
             </div>
 
+            {/* SCHOOL SECRETARY NOTICE FOR DR DEPOSIT */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.75rem',
+                flexWrap: 'wrap',
+                padding: '0.6rem 0.85rem',
+                background: '#F0FDF4',
+                border: '1px solid #BBF7D0',
+                borderRadius: '8px',
+                marginBottom: '1.15rem',
+                fontSize: '0.78rem',
+                color: '#166534',
+              }}
+            >
+              <span>
+                🏫 <strong>School Secretary DR Deposit:</strong> School Secretaries can remit DR Deposit &amp; manage student rosters after logging into the School Portal.
+              </span>
+              <Link
+                href="/school-login"
+                style={{
+                  color: '#15803D',
+                  fontWeight: 800,
+                  textDecoration: 'underline',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                School Secretary Login &rarr;
+              </Link>
+            </div>
+
             {/* ERROR / SUCCESS ALERTS */}
             {error && (
               <div style={{ padding: '0.75rem 1rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '6px', color: '#B91C1C', fontSize: '0.85rem', marginBottom: '1rem' }}>
@@ -816,129 +761,7 @@ export default function PayClient() {
               </div>
             )}
 
-            {/* FORM 1: DR DEPOSIT BY SCHOOL (₹25,000) */}
-            {feeCategory === 'dr_deposit' ? (
-              <form onSubmit={handleDrDepositPay} className="pay-form">
-                <div className="form-group">
-                  <label htmlFor="drZoneSelect">
-                    1. Select School Zone <span style={{ color: '#EF4444' }}>*</span>
-                  </label>
-                  <select
-                    id="drZoneSelect"
-                    value={drZoneId}
-                    onChange={(e) => {
-                      const z = e.target.value;
-                      setDrZoneId(z);
-                      const f = SCHOOLS.filter((s) => s.zone === z)[0];
-                      if (f) setDrSchoolName(f.name);
-                    }}
-                  >
-                    {ZONES.map((z) => (
-                      <option key={z.id} value={z.id}>
-                        {z.name} ({z.schoolCount} Institutions)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="drSchoolSelect">
-                    2. Member Institution / Training School <span style={{ color: '#EF4444' }}>*</span>
-                  </label>
-                  <select
-                    id="drSchoolSelect"
-                    value={drSchoolName}
-                    onChange={(e) => setDrSchoolName(e.target.value)}
-                  >
-                    {drAvailableSchools.map((s, idx) => (
-                      <option key={idx} value={s.name}>
-                        {s.name} ({s.district})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="drRepresentative">
-                    3. Principal / Authorized Secretary Name <span style={{ color: '#EF4444' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="drRepresentative"
-                    placeholder="e.g. Dr. B. K. Mohapatra, Principal"
-                    value={drRepresentative}
-                    onChange={(e) => setDrRepresentative(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="drPhone">
-                    4. Authorized Mobile Number <span style={{ color: '#EF4444' }}>*</span>
-                  </label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 600, color: '#475569' }}>
-                      +91
-                    </span>
-                    <input
-                      type="tel"
-                      id="drPhone"
-                      maxLength={10}
-                      placeholder="9861012345"
-                      style={{ paddingLeft: '48px' }}
-                      value={drPhone}
-                      onChange={(e) => setDrPhone(e.target.value.replace(/\D/g, ''))}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>5. Fixed Statutory DR Deposit Amount</label>
-                  <div style={{
-                    padding: '0.85rem 1.25rem',
-                    background: '#F0FDF4',
-                    border: '2px solid #16A34A',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                    <div>
-                      <b style={{ color: '#15803D', fontSize: '1.25rem' }}>₹25,000.00</b>
-                      <small style={{ display: 'block', color: '#166534', fontSize: '0.78rem' }}>
-                        Official Directorate Registration Fee (Session 2026-2027)
-                      </small>
-                    </div>
-                    <span style={{ background: '#DCFCE7', color: '#15803D', padding: '0.25rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800 }}>
-                      FIXED BY ASSOCIATION
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={paymentProcessing}
-                  style={{
-                    width: '100%',
-                    padding: '0.9rem',
-                    background: 'linear-gradient(135deg, #0B2545 0%, #15803D 100%)',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontWeight: 700,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(11, 37, 69, 0.25)',
-                    marginTop: '0.5rem',
-                  }}
-                >
-                  {paymentProcessing
-                    ? 'Connecting to Gateway...'
-                    : '🏫 Pay ₹25,000 DR Deposit & Generate Certificate'}
-                </button>
-              </form>
-            ) : feeCategory === 'legal_assist' ? (
+            {feeCategory === 'legal_assist' ? (
               /* FORM 2: LEGAL ASSIST */
               <form onSubmit={handleLegalAssistPay} className="pay-form">
                 <div className="form-group">
@@ -1414,52 +1237,11 @@ export default function PayClient() {
       <div className="pay-card summary-card">
         <h3>
           {feeCategory === 'student' && 'Fee Details & Candidate Checkout'}
-          {feeCategory === 'dr_deposit' && '🏫 DR Deposit Summary (Session 2026-2027)'}
           {feeCategory === 'legal_assist' && '⚖️ Legal Assist Fund Summary'}
           {feeCategory === 'court_expenses' && '📜 Court Litigation Expenses Summary'}
         </h3>
 
-        {feeCategory === 'dr_deposit' ? (
-          <div style={{ padding: '0.5rem 0' }}>
-            <div style={{ padding: '1rem', background: '#F0FDF4', borderRadius: '8px', border: '1px solid #BBF7D0', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '1.75rem' }}>🏛️</span>
-                <div>
-                  <h4 style={{ margin: 0, color: '#15803D', fontSize: '1.05rem', fontWeight: 800 }}>
-                    Directorate Registration Deposit
-                  </h4>
-                  <small style={{ color: '#166534' }}>Statutory Member Institution Account</small>
-                </div>
-              </div>
-              <p style={{ fontSize: '0.82rem', color: '#14532D', lineHeight: 1.6, margin: 0 }}>
-                Statutory deposit of <b>₹25,000</b> remitted under Societies Registration Act XXI of 1860 for annual Directorate affiliation and candidate eligibility recognition.
-              </p>
-            </div>
-
-            <div style={{ background: '#FFFFFF', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
-                <span style={{ color: '#64748B' }}>Statutory Fee:</span>
-                <b style={{ color: '#15803D', fontSize: '1.15rem' }}>₹25,000.00</b>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
-                <span style={{ color: '#64748B' }}>Institution:</span>
-                <b style={{ color: '#0F172A', textAlign: 'right', maxWidth: '60%' }}>{drSchoolName}</b>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.55rem', fontSize: '0.85rem' }}>
-                <span style={{ color: '#64748B' }}>Representative:</span>
-                <b style={{ color: '#0F172A' }}>{drRepresentative || 'Principal / Secretary'}</b>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', borderTop: '1px solid #E2E8F0', paddingTop: '0.5rem' }}>
-                <span style={{ color: '#64748B' }}>Certificate:</span>
-                <b style={{ color: '#15803D' }}>Digital DR Certificate with Apex Seal ✓</b>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '1.25rem', padding: '0.75rem', background: '#FEF3C7', borderLeft: '4px solid #D97706', borderRadius: '0 6px 6px 0', fontSize: '0.78rem', color: '#92400E' }}>
-              📜 <strong>Instant Verification:</strong> Completing this ₹25,000 DR deposit marks the school as active in the State Registry and issues a printable Directorate Certificate.
-            </div>
-          </div>
-        ) : feeCategory === 'legal_assist' ? (
+        {feeCategory === 'legal_assist' ? (
           <div style={{ padding: '0.5rem 0' }}>
             <div style={{ padding: '1rem', background: '#FFFBEB', borderRadius: '8px', border: '1px solid #FDE68A', marginBottom: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem' }}>

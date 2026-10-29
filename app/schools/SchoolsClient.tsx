@@ -212,17 +212,7 @@ export default function SchoolsClient() {
                 style={{ borderRadius: '50%', objectFit: 'cover' }}
               />
             </div>
-            <span
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 800,
-                color: '#0B2545',
-                marginTop: '0.25rem',
-              }}
-            >
-              ( Logo )
-            </span>
-            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1E40AF', lineHeight: 1 }}>
+            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1E40AF', lineHeight: 1, marginTop: '0.35rem' }}>
               &darr;
             </span>
           </div>

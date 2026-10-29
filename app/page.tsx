@@ -85,10 +85,7 @@ export default function HomePage() {
             🏫 Find a School
           </Link>
           <Link href="/students" className="school-click-here-btn" style={{ background: '#059669' }}>
-            🎓 Student Registration
-          </Link>
-          <Link href="/videos" className="school-click-here-btn" style={{ background: '#7E22CE' }}>
-            🎬 Watch Videos (50 Clips)
+            🎓 Student Portal &amp; Videos
           </Link>
           <Link href="/schools" className="school-click-here-btn">
             🏛️ Association Directory
@@ -244,9 +241,9 @@ export default function HomePage() {
             </article>
 
             <article className="service">
-              <h3>DIR Recognition &amp; Board Renewals</h3>
+              <h3>DR Deposit &amp; Board Renewals</h3>
               <p>
-                Authoritative guidance on DIR recognition timelines, NCTE compliance parameters,
+                Authoritative guidance on DR Deposit recognition timelines, NCTE compliance parameters,
                 and regulatory submissions required by the Board of Secondary Education (BSE) Odisha.
               </p>
             </article>

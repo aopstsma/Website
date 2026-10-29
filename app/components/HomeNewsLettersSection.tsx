@@ -25,7 +25,7 @@ export default function HomeNewsLettersSection() {
       date: '14 Feb 2026',
       department: 'School & Mass Education Dept, Govt. of Odisha',
       badge: 'Govt. Resolution',
-      title: 'Clarification on Recognition & DIR Extension Timelines for Private Training Schools',
+      title: 'Clarification on Recognition & DR Deposit Timelines for Private Training Schools',
       summary: 'State Government directive regarding provisional affiliation continuity and verification protocol for secondary teacher education institutions across all 30 districts.',
     },
     {

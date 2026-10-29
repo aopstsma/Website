@@ -807,7 +807,7 @@ export const DOCUMENTS: DocumentRecord[] = [
   {
     ref: 'AN/25',
     year: '2025',
-    title: 'Advisory on DIR Renewal & Deposits',
+    title: 'Advisory on DR Deposit & Renewals',
     note: 'Guidelines for submission of renewal files, legal fee contributions, and annual portal registration for 2025-26.',
     file: '',
     category: 'notice',

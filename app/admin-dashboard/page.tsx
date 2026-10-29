@@ -406,7 +406,7 @@ export default function AdminDashboardPage() {
               </span>
               <h1>Administration &amp; Governance Portal</h1>
               <p className="lede">
-                Manage 5 Zones, Member Schools, Leadership Directory, Batches, Student Registrations, Payments, 50-Clip Video Library &amp; Audit Logs.
+                Manage 5 Zones, Member Schools, Leadership Directory, Batches, Student Registrations, Payments, Video Library &amp; Audit Logs.
               </p>
             </div>
 
@@ -503,7 +503,7 @@ export default function AdminDashboardPage() {
               { id: 'schools_officials', label: '🏫 Schools & Officials' },
               { id: 'batches', label: '🎓 Batch Directory' },
               { id: 'students_payments', label: '💳 Students & Payments' },
-              { id: 'videos', label: '🎬 Video Library (50)' },
+              { id: 'videos', label: '🎬 Video Library' },
               { id: 'announcements', label: '📢 Notices & Content' },
               { id: 'roles_audit', label: '🔐 Roles & Audit Log' },
             ].map((t) => (
@@ -565,7 +565,7 @@ export default function AdminDashboardPage() {
                   {
                     label: 'Educational Video Library',
                     value: `${videos.length} Clips`,
-                    sub: '13-Day / 13-Location Catalog',
+                    sub: 'Student Portal Video Library',
                     color: '#7E22CE',
                   },
                 ].map((stat) => (
@@ -1417,8 +1417,8 @@ export default function AdminDashboardPage() {
                 </table>
               </div>
               <div style={{ marginTop: '0.85rem', textAlign: 'right' }}>
-                <Link href="/videos" className="school-click-here-btn">
-                  Open Full 50-Clip Video Library &rarr;
+                <Link href="/students" className="school-click-here-btn">
+                  Open Student Portal Video Library &rarr;
                 </Link>
               </div>
             </div>

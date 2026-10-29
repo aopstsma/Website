@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   INITIAL_VIDEOS,
-  VIDEO_PRODUCTION_SCHEDULE,
   VideoClip,
   VideoAccessLevel,
 } from '@/lib/data/videos';
@@ -16,7 +15,6 @@ export default function VideoLibraryPage() {
   const [selectedZone, setSelectedZone] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedAccess, setSelectedAccess] = useState<string>('all');
-  const [showSchedule, setShowSchedule] = useState<boolean>(false);
 
   // Access Control Session State
   const [studentRegNo, setStudentRegNo] = useState<string>('');
@@ -125,11 +123,11 @@ export default function VideoLibraryPage() {
             className="pay-badge"
             style={{ color: '#FDE68A', borderColor: 'rgba(253, 230, 138, 0.4)' }}
           >
-            EDUCATIONAL VIDEO LIBRARY &middot; 50 CLIPS CATALOG
+            EDUCATIONAL VIDEO LIBRARY
           </span>
           <h1>AOPSTSMA Educational Video Library</h1>
           <p className="lede">
-            50 curated 30-minute educational lectures, zonal documentaries, pedagogy demonstrations, and legal awareness sessions across 5 zones and 13 locations of Odisha.
+            Curated educational lectures, zonal documentaries, pedagogy demonstrations, and legal awareness sessions across 5 zones of Odisha.
           </p>
         </div>
       </section>
@@ -166,7 +164,7 @@ export default function VideoLibraryPage() {
                     borderRadius: '999px',
                   }}
                 >
-                  🎬 {allVideos.length} Video Clips (30 Min Each)
+                  🎬 Educational Video Clips
                 </span>
                 <span
                   style={{
@@ -178,32 +176,15 @@ export default function VideoLibraryPage() {
                     borderRadius: '999px',
                   }}
                 >
-                  📍 5 Zones + Special Kendrapara + 7 Districts (13 Locations)
+                  📍 All 5 Regional Zones
                 </span>
               </div>
               <h2 style={{ fontSize: '1.25rem', color: '#FFFFFF', margin: 0 }}>
-                Public, Registered-Student &amp; Authorized-Member Video Portal
+                Student &amp; Member Educational Video Portal
               </h2>
             </div>
 
             <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'center' }}>
-              <button
-                type="button"
-                onClick={() => setShowSchedule((prev) => !prev)}
-                style={{
-                  background: showSchedule ? '#FDE68A' : 'rgba(255,255,255,0.12)',
-                  color: showSchedule ? '#0B2545' : '#FFFFFF',
-                  border: '1px solid #FDE68A',
-                  borderRadius: '8px',
-                  padding: '0.5rem 0.95rem',
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                }}
-              >
-                📅 {showSchedule ? 'Hide 13-Day Shoot Schedule' : 'View 13-Day / 50-Clip Plan'}
-              </button>
-
               {isStudentUnlocked ? (
                 <span
                   style={{
@@ -218,39 +199,20 @@ export default function VideoLibraryPage() {
                   🔓 Unlocked ({studentRegNo || 'Verified Access'})
                 </span>
               ) : (
-                <form
-                  onSubmit={handleUnlockSubmit}
-                  style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}
+                <Link
+                  href="/students"
+                  style={{
+                    background: '#10B981',
+                    color: '#FFFFFF',
+                    textDecoration: 'none',
+                    borderRadius: '8px',
+                    padding: '0.55rem 1rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                  }}
                 >
-                  <input
-                    type="text"
-                    placeholder="Enter Reg. No (e.g. AOP-BZB-2026-1024)"
-                    value={unlockInput}
-                    onChange={(e) => setUnlockInput(e.target.value)}
-                    style={{
-                      padding: '0.48rem 0.75rem',
-                      borderRadius: '7px',
-                      border: '1px solid #CBD5E1',
-                      fontSize: '0.8rem',
-                      minWidth: '220px',
-                    }}
-                  />
-                  <button
-                    type="submit"
-                    style={{
-                      background: '#10B981',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '7px',
-                      padding: '0.48rem 0.85rem',
-                      fontSize: '0.8rem',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    🔑 Unlock Student Videos
-                  </button>
-                </form>
+                  🎓 Unlock in Student Portal &rarr;
+                </Link>
               )}
             </div>
           </div>
@@ -258,67 +220,6 @@ export default function VideoLibraryPage() {
           {unlockError && (
             <div className="pay-error" style={{ marginBottom: '1.25rem' }}>
               {unlockError}
-            </div>
-          )}
-
-          {/* =================================================================
-              2. OPTIONAL 13-DAY / 13-LOCATION PRODUCTION PLAN TABLE
-             ================================================================= */}
-          {showSchedule && (
-            <div
-              style={{
-                background: '#FFFFFF',
-                border: '2px solid #0B2545',
-                borderRadius: '14px',
-                padding: '1.35rem',
-                marginBottom: '1.75rem',
-                boxShadow: '0 8px 24px rgba(11,37,69,0.08)',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  marginBottom: '0.85rem',
-                }}
-              >
-                <div>
-                  <span className="pay-badge">PRODUCTION REFERENCE SCHEDULE</span>
-                  <h3 style={{ fontSize: '1.2rem', color: '#0B2545', marginTop: '0.25rem' }}>
-                    50 Clips Production Plan (13 Days &middot; 13 Locations &middot; 2 Hours/Day &middot; 30 Min Edited Clips)
-                  </h3>
-                </div>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#059669' }}>
-                  ✓ 24 Clips with Association (5 Zones + Kendrapara) + 26 District &amp; Keynote Clips = 50 Clips
-                </span>
-              </div>
-
-              <div style={{ overflowX: 'auto' }}>
-                <table className="school-table">
-                  <thead>
-                    <tr>
-                      <th>Day</th>
-                      <th>Shoot Location / Zone</th>
-                      <th>Daily Shoot</th>
-                      <th>Edited Clips (30 Min)</th>
-                      <th>Production Group</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {VIDEO_PRODUCTION_SCHEDULE.map((row) => (
-                      <tr key={row.day}>
-                        <td style={{ fontWeight: 800, color: '#0B2545' }}>Day {row.day}</td>
-                        <td style={{ fontWeight: 700 }}>📍 {row.location}</td>
-                        <td>{row.hours}</td>
-                        <td style={{ fontWeight: 800, color: '#D97706' }}>{row.clips} Clips</td>
-                        <td>{row.group}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
           )}
 
@@ -505,7 +406,7 @@ export default function VideoLibraryPage() {
                             borderRadius: '6px',
                           }}
                         >
-                          Clip #{String(vid.clipNumber).padStart(2, '0')} &middot; Day {vid.shootDay}
+                          Clip #{String(vid.clipNumber).padStart(2, '0')}
                         </span>
                         <span
                           style={{

@@ -32,9 +32,7 @@ export default function SiteHeader() {
     { href: '/zones', label: 'Zones' },
     { href: '/schools', label: 'Schools' },
     { href: '/students', label: 'Student Portal' },
-    { href: '/videos', label: 'Videos' },
     { href: '/achievements', label: 'Court Orders' },
-    { href: '/services', label: 'Services' },
     { href: '/contact', label: 'Contact' },
   ];
 

@@ -3,7 +3,7 @@
 export default function WhatsAppButton() {
   const phoneNumber = '916370987576';
   const prefilledMessage = encodeURIComponent(
-    'Namaskar AOPSTSMA Secretariat. I would like to inquire about member secondary training school registration, DIR renewal, and High Court orders.'
+    'Namaskar AOPSTSMA Secretariat. I would like to inquire about member secondary training school registration, DR Deposit, and High Court orders.'
   );
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${prefilledMessage}`;
 

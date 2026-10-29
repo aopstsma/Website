@@ -350,14 +350,14 @@ export default function SchoolDashboardPage() {
     <div className="section" style={{ minHeight: '80vh' }}>
       <div className="wrap">
         {/* DASHBOARD HEADER */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '2px solid #E2E8F0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '2px solid #E2E8F0' }}>
           <div>
             <span className="pay-badge">AUTHENTICATED MEMBER INSTITUTION DASHBOARD</span>
             <h1 style={{ fontSize: '2rem', color: '#0F172A', marginTop: '0.4rem' }}>
               {schoolInfo.name}
             </h1>
             <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem' }}>
-              {schoolInfo.zone.charAt(0).toUpperCase() + schoolInfo.zone.slice(1)} Zone &middot; Authorized Signatory: <strong>{schoolInfo.authority}</strong> {schoolInfo.mobile ? `(${schoolInfo.mobile})` : ''}
+              {schoolInfo.zone.charAt(0).toUpperCase() + schoolInfo.zone.slice(1)} Zone &middot; Authorized Secretary: <strong>{schoolInfo.authority}</strong> {schoolInfo.mobile ? `(${schoolInfo.mobile})` : ''}
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -367,6 +367,164 @@ export default function SchoolDashboardPage() {
             <button type="button" onClick={handleLogout} className="btn" style={{ background: '#EF4444', color: '#FFF' }}>
               🚪 Sign Out
             </button>
+          </div>
+        </div>
+
+        {/* =====================================================================
+            SCHOOL SECRETARY PROCEDURE FLOWCHART (LIKE STUDENT PORTAL)
+           ===================================================================== */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #0B2545 0%, #1E3A8A 100%)',
+            borderRadius: '14px',
+            border: '2px solid #D97706',
+            padding: '1.2rem 1.35rem',
+            marginBottom: '2rem',
+            color: '#FFFFFF',
+            boxShadow: '0 10px 28px rgba(11,37,69,0.15)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+              marginBottom: '0.9rem',
+            }}
+          >
+            <div>
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  color: '#FDE68A',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                🏫 SCHOOL SECRETARY PORTAL PROCEDURE
+              </span>
+              <h2 style={{ fontSize: '1.15rem', color: '#FFFFFF', margin: '0.15rem 0 0' }}>
+                Choose Zone &rarr; Choose School &rarr; Secretary &amp; Mobile &rarr; OTP &rarr; Pay DR Deposit (₹25,000) &amp; Upload Student Roster &rarr; Get DR Certificate &amp; Benefits
+              </h2>
+            </div>
+
+            <span
+              style={{
+                background: drDepositPaid ? 'rgba(16,185,129,0.25)' : 'rgba(253,230,138,0.18)',
+                border: `1px solid ${drDepositPaid ? '#34D399' : '#FDE68A'}`,
+                color: drDepositPaid ? '#A7F3D0' : '#FDE68A',
+                padding: '0.35rem 0.85rem',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+              }}
+            >
+              {drDepositPaid ? '✓ All 5 Secretary Steps Completed' : 'Step 4 Active: DR Deposit & Student Roster'}
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+              gap: '0.6rem',
+            }}
+          >
+            {[
+              {
+                num: '1',
+                label: 'Choose Zone & School',
+                sub: `${schoolInfo.zone.toUpperCase()} · ${schoolInfo.name}`,
+                done: true,
+                active: false,
+              },
+              {
+                num: '2',
+                label: 'Secretary & Mobile',
+                sub: `${schoolInfo.authority}`,
+                done: true,
+                active: false,
+              },
+              {
+                num: '3',
+                label: 'OTP & Scan Verified',
+                sub: schoolInfo.scan || '6-Digit OTP Verified',
+                done: true,
+                active: false,
+              },
+              {
+                num: '4',
+                label: 'DR Deposit & Roster',
+                sub: drDepositPaid ? '₹25,000 DR Paid ✓' : 'Pay ₹25,000 & Upload DR List',
+                done: drDepositPaid,
+                active: !drDepositPaid,
+              },
+              {
+                num: '5',
+                label: 'DR Certificate & Benefits',
+                sub: drDepositPaid ? 'Certificate Ready to Print ✓' : 'Unlocks after DR Deposit',
+                done: drDepositPaid,
+                active: drDepositPaid,
+              },
+            ].map((s) => (
+              <div
+                key={s.num}
+                style={{
+                  background: s.active
+                    ? '#FEF3C7'
+                    : s.done
+                    ? 'rgba(16, 185, 129, 0.22)'
+                    : 'rgba(255, 255, 255, 0.08)',
+                  color: s.active ? '#0B2545' : '#FFFFFF',
+                  border: s.active
+                    ? '2px solid #F59E0B'
+                    : s.done
+                    ? '1px solid #34D399'
+                    : '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '10px',
+                  padding: '0.65rem 0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.55rem',
+                }}
+              >
+                <span
+                  style={{
+                    width: '26px',
+                    height: '26px',
+                    borderRadius: '50%',
+                    background: s.active ? '#0B2545' : s.done ? '#10B981' : 'rgba(255,255,255,0.2)',
+                    color: s.active ? '#FDE68A' : '#FFFFFF',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 900,
+                    fontSize: '0.78rem',
+                    flexShrink: 0,
+                  }}
+                >
+                  {s.done ? '✓' : s.num}
+                </span>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.8rem', lineHeight: 1.2 }}>{s.label}</div>
+                  <div
+                    style={{
+                      fontSize: '0.68rem',
+                      opacity: s.active ? 0.85 : 0.8,
+                      marginTop: '0.14rem',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {s.sub}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 

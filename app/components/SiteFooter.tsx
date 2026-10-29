@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function SiteFooter() {
   const currentYear = new Date().getFullYear();
@@ -7,72 +8,155 @@ export default function SiteFooter() {
     <footer className="site-footer">
       <div className="wrap">
         <div className="site-footer__grid">
-          <div>
-            <h4>All Orissa Secondary Training Schools Association</h4>
-            <p style={{ fontSize: 'var(--t-sm)', color: '#94A3B8', lineHeight: '1.6' }}>
-              All Orissa Private Secondary Training Schools Management Association (AOPSTSMA).
-              The apex body representing recognized D.El.Ed &amp; B.Ed secondary training institutions
-              across 30 districts of Odisha since 1980.
+          {/* COLUMN 1: BRAND & STATUTORY IDENTITY */}
+          <div className="site-footer__brand-col">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  width: '52px',
+                  height: '52px',
+                  borderRadius: '50%',
+                  border: '2px solid #D97706',
+                  background: '#FFFFFF',
+                  padding: '2px',
+                  flexShrink: 0,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Image
+                  src="/assets/img/aopstsma-seal.jpg"
+                  alt="AOPSTSMA Official Seal"
+                  width={46}
+                  height={46}
+                  style={{ borderRadius: '50%', objectFit: 'cover' }}
+                />
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontSize: '1.15rem',
+                    fontWeight: 900,
+                    color: '#FFFFFF',
+                    letterSpacing: '0.04em',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  AOPSTSMA
+                </div>
+                <div
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    color: '#FBBF24',
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase',
+                    marginTop: '0.15rem',
+                  }}
+                >
+                  Est. 1980 &middot; Regd. No. 1422/80
+                </div>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.88rem', color: '#CBD5E1', lineHeight: 1.65, margin: '0 0 0.9rem 0' }}>
+              All Orissa Private Secondary Training Schools Management Association (AOPSTSMA). The apex
+              body representing recognized Secondary &amp; C.T. Training Institutions across 5 zones of
+              Odisha.
             </p>
-            <p style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.75rem' }}>
-              Registered under Societies Registration Act XXI of 1860 &middot; Regd. No. 1422/80
-            </p>
+
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                background: 'rgba(251, 191, 36, 0.1)',
+                border: '1px solid rgba(251, 191, 36, 0.3)',
+                borderRadius: '6px',
+                padding: '0.4rem 0.75rem',
+                fontSize: '0.74rem',
+                color: '#FDE68A',
+                fontWeight: 600,
+              }}
+            >
+              🏛️ Registered under Societies Registration Act XXI of 1860
+            </div>
           </div>
 
-          <div>
+          {/* COLUMN 2: QUICK NAVIGATION */}
+          <div className="site-footer__col">
             <h4>Quick Navigation</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/about">About the Association</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/zones">Explore 5 Regional Zones</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/schools">School &amp; Batch Directory</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/students">Student Registration Portal</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/videos">Educational Video Library (50 Clips)</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/achievements">High Court Orders &amp; Records</Link></li>
+            <ul className="site-footer__list">
+              <li><Link href="/about">About the Association</Link></li>
+              <li><Link href="/zones">Explore 5 Regional Zones</Link></li>
+              <li><Link href="/schools">School &amp; Batch Directory (90)</Link></li>
+              <li><Link href="/students">Student Registration &amp; Videos</Link></li>
+              <li><Link href="/achievements">High Court Orders &amp; Records</Link></li>
+              <li><Link href="/contact">Contact Us &amp; Helpdesk</Link></li>
             </ul>
           </div>
 
-          <div>
+          {/* COLUMN 3: MEMBER & LEGAL LINKS */}
+          <div className="site-footer__col">
             <h4>Member &amp; Legal Links</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/pay">Online Fee &amp; Legal Portal</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/admin-login">Administration Panel</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/privacy-policy">Privacy Policy</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/terms">Terms &amp; Conditions</Link></li>
-              <li style={{ marginBottom: '0.5rem' }}><Link href="/contact">Contact Us &amp; Helpdesk</Link></li>
+            <ul className="site-footer__list">
+              <li><Link href="/pay">Online Fee &amp; Payment Portal</Link></li>
+              <li><Link href="/student-login">Student Dashboard Login</Link></li>
+              <li><Link href="/school-login">School Secretary Login</Link></li>
+              <li><Link href="/admin-login">Administration Panel</Link></li>
+              <li><Link href="/privacy-policy">Privacy Policy</Link></li>
+              <li><Link href="/terms">Terms &amp; Conditions</Link></li>
             </ul>
           </div>
 
-          <div>
+          {/* COLUMN 4: ASSOCIATION SECRETARIAT */}
+          <div className="site-footer__col">
             <h4>Association Secretariat</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li style={{ marginBottom: '0.5rem' }}>
-                <a href="tel:+916370987576">📞 +91 63709 87576</a>
-              </li>
-              <li style={{ marginBottom: '0.5rem' }}>
-                <a href="mailto:info@aopstsma.in">✉️ info@aopstsma.in</a>
-              </li>
-              <li style={{ marginBottom: '0.5rem', color: '#CBD5E1', fontSize: '0.85rem', lineHeight: 1.5 }}>
-                📍 <strong>Registered Office:</strong><br />
-                Plot No. 4971/8, V.S.S. Nagar,<br />
-                Bhubaneswar, Khordha,<br />
-                Odisha &ndash; 751010, India
-              </li>
-            </ul>
+            <div className="site-footer__contact-box">
+              <a href="tel:+916370987576" className="site-footer__contact-item">
+                <span>📞</span>
+                <div>
+                  <small>Official Helpline</small>
+                  <strong>+91 63709 87576</strong>
+                </div>
+              </a>
+              <a href="mailto:info@aopstsma.in" className="site-footer__contact-item">
+                <span>✉️</span>
+                <div>
+                  <small>Official Email</small>
+                  <strong>info@aopstsma.in</strong>
+                </div>
+              </a>
+              <div className="site-footer__address">
+                <span>📍</span>
+                <div>
+                  <strong style={{ color: '#FDE68A', display: 'block', marginBottom: '0.15rem' }}>
+                    Registered Office:
+                  </strong>
+                  Plot No. 4971/8, V.S.S. Nagar, Bhubaneswar, Khordha, Odisha &ndash; 751010, India
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
+        {/* BOTTOM COPYRIGHT & INLINE LINKS BAR */}
         <div className="site-footer__base">
-          <span>&copy; {currentYear} AOPSTSMA &middot; All Orissa Private Secondary Training Schools Management Association.</span>
-          <span>
-            <Link href="/privacy-policy" style={{ textDecoration: 'underline', marginRight: '0.75rem' }}>
-              Privacy Policy
-            </Link>
-            &middot;
-            <Link href="/terms" style={{ textDecoration: 'underline', margin: '0 0.75rem' }}>
-              Terms &amp; Conditions
-            </Link>
-            &middot; aopstsma.in
-          </span>
+          <div className="site-footer__copy">
+            &copy; {currentYear} <strong>AOPSTSMA</strong> &middot; All Orissa Private Secondary Training
+            Schools Management Association. All rights reserved.
+          </div>
+          <div className="site-footer__bottom-links">
+            <Link href="/privacy-policy">Privacy Policy</Link>
+            <span className="site-footer__dot">&bull;</span>
+            <Link href="/terms">Terms &amp; Conditions</Link>
+            <span className="site-footer__dot">&bull;</span>
+            <Link href="/contact">Contact Us</Link>
+            <span className="site-footer__dot">&bull;</span>
+            <span style={{ color: '#FBBF24', fontWeight: 700 }}>www.aopstsma.in</span>
+          </div>
         </div>
       </div>
     </footer>

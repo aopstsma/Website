@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ZONES, SCHOOLS, getZoneDetails, getSchoolFullDetails } from '@/lib/data/schools';
 import { INITIAL_STUDENTS, StudentRecord } from '@/lib/data/students';
+import { INITIAL_VIDEOS, VideoClip } from '@/lib/data/videos';
 
 type PortalMode = 'new_flow' | 'existing_lookup';
 type FlowStep = 'details' | 'otp' | 'payment' | 'benefits';
@@ -35,6 +36,12 @@ export default function StudentPortalPage() {
   const [transactionId, setTransactionId] = useState<string>('');
   const [paidTimestamp, setPaidTimestamp] = useState<string>('');
   const [showAdmitCardModal, setShowAdmitCardModal] = useState<boolean>(false);
+
+  // Embedded Student Video Library State (Inside Student Portal)
+  const [videoSearch, setVideoSearch] = useState<string>('');
+  const [videoZoneFilter, setVideoZoneFilter] = useState<string>('all');
+  const [videoCategoryFilter, setVideoCategoryFilter] = useState<string>('all');
+  const [activeVideo, setActiveVideo] = useState<VideoClip | null>(null);
 
   // Existing Lookup State
   const [lookupRegNo, setLookupRegNo] = useState<string>('');
@@ -69,6 +76,21 @@ export default function StudentPortalPage() {
     () => getSchoolFullDetails(currentSchoolObj, currentSchoolObj.slNo || 1),
     [currentSchoolObj]
   );
+
+  const studentVideos = useMemo(() => {
+    const q = videoSearch.trim().toLowerCase();
+    return INITIAL_VIDEOS.filter((v) => {
+      const zoneOk = videoZoneFilter === 'all' || v.zoneId === videoZoneFilter || v.zoneId === 'all';
+      const catOk = videoCategoryFilter === 'all' || v.category === videoCategoryFilter;
+      const textOk =
+        !q ||
+        v.title.toLowerCase().includes(q) ||
+        v.topic.toLowerCase().includes(q) ||
+        v.location.toLowerCase().includes(q) ||
+        v.description.toLowerCase().includes(q);
+      return zoneOk && catOk && textOk;
+    });
+  }, [videoSearch, videoZoneFilter, videoCategoryFilter]);
 
   const handleZoneChange = (newZoneId: string) => {
     setSelectedZone(newZoneId);
@@ -462,7 +484,7 @@ export default function StudentPortalPage() {
               <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                 <span className="pay-badge">EXISTING STUDENT ACCESS</span>
                 <h2 style={{ fontSize: '1.5rem', marginTop: '0.4rem', color: '#0F172A' }}>
-                  Enter Registration Number to Get Benefits &amp; Admit Card
+                  Enter Registration Number
                 </h2>
                 <p style={{ fontSize: '0.9rem', color: '#64748B', margin: '0.35rem 0 0' }}>
                   Already completed payment? Enter your Registration Number or registered Mobile Number below.
@@ -492,7 +514,7 @@ export default function StudentPortalPage() {
                   />
                 </div>
                 <button type="submit" className="verify-btn">
-                  🔓 Unlock Student Benefits &amp; Admit Card &rarr;
+                  🔓 Verify Registration Number &rarr;
                 </button>
               </form>
             </div>
@@ -1165,7 +1187,7 @@ export default function StudentPortalPage() {
                     className="btn btn--primary"
                     style={{ background: '#0B2545', borderColor: '#D97706' }}
                   >
-                    🎟️ {showAdmitCardModal ? 'Hide Official Admit Card' : 'View & Download Board Admit Card'}
+                    📄 {showAdmitCardModal ? 'Hide Registration Certificate' : 'View & Download Registration Certificate'}
                   </button>
                   <button
                     type="button"
@@ -1173,7 +1195,7 @@ export default function StudentPortalPage() {
                     className="btn btn--secondary"
                     style={{ background: '#FFFFFF', color: '#0B2545', border: '1.5px solid #0B2545' }}
                   >
-                    🖨️ Print Registration &amp; Benefits Slip
+                    🖨️ Print Registration Receipt
                   </button>
                 </div>
               </div>
@@ -1206,7 +1228,7 @@ export default function StudentPortalPage() {
                     UNLOCKED WITH REGISTRATION NO: {registrationNumber}
                   </span>
                   <h3 style={{ fontSize: '1.45rem', color: '#0B2545', marginTop: '0.4rem', fontWeight: 900 }}>
-                    🎁 Get the Benefits &mdash; Student Portal Privileges
+                    🎁 Student Portal Privileges
                   </h3>
                 </div>
 
@@ -1217,7 +1239,7 @@ export default function StudentPortalPage() {
                     gap: '1rem',
                   }}
                 >
-                  {/* Benefit 1: Board Admit Card */}
+                  {/* Benefit 1: Registration Certificate */}
                   <div
                     style={{
                       background: '#F8FAFC',
@@ -1226,12 +1248,12 @@ export default function StudentPortalPage() {
                       padding: '1.15rem',
                     }}
                   >
-                    <div style={{ fontSize: '1.5rem', marginBottom: '0.35rem' }}>🎟️</div>
+                    <div style={{ fontSize: '1.5rem', marginBottom: '0.35rem' }}>📄</div>
                     <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0B2545', marginBottom: '0.35rem' }}>
-                      1. Official Board Admit Card
+                      1. Official Registration Certificate
                     </h4>
                     <p style={{ fontSize: '0.83rem', color: '#475569', marginBottom: '0.75rem' }}>
-                      Instant digital &amp; printable C.T. Examination Admit Card with assigned Zonal Exam Centre:
+                      Instant digital &amp; printable AOPSTSMA Student Registration Certificate with assigned Zonal Centre:
                       <strong> {currentSchoolDetails.invigilators[0]?.centreName}</strong>.
                     </p>
                     <button
@@ -1239,7 +1261,7 @@ export default function StudentPortalPage() {
                       onClick={() => setShowAdmitCardModal(true)}
                       className="school-click-here-btn"
                     >
-                      Open Admit Card &rarr;
+                      Open Registration Certificate &rarr;
                     </button>
                   </div>
 
@@ -1306,7 +1328,7 @@ export default function StudentPortalPage() {
                     </Link>
                   </div>
 
-                  {/* Benefit 5: 50 Educational Video Clips Library */}
+                  {/* Benefit 5: Educational Video Library */}
                   <div
                     style={{
                       background: '#F8FAFC',
@@ -1317,17 +1339,403 @@ export default function StudentPortalPage() {
                   >
                     <div style={{ fontSize: '1.5rem', marginBottom: '0.35rem' }}>🎬</div>
                     <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0B2545', marginBottom: '0.35rem' }}>
-                      5. 50 Educational Video Clips Library
+                      5. Educational Video Library
                     </h4>
                     <p style={{ fontSize: '0.83rem', color: '#475569', marginBottom: '0.75rem' }}>
-                      Unlocked access to all 50 registered-student pedagogy lectures, zonal documentaries, and 10-year exam walkthroughs.
+                      Unlocked access to registered-student pedagogy lectures, zonal documentaries, and C.T. exam walkthroughs below.
                     </p>
-                    <Link href="/videos" className="school-click-here-btn">
-                      Watch Student Videos &rarr;
-                    </Link>
+                    <a href="#student-unlocked-videos" className="school-click-here-btn">
+                      Watch Unlocked Videos Below &darr;
+                    </a>
                   </div>
                 </div>
               </div>
+
+              {/* 2B. EMBEDDED UNLOCKED STUDENT VIDEO LIBRARY (INSIDE STUDENT PORTAL) */}
+              <div
+                id="student-unlocked-videos"
+                className="no-print"
+                style={{
+                  background: '#FFFFFF',
+                  border: '2px solid #0B2545',
+                  borderRadius: '16px',
+                  padding: '1.75rem 1.5rem',
+                  boxShadow: '0 10px 28px rgba(11,37,69,0.08)',
+                  marginBottom: '1.75rem',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '0.85rem',
+                    borderBottom: '2px solid #E2E8F0',
+                    paddingBottom: '1rem',
+                    marginBottom: '1.25rem',
+                  }}
+                >
+                  <div>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        background: '#D1FAE5',
+                        color: '#065F46',
+                        fontSize: '0.73rem',
+                        fontWeight: 900,
+                        padding: '0.22rem 0.75rem',
+                        borderRadius: '999px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      🔓 UNLOCKED FOR REG. NO: {registrationNumber}
+                    </span>
+                    <h3 style={{ fontSize: '1.35rem', color: '#0B2545', marginTop: '0.35rem', fontWeight: 900 }}>
+                      🎬 Student Educational Video Library
+                    </h3>
+                    <p style={{ fontSize: '0.85rem', color: '#475569', margin: '0.2rem 0 0' }}>
+                      Watch pedagogy lectures, C.T. curriculum modules, zonal training sessions, and legal awareness clips directly inside your Student Portal.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Video Search & Filters */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '0.75rem',
+                    marginBottom: '1.25rem',
+                    background: '#F8FAFC',
+                    padding: '1rem',
+                    borderRadius: '12px',
+                    border: '1px solid #E2E8F0',
+                  }}
+                >
+                  <div>
+                    <label
+                      htmlFor="stuVidSearch"
+                      style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#0B2545', marginBottom: '0.25rem' }}
+                    >
+                      🔍 Search Video Clips
+                    </label>
+                    <input
+                      id="stuVidSearch"
+                      type="search"
+                      placeholder="Search by title, topic or school..."
+                      value={videoSearch}
+                      onChange={(e) => setVideoSearch(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.55rem 0.75rem',
+                        borderRadius: '8px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.84rem',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="stuVidZone"
+                      style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#0B2545', marginBottom: '0.25rem' }}
+                    >
+                      🏛️ Filter by Zone
+                    </label>
+                    <select
+                      id="stuVidZone"
+                      value={videoZoneFilter}
+                      onChange={(e) => setVideoZoneFilter(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.55rem 0.75rem',
+                        borderRadius: '8px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.84rem',
+                        fontWeight: 700,
+                      }}
+                    >
+                      <option value="all">All 5 Zones + State HQ</option>
+                      {ZONES.map((z) => (
+                        <option key={z.id} value={z.id}>
+                          {z.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="stuVidCat"
+                      style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#0B2545', marginBottom: '0.25rem' }}
+                    >
+                      📂 Filter by Topic / Category
+                    </label>
+                    <select
+                      id="stuVidCat"
+                      value={videoCategoryFilter}
+                      onChange={(e) => setVideoCategoryFilter(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.55rem 0.75rem',
+                        borderRadius: '8px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.84rem',
+                        fontWeight: 700,
+                      }}
+                    >
+                      <option value="all">All Categories</option>
+                      <option value="Pedagogy & C.T. Curriculum">Pedagogy &amp; C.T. Curriculum</option>
+                      <option value="Zonal Documentary">Zonal Documentary</option>
+                      <option value="Legal & Regulatory Awareness">Legal &amp; Regulatory Awareness</option>
+                      <option value="Press Release & Keynote">Press Release &amp; Keynote</option>
+                      <option value="Special Programme">Special Programme</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Video Grid inside Student Portal */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(275px, 1fr))',
+                    gap: '1rem',
+                  }}
+                >
+                  {studentVideos.map((vid) => (
+                    <article
+                      key={vid.id}
+                      style={{
+                        background: '#FFFFFF',
+                        borderRadius: '12px',
+                        border: '1px solid #E2E8F0',
+                        overflow: 'hidden',
+                        boxShadow: '0 4px 12px rgba(11,37,69,0.05)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <div>
+                        <div
+                          style={{
+                            height: '130px',
+                            background: 'linear-gradient(135deg, #0B2545 0%, #1E40AF 100%)',
+                            padding: '0.85rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            color: '#FFFFFF',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span
+                              style={{
+                                background: 'rgba(0,0,0,0.4)',
+                                color: '#FDE68A',
+                                fontSize: '0.68rem',
+                                fontWeight: 800,
+                                padding: '0.18rem 0.5rem',
+                                borderRadius: '6px',
+                              }}
+                            >
+                              Clip #{String(vid.clipNumber).padStart(2, '0')}
+                            </span>
+                            <span
+                              style={{
+                                background: '#D1FAE5',
+                                color: '#065F46',
+                                fontSize: '0.66rem',
+                                fontWeight: 900,
+                                padding: '0.15rem 0.5rem',
+                                borderRadius: '999px',
+                              }}
+                            >
+                              🔓 UNLOCKED
+                            </span>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                            <div
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                background: '#F59E0B',
+                                color: '#0B2545',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '1.1rem',
+                                fontWeight: 900,
+                                flexShrink: 0,
+                              }}
+                            >
+                              ▶
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#E2E8F0', fontWeight: 600 }}>
+                              <div style={{ color: '#FDE68A', fontWeight: 800 }}>{vid.category}</div>
+                              <div>📍 {vid.location}</div>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#CBD5E1' }}>
+                            <span>{vid.zoneName}</span>
+                            <strong>⏱️ {vid.duration}</strong>
+                          </div>
+                        </div>
+
+                        <div style={{ padding: '0.9rem 1rem' }}>
+                          <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0B2545', marginBottom: '0.35rem', lineHeight: 1.35 }}>
+                            {vid.title}
+                          </h4>
+                          <p style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.45, margin: 0 }}>
+                            {vid.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          padding: '0.65rem 1rem',
+                          borderTop: '1px solid #F1F5F9',
+                          background: '#F8FAFC',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748B' }}>
+                          {vid.topic}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setActiveVideo(vid)}
+                          className="school-click-here-btn"
+                          style={{
+                            background: '#0B2545',
+                            padding: '0.35rem 0.75rem',
+                            fontSize: '0.74rem',
+                          }}
+                        >
+                          ▶ Watch Video
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              {/* ACTIVE VIDEO PLAYER MODAL INSIDE STUDENT PORTAL */}
+              {activeVideo && (
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  onClick={() => setActiveVideo(null)}
+                  style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(6, 19, 36, 0.84)',
+                    backdropFilter: 'blur(4px)',
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '1rem',
+                  }}
+                >
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      background: '#FFFFFF',
+                      borderRadius: '16px',
+                      border: '2px solid #D97706',
+                      maxWidth: '740px',
+                      width: '100%',
+                      padding: '1.5rem',
+                      boxShadow: '0 25px 60px rgba(0,0,0,0.45)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '1rem' }}>
+                      <div>
+                        <span className="pay-badge">
+                          CLIP #{String(activeVideo.clipNumber).padStart(2, '0')} &middot; {activeVideo.category}
+                        </span>
+                        <h3 style={{ fontSize: '1.2rem', color: '#0B2545', marginTop: '0.25rem' }}>
+                          {activeVideo.title}
+                        </h3>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveVideo(null)}
+                        style={{
+                          background: '#F1F5F9',
+                          border: '1px solid #CBD5E1',
+                          borderRadius: '8px',
+                          padding: '0.4rem 0.8rem',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ✕ Close
+                      </button>
+                    </div>
+
+                    <div
+                      style={{
+                        background: 'radial-gradient(circle at center, #1E3A8A 0%, #061324 100%)',
+                        borderRadius: '12px',
+                        height: '300px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#FFFFFF',
+                        padding: '1.5rem',
+                        textAlign: 'center',
+                        border: '2px solid #0B2545',
+                        marginBottom: '1rem',
+                      }}
+                    >
+                      <Image
+                        src="/assets/img/aopstsma-seal.jpg"
+                        alt="AOPSTSMA Seal"
+                        width={60}
+                        height={60}
+                        style={{ borderRadius: '50%', border: '2px solid #D97706', marginBottom: '0.75rem' }}
+                      />
+                      <div style={{ fontSize: '0.75rem', color: '#FDE68A', fontWeight: 800, letterSpacing: '0.06em' }}>
+                        AOPSTSMA STUDENT PORTAL STREAM &middot; DURATION {activeVideo.duration}
+                      </div>
+                      <h4 style={{ color: '#FFFFFF', fontSize: '1.1rem', margin: '0.4rem 0', maxWidth: '520px' }}>
+                        {activeVideo.title}
+                      </h4>
+                      <p style={{ fontSize: '0.8rem', color: '#CBD5E1', maxWidth: '500px', marginBottom: '1rem' }}>
+                        📍 {activeVideo.location} ({activeVideo.zoneName}) &middot;{' '}
+                        {activeVideo.schoolName || 'Association Academic Wing'}
+                      </p>
+                      <span
+                        style={{
+                          background: '#10B981',
+                          color: '#FFFFFF',
+                          padding: '0.42rem 1.1rem',
+                          borderRadius: '999px',
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                        }}
+                      >
+                        ▶ Unlocked Student Playback Active ({registrationNumber})
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: '0.86rem', color: '#334155', margin: 0 }}>
+                      <strong>Session Summary:</strong> {activeVideo.description}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* 3. PRINTABLE OFFICIAL ADMIT CARD (WHEN TOGGLED OR PRINTED) */}
               {showAdmitCardModal && (
@@ -1388,7 +1796,7 @@ export default function StudentPortalPage() {
                         letterSpacing: '0.06em',
                       }}
                     >
-                      OFFICIAL STUDENT REGISTRATION &amp; EXAMINATION ADMIT CARD
+                      OFFICIAL STUDENT REGISTRATION CERTIFICATE
                     </div>
                   </div>
 

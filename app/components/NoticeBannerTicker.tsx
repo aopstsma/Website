@@ -35,7 +35,7 @@ const NOTICES: NoticeItem[] = [
     id: 'n-3',
     badge: 'GOVT. DIRECTIVE',
     badgeBg: '#2563EB',
-    title: 'School & Mass Education Dept Clarification on Recognition & DIR Timelines (Memo S&ME/TE-1422/2026)',
+    title: 'School & Mass Education Dept Clarification on Recognition & DR Deposit Timelines (Memo S&ME/TE-1422/2026)',
     date: '20 Aug 2026',
     link: '/achievements',
   },
@@ -54,7 +54,7 @@ const NOTICES: NoticeItem[] = [
     badgeBg: '#0D9488',
     title: 'Board of Secondary Education (BSE) Examination Schedule & Center Choice Allocation 2026',
     date: '08 Aug 2026',
-    link: '/services',
+    link: '/schools',
   },
   {
     id: 'n-6',
