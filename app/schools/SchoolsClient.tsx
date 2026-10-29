@@ -45,6 +45,7 @@ export default function SchoolsClient() {
   const [activeBatchIdx, setActiveBatchIdx] = useState<number>(0);
   const [activeCentreIdx, setActiveCentreIdx] = useState<number>(0);
   const [modalSchool, setModalSchool] = useState<SchoolFullDetails | null>(null);
+  const [candidateQuery, setCandidateQuery] = useState<string>('');
 
   useEffect(() => {
     const p = searchParams.get('zone');
@@ -676,6 +677,33 @@ export default function SchoolsClient() {
                 >
                   ( Click ) &mdash; See the Batch &rarr;
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const noble = SCHOOLS.find((s) =>
+                      s.name.toLowerCase().includes('noble c.t')
+                    );
+                    if (noble) {
+                      setSelectedZone('bhubaneswar');
+                      setActiveSchool(noble);
+                      setActiveCentreIdx(0);
+                      setShowBatches(true);
+                    }
+                  }}
+                  style={{
+                    border: '2px solid #15803D',
+                    background: '#DCFCE7',
+                    color: '#14532D',
+                    fontWeight: 900,
+                    fontSize: '0.8rem',
+                    padding: '0.45rem 0.95rem',
+                    borderRadius: '999px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  📄 View Orissa Noble C.T. School (115 Candidates PDF)
+                </button>
               </div>
             </div>
 
@@ -804,9 +832,31 @@ export default function SchoolsClient() {
                 <div>
                   &ndash; <strong>PO:</strong> {activeDetails.address.po}
                 </div>
+                {activeDetails.address.via && (
+                  <div>
+                    &ndash; <strong>Via:</strong> {activeDetails.address.via}
+                  </div>
+                )}
                 <div>
                   &ndash; <strong>Dist:</strong> {activeDetails.address.dist}
                 </div>
+                {activeDetails.address.circle && (
+                  <div>
+                    &ndash; <strong>Circle / Block:</strong> {activeDetails.address.circle} /{' '}
+                    {activeDetails.address.block || activeDetails.address.educationalDistrict}
+                  </div>
+                )}
+                {activeDetails.address.telegraphOffice && (
+                  <div>
+                    &ndash; <strong>Nearest Telegraph Office:</strong>{' '}
+                    {activeDetails.address.telegraphOffice}
+                  </div>
+                )}
+                {activeDetails.address.landline && (
+                  <div>
+                    &ndash; <strong>School Telephone:</strong> {activeDetails.address.landline}
+                  </div>
+                )}
                 <div>
                   &ndash; <strong>Pin:</strong> {activeDetails.address.pin}
                 </div>
@@ -900,6 +950,143 @@ export default function SchoolsClient() {
               )}
             </div>
           </div>
+
+          {/* OFFICIAL B.S.E. EXAM FORM NO. 29 — DESCRIPTIVE ROLL (DR) CANDIDATE LIST */}
+          {activeDetails.candidates && activeDetails.candidates.length > 0 && (
+            <div
+              style={{
+                marginTop: '1.35rem',
+                background: '#F8FAFC',
+                border: '2px solid #0B2545',
+                borderRadius: '14px',
+                padding: '1.2rem',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '0.85rem',
+                  marginBottom: '1rem',
+                  paddingBottom: '0.85rem',
+                  borderBottom: '2px solid #CBD5E1',
+                }}
+              >
+                <div>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      background: '#15803D',
+                      color: '#FFFFFF',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      padding: '0.2rem 0.65rem',
+                      borderRadius: '999px',
+                      marginBottom: '0.3rem',
+                    }}
+                  >
+                    ✓ VERIFIED B.S.E. EXAM FORM NO. 29 &bull; DATED {activeDetails.drFormDate || '22/06/2009'}
+                  </span>
+                  <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#0B2545', fontWeight: 900 }}>
+                    📋 Descriptive Roll (DR) of {activeDetails.candidates.length} Candidates —{' '}
+                    {activeDetails.name}
+                  </h4>
+                  <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#475569' }}>
+                    Board of Secondary Education, Orissa &bull; Certified by Headmaster{' '}
+                    <strong>{activeDetails.secretary.name}</strong> &bull; Tel:{' '}
+                    <strong>{activeDetails.address.landline || '0674-2397022'}</strong>
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                  <input
+                    type="search"
+                    placeholder="Search 115 candidates by name or roll..."
+                    value={candidateQuery}
+                    onChange={(e) => setCandidateQuery(e.target.value)}
+                    style={{
+                      padding: '0.5rem 0.85rem',
+                      borderRadius: '8px',
+                      border: '1.5px solid #94A3B8',
+                      fontSize: '0.84rem',
+                      minWidth: '250px',
+                    }}
+                  />
+                  {activeDetails.drFormPdf && (
+                    <a
+                      href={activeDetails.drFormPdf}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        background: '#0B2545',
+                        color: '#FDE68A',
+                        fontWeight: 800,
+                        fontSize: '0.82rem',
+                        padding: '0.55rem 1rem',
+                        borderRadius: '8px',
+                        textDecoration: 'none',
+                        border: '1.5px solid #D97706',
+                      }}
+                    >
+                      📥 View / Download Original PDF (7 Pages)
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ maxHeight: '380px', overflowY: 'auto', borderRadius: '10px', border: '1px solid #CBD5E1' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', background: '#FFFFFF' }}>
+                  <thead style={{ position: 'sticky', top: 0, background: '#0B2545', color: '#FFFFFF', zIndex: 1 }}>
+                    <tr>
+                      <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left' }}>Sl. No.</th>
+                      <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left' }}>DR Roll No.</th>
+                      <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left' }}>Candidate Name</th>
+                      <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left' }}>DR List Type</th>
+                      <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left' }}>PDF Page</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activeDetails.candidates
+                      .filter((c) => {
+                        const q = candidateQuery.trim().toLowerCase();
+                        if (!q) return true;
+                        return (
+                          c.name.toLowerCase().includes(q) ||
+                          c.rollLabel.toLowerCase().includes(q) ||
+                          c.listType.toLowerCase().includes(q) ||
+                          String(c.slNo).includes(q)
+                        );
+                      })
+                      .map((c, idx) => (
+                        <tr
+                          key={`${c.slNo}-${idx}`}
+                          style={{
+                            borderBottom: '1px solid #E2E8F0',
+                            background: idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC',
+                          }}
+                        >
+                          <td style={{ padding: '0.5rem 0.75rem', fontWeight: 800, color: '#64748B' }}>
+                            #{String(c.slNo).padStart(3, '0')}
+                          </td>
+                          <td style={{ padding: '0.5rem 0.75rem', fontWeight: 800, color: '#1E40AF' }}>
+                            {c.rollLabel}
+                          </td>
+                          <td style={{ padding: '0.5rem 0.75rem', fontWeight: 800, color: '#0B2545' }}>
+                            {c.name}
+                          </td>
+                          <td style={{ padding: '0.5rem 0.75rem', color: '#334155' }}>{c.listType}</td>
+                          <td style={{ padding: '0.5rem 0.75rem', fontWeight: 700, color: '#0369A1' }}>
+                            Page {c.pageNo} of 7
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1085,8 +1272,23 @@ export default function SchoolsClient() {
                       {String(s.slNo || idx + 1).padStart(2, '0')}
                     </td>
                     <td>
-                      <div style={{ fontWeight: 800, color: '#0B2545', fontSize: '0.98rem' }}>
-                        {s.name}
+                      <div style={{ fontWeight: 800, color: '#0B2545', fontSize: '0.98rem', display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                        <span>{s.name}</span>
+                        {full.candidates && full.candidates.length > 0 && (
+                          <span
+                            style={{
+                              background: '#DCFCE7',
+                              color: '#14532D',
+                              border: '1px solid #16A34A',
+                              borderRadius: '999px',
+                              padding: '0.1rem 0.55rem',
+                              fontSize: '0.7rem',
+                              fontWeight: 900,
+                            }}
+                          >
+                            📄 {full.candidates.length} Candidates + BSE Form 29 PDF
+                          </span>
+                        )}
                       </div>
                       <small style={{ color: '#64748B', fontWeight: 600 }}>
                         Code: {full.schoolCode} &middot; Secretary: {full.secretary.name}
@@ -1305,7 +1507,24 @@ export default function SchoolsClient() {
                   <div>&ndash; <strong>WP:</strong> {modalSchool.secretary.phone}</div>
                   <div>&ndash; <strong>AT:</strong> {modalSchool.address.at}</div>
                   <div>&ndash; <strong>PO:</strong> {modalSchool.address.po}</div>
+                  {modalSchool.address.via && (
+                    <div>&ndash; <strong>Via:</strong> {modalSchool.address.via}</div>
+                  )}
                   <div>&ndash; <strong>Dist:</strong> {modalSchool.address.dist}</div>
+                  {modalSchool.address.circle && (
+                    <div>
+                      &ndash; <strong>Circle / Block:</strong> {modalSchool.address.circle} /{' '}
+                      {modalSchool.address.block || modalSchool.address.educationalDistrict}
+                    </div>
+                  )}
+                  {modalSchool.address.telegraphOffice && (
+                    <div>
+                      &ndash; <strong>Telegraph Office:</strong> {modalSchool.address.telegraphOffice}
+                    </div>
+                  )}
+                  {modalSchool.address.landline && (
+                    <div>&ndash; <strong>Telephone:</strong> {modalSchool.address.landline}</div>
+                  )}
                   <div>&ndash; <strong>Pin:</strong> {modalSchool.address.pin}</div>
                 </div>
               </div>
@@ -1345,6 +1564,137 @@ export default function SchoolsClient() {
                 ))}
               </div>
             </div>
+
+            {/* MODAL: OFFICIAL B.S.E. EXAM FORM NO. 29 CANDIDATE ROLL */}
+            {modalSchool.candidates && modalSchool.candidates.length > 0 && (
+              <div
+                style={{
+                  marginTop: '1.25rem',
+                  background: '#F8FAFC',
+                  border: '2px solid #0B2545',
+                  borderRadius: '14px',
+                  padding: '1.1rem',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '0.75rem',
+                    marginBottom: '0.85rem',
+                    paddingBottom: '0.75rem',
+                    borderBottom: '2px solid #CBD5E1',
+                  }}
+                >
+                  <div>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        background: '#15803D',
+                        color: '#FFFFFF',
+                        fontSize: '0.7rem',
+                        fontWeight: 800,
+                        padding: '0.18rem 0.6rem',
+                        borderRadius: '999px',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
+                      ✓ VERIFIED B.S.E. EXAM FORM NO. 29 &bull; DATED {modalSchool.drFormDate || '22/06/2009'}
+                    </span>
+                    <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#0B2545', fontWeight: 900 }}>
+                      📋 Descriptive Roll (DR) of {modalSchool.candidates.length} Candidates
+                    </h4>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                    <input
+                      type="search"
+                      placeholder="Search candidate name or roll..."
+                      value={candidateQuery}
+                      onChange={(e) => setCandidateQuery(e.target.value)}
+                      style={{
+                        padding: '0.45rem 0.75rem',
+                        borderRadius: '8px',
+                        border: '1.5px solid #94A3B8',
+                        fontSize: '0.82rem',
+                        minWidth: '220px',
+                      }}
+                    />
+                    {modalSchool.drFormPdf && (
+                      <a
+                        href={modalSchool.drFormPdf}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          background: '#0B2545',
+                          color: '#FDE68A',
+                          fontWeight: 800,
+                          fontSize: '0.8rem',
+                          padding: '0.5rem 0.9rem',
+                          borderRadius: '8px',
+                          textDecoration: 'none',
+                          border: '1.5px solid #D97706',
+                        }}
+                      >
+                        📥 Open Official PDF (7 Pages)
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ maxHeight: '320px', overflowY: 'auto', borderRadius: '8px', border: '1px solid #CBD5E1' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', background: '#FFFFFF' }}>
+                    <thead style={{ position: 'sticky', top: 0, background: '#0B2545', color: '#FFFFFF', zIndex: 1 }}>
+                      <tr>
+                        <th style={{ padding: '0.55rem 0.7rem', textAlign: 'left' }}>Sl. No.</th>
+                        <th style={{ padding: '0.55rem 0.7rem', textAlign: 'left' }}>DR Roll No.</th>
+                        <th style={{ padding: '0.55rem 0.7rem', textAlign: 'left' }}>Candidate Name</th>
+                        <th style={{ padding: '0.55rem 0.7rem', textAlign: 'left' }}>DR List Type</th>
+                        <th style={{ padding: '0.55rem 0.7rem', textAlign: 'left' }}>PDF Page</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {modalSchool.candidates
+                        .filter((c) => {
+                          const q = candidateQuery.trim().toLowerCase();
+                          if (!q) return true;
+                          return (
+                            c.name.toLowerCase().includes(q) ||
+                            c.rollLabel.toLowerCase().includes(q) ||
+                            c.listType.toLowerCase().includes(q) ||
+                            String(c.slNo).includes(q)
+                          );
+                        })
+                        .map((c, idx) => (
+                          <tr
+                            key={`modal-${c.slNo}-${idx}`}
+                            style={{
+                              borderBottom: '1px solid #E2E8F0',
+                              background: idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC',
+                            }}
+                          >
+                            <td style={{ padding: '0.45rem 0.7rem', fontWeight: 800, color: '#64748B' }}>
+                              #{String(c.slNo).padStart(3, '0')}
+                            </td>
+                            <td style={{ padding: '0.45rem 0.7rem', fontWeight: 800, color: '#1E40AF' }}>
+                              {c.rollLabel}
+                            </td>
+                            <td style={{ padding: '0.45rem 0.7rem', fontWeight: 800, color: '#0B2545' }}>
+                              {c.name}
+                            </td>
+                            <td style={{ padding: '0.45rem 0.7rem', color: '#334155' }}>{c.listType}</td>
+                            <td style={{ padding: '0.45rem 0.7rem', fontWeight: 700, color: '#0369A1' }}>
+                              Page {c.pageNo} of 7
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
