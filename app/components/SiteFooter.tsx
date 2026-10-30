@@ -108,6 +108,7 @@ export default function SiteFooter() {
               <li><Link href="/admin-login">Administration Panel</Link></li>
               <li><Link href="/privacy-policy">Privacy Policy</Link></li>
               <li><Link href="/terms">Terms &amp; Conditions</Link></li>
+              <li><Link href="/refund-policy">Refund Policy</Link></li>
             </ul>
           </div>
 
@@ -152,6 +153,8 @@ export default function SiteFooter() {
             <Link href="/privacy-policy">Privacy Policy</Link>
             <span className="site-footer__dot">&bull;</span>
             <Link href="/terms">Terms &amp; Conditions</Link>
+            <span className="site-footer__dot">&bull;</span>
+            <Link href="/refund-policy">Refund Policy</Link>
             <span className="site-footer__dot">&bull;</span>
             <Link href="/contact">Contact Us</Link>
             <span className="site-footer__dot">&bull;</span>
